@@ -1,0 +1,76 @@
+/**
+ * Copyright 2019 Neetos LLC. All rights reserved.
+ */
+
+import {
+  desktopCapturer,
+  screen,
+  remote as screenRemote,
+} from 'electron';
+
+/**
+ * Alias for the 'full screen' capture source.
+ *
+ * @type {string}
+ */
+const CAPTURE_SOURCE_SCREEN_1 = 'Screen 1';
+const CAPTURE_SOURCE_ENTIRE_SCREEN = 'Entire screen';
+
+/**
+ * Provides a list of possible capture source aliases.
+ *
+ * @type {Set<String>}
+ */
+const POSSIBLE_CAPTURE_SOURCES = new Set([
+  CAPTURE_SOURCE_ENTIRE_SCREEN,
+  CAPTURE_SOURCE_SCREEN_1,
+]);
+
+/**
+ * Provides a list of capture sources or an error if the operation was unsuccessful.
+ *
+ * @returns {Promise} - A promise that resolves to an array of capture sources or an error.
+ */
+async function getSources() {
+  return new Promise((resolve, reject) => {
+    const options = {
+      types: [
+        'screen',
+      ],
+    };
+    const getSourcesCallback = (error, sources) => error ? reject(error) : resolve(sources);
+
+    desktopCapturer.getSources(options, getSourcesCallback);
+  });
+}
+
+/**
+ * Fetches the primary capture source ID.
+ *
+ * @returns {Promise} - A promise that resolves with the source ID or undefined.
+ */
+export async function getCaptureSourceId() {
+  try {
+    const sources = await getSources();
+    const source = sources.find(({ name }) => POSSIBLE_CAPTURE_SOURCES.has(name));
+
+    return source && source.id;
+  } catch (err) {
+    console.error('An error occurred while fetching the capture source ID', err);
+  }
+}
+
+/**
+ * Provides the primary screen's dimensions.
+ *
+ * @returns {Electron.Size} - screen dimensions.
+ */
+export function getScreenSize() {
+  return screen.getPrimaryDisplay().size;
+}
+
+export function captureScreen(rect) {
+  return new Promise((resolve) => {
+    screenRemote.getCurrentWindow().capturePage(rect, resolve);
+  });
+}

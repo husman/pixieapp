@@ -1,0 +1,49 @@
+{
+  "name": "pixiehd-app",
+  "version": "0.0.0",
+  "main": "dist/electron.js",
+  "repository": "husman/pixiehd-app",
+  "scripts": {
+    "watch:client": "webpack --progress --mode development --watch --config webpack.client.config.js",
+    "build:client": "webpack --progress --config webpack.client.config.js",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.7.1",
+    "@material-ui/icons": "^3.0.1",
+    "@observablehq/parser": "^1.0.1",
+    "@observablehq/runtime": "^3.0.2",
+    "classnames": "^2.2.6",
+    "font-awesome": "^4.7.0",
+    "mdi-material-ui": "^5.7.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.7.0",
+    "react-ace": "^6.3.2",
+    "react-dom": "^16.7.0",
+    "react-redux": "^6.0.0",
+    "react-sketch": "git+https://git@github.com/husman/react-sketch.git",
+    "redux": "^4.0.1",
+    "socket.io-client": "^2.2.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.4.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-electron": "^1.4.15",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "css-loader": "^0.28.9",
+    "electron": "^1.4.3",
+    "electron-devtools-installer": "^2.2.4",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "file-loader": "^1.1.6",
+    "node-sass": "^4.9.3",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.20.1",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2",
+    "webpack-node-externals": "^1.6.0"
+  }
+}

@@ -1,0 +1,133 @@
+/**
+ * Copyright 2019 Neetos LLC. All rights reserved.
+ */
+@import '../node_modules/font-awesome/css/font-awesome.min.css';
+@import "./canvas";
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #272822;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+.app-container {
+  height: 100%;
+}
+
+.app-content {
+  width: 100%;
+  height: 100%;
+  padding-top: 65px;
+  padding-left: 73px;
+}
+
+.code-editor-container {
+  width: 100%;
+  height: 70%;
+  padding: 5px;
+  overflow-y: auto;
+}
+
+.notebook-container {
+  z-index: 1;
+}
+
+.code-editor {
+  margin-bottom: 10px;
+
+  .code-editor-wrapper {
+    background-color: #272822;
+    padding: 5px;
+    border: 1px solid #444444;
+    border-radius: 4px;
+  }
+
+  .code-editor__render {
+    display: none;
+  }
+
+  &.code-editor--evaluated {
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+
+    .code-editor-wrapper {
+      border-bottom: 0;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .code-editor__render {
+      font-family: Proxima Nova, Helvetica, Museo, Futura, sans-serif;
+      display: block;
+      margin-bottom: 10px;
+      padding: 10px 5px;
+      color: #ccc;
+
+      a {
+        color: #0074D9;
+      }
+
+      background-color: #272822;
+      border: 1px solid #444444;
+      border-top: 1px dashed #3f3f3f;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+  }
+}
+
+.user-videos-container {
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  overflow: hidden;
+  height: 30%;
+}
+
+.user-video {
+  height: 100%;
+  margin-left: 10px;
+  border-radius: 8px;
+}
+
+.notebook-action-buttons {
+  margin-top: 10px;
+  z-index: 3;
+}
+
+.logo-text {
+  font-family: "Times New Roman", sans-serif;
+}
+
+.create-note-submenu {
+  position: absolute;
+  border: 1px solid #555;
+  border-left: 0;
+  background-color: #333;
+  z-index: 1201;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+  left: 73px;
+
+  .create-note-submenu__list {
+    padding: 0;
+  }
+
+  @media screen and (max-width: 599px) {
+    left: 57px;
+  }
+}
+
+.app-sidemenu {
+  .active {
+    background-color: rgba(100, 255, 100, 0.1);
+    box-shadow: 0 1px 30px rgba(255, 255, 0, 0.1);
+  }
+}
