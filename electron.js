@@ -1,6 +1,7 @@
 /**
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
+/* eslint-disable no-console */
 
 import {
   app,

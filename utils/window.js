@@ -10,7 +10,7 @@ class Win {
    * Initializes the window reference.
    */
   constructor() {
-    this._win = window ? window : null;
+    this.win = window || null;
   }
 
   /**
@@ -20,20 +20,12 @@ class Win {
    * @param {Function} handler
    */
   on(eventType, handler) {
-    if (this._win) {
-      this._win.addEventListener(eventType, handler);
-    }
-  }
+    const {
+      win,
+    } = this;
 
-  /**
-   * unbinds a handler from a window event.
-   *
-   * @param {String} eventType
-   * @param {Function} handler
-   */
-  off(eventType, handler) {
-    if (this._win) {
-      this._win.removeEventListener(eventType, handler);
+    if (win) {
+      win.addEventListener(eventType, handler);
     }
   }
 
@@ -45,6 +37,9 @@ class Win {
    * @param {String} alias - The event label for the resulting 'optimized' event.
    */
   throttleEvent(eventType, alias) {
+    const {
+      win,
+    } = this;
     let running = false;
 
     /**
@@ -57,27 +52,15 @@ class Win {
 
       running = true;
       requestAnimationFrame(() => {
-        this._win.dispatchEvent(new CustomEvent(alias));
+        win.dispatchEvent(new CustomEvent(alias));
         running = false;
       });
     };
 
-    this._win.addEventListener(eventType, onThrottle);
+    win.addEventListener(eventType, onThrottle);
 
     return onThrottle;
-  };
-
-  /**
-   * Remove event type throttle.
-   *
-   * @param {String} eventType - The event type.
-   * @param {Function} throttleHandler - The event handler received when applying the throttled.
-   */
-  unthrottleEvent(eventType, throttleHandler) {
-    if (throttleHandler) {
-      this._win.removeEventListener(eventType, throttleHandler);
-    }
-  };
+  }
 
   /**
    * Returns the size of the primary window.
@@ -87,43 +70,11 @@ class Win {
   getPrimaryWindowSize() {
     let size = {};
 
-    if (this._win) {
+    if (this.win) {
       size = {
-        width: this._win.innerWidth,
-        height: this._win.innerHeight,
+        width: this.win.innerWidth,
+        height: this.win.innerHeight,
       };
-    }
-
-    return size;
-  }
-
-  /**
-   * Returns the computed CSS styles for the specified element.
-   *
-   * @param {{}} elem - The DOM element to compute the styles for.
-   *
-   * @returns {{}} - The computed styles or an empty object.
-   */
-  getComputedStyle(elem) {
-    if (!this._win || !elem) {
-      return {};
-    }
-
-    return this._win.getComputedStyle(elem);
-  }
-
-  /**
-   * Returns the bounding rectangle for the specified element.
-   *
-   * @param {HTMLElement} elem - The element to fetch the bounding rectangle for.
-   *
-   * @returns {{}} - Returns the bounding rectangle for the specified elment.
-   */
-  getElementBoundingRect(elem) {
-    let size = {};
-
-    if (this._win && elem) {
-      size = this._win.getBoundingClientRect(elem);
     }
 
     return size;

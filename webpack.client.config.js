@@ -20,6 +20,10 @@ module.exports = {
     nodeExternals(),
   ],
   resolve: {
+    extensions: [
+      '.js',
+      '.jsx',
+    ],
     modules: [
       path.join(__dirname), // root
     ],
@@ -59,7 +63,7 @@ module.exports = {
         }),
       },
       {
-        test: /.(jpg|jpeg|png|gif|woff(2)?|eot|otf|ttf|svg|pdf|csv)(\?[a-z0-9=\.]+)?$/,
+        test: /.(jpg|jpeg|png|gif|woff(2)?|eot|otf|ttf|svg|pdf|csv)(\?[a-z0-9=.]+)?$/,
         use: [
           {
             loader: 'file-loader',
@@ -71,7 +75,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        'NODE_ENV': 'electron',
+        NODE_ENV: 'electron',
       },
     }),
     new ExtractTextPlugin('styles.css'),

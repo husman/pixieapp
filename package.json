@@ -6,17 +6,19 @@
   "scripts": {
     "watch:client": "webpack --progress --mode development --watch --config webpack.client.config.js",
     "build:client": "webpack --progress --config webpack.client.config.js",
-    "lint": "eslint .",
+    "lint": "eslint \"**/*.{js,jsx}\"",
     "start": "electron ."
   },
   "dependencies": {
-    "electron": "^1.4.3",
-    "electron-devtools-installer": "^2.2.4",
     "@material-ui/core": "^3.7.1",
     "@material-ui/icons": "^3.0.1",
     "@observablehq/parser": "^1.0.1",
     "@observablehq/runtime": "^3.0.2",
+    "brace": "^0.11.1",
     "classnames": "^2.2.6",
+    "electron": "^1.4.3",
+    "electron-devtools-installer": "^2.2.4",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "font-awesome": "^4.7.0",
     "mdi-material-ui": "^5.7.0",
     "prop-types": "^15.6.2",
@@ -27,7 +29,9 @@
     "react-sketch": "git+https://git@github.com/husman/react-sketch.git",
     "redux": "^4.0.1",
     "socket.io-client": "^2.2.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "webpack": "^4.20.2",
+    "webpack-node-externals": "^1.6.0"
   },
   "devDependencies": {
     "babel-cli": "^6.4.0",
@@ -44,13 +48,10 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-react": "^7.12.0",
-    "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^1.1.6",
     "node-sass": "^4.9.3",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.20.1",
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.2",
-    "webpack-node-externals": "^1.6.0"
+    "webpack-cli": "^3.1.2"
   }
 }

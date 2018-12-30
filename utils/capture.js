@@ -38,7 +38,7 @@ async function getSources() {
         'screen',
       ],
     };
-    const getSourcesCallback = (error, sources) => error ? reject(error) : resolve(sources);
+    const getSourcesCallback = (error, sources) => (error ? reject(error) : resolve(sources));
 
     desktopCapturer.getSources(options, getSourcesCallback);
   });
@@ -47,17 +47,21 @@ async function getSources() {
 /**
  * Fetches the primary capture source ID.
  *
- * @returns {Promise} - A promise that resolves with the source ID or undefined.
+ * @returns {String} - A promise that resolves with the source ID or undefined.
  */
 export async function getCaptureSourceId() {
+  let sourceId = '';
+
   try {
     const sources = await getSources();
     const source = sources.find(({ name }) => POSSIBLE_CAPTURE_SOURCES.has(name));
 
-    return source && source.id;
+    sourceId = source && source.id;
   } catch (err) {
-    console.error('An error occurred while fetching the capture source ID', err);
+    console.error('An error occurred while fetching the capture source ID', err); // eslint-disable-line no-console
   }
+
+  return sourceId;
 }
 
 /**

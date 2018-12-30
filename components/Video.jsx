@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class Video extends React.Component {
   /**
@@ -44,13 +45,25 @@ export default class Video extends React.Component {
     } = this.props;
 
     return (
-        <video
-            autoPlay={autoPlay}
-            ref={this.onInit}
-            className={className}
-        >
-          Your device does not support videos.
-        </video>
+      <video
+        autoPlay={autoPlay}
+        ref={this.onInit}
+        className={className}
+      >
+        Your device does not support videos.
+      </video>
     );
   }
+}
+
+Video.defaultProps = {
+  autoPlay: false,
+  className: undefined,
+  onInit: undefined,
+};
+
+Video.propTypes = {
+  autoPlay: PropTypes.bool,
+  className: PropTypes.string,
+  onInit: PropTypes.func,
 };

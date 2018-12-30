@@ -3,15 +3,16 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   connect,
 } from 'react-redux';
-import Video from './Video';
-import Audio from './Audio';
+import Video from 'components/Video';
+import Audio from 'components/Audio';
 import {
   getCaptureSourceId,
   getScreenSize,
-} from '../utils/capture';
+} from 'utils/capture';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/mode/html';
@@ -19,12 +20,12 @@ import 'brace/mode/latex';
 import 'brace/theme/monokai';
 import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
-import Win from '../utils/window';
+import Win from 'utils/window';
 import {
   Library,
   Inspector,
   Runtime,
-} from '@observablehq/runtime'
+} from '@observablehq/runtime';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -32,7 +33,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import PencilIcon from '@material-ui/icons/Create';
 import TextIcon from '@material-ui/icons/Title';
 import uuid from 'uuid';
-import Canvas from './Canvas';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -46,20 +46,21 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import CodeIcon from '@material-ui/icons/Code';
 import GestureIcon from '@material-ui/icons/Gesture';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import PointerIcon from 'mdi-material-ui/CursorDefaultOutline';
 import classNames from 'classnames';
+import {
+  Tools,
+} from 'react-sketch';
 import {
   createMuiTheme,
   MuiThemeProvider,
   withStyles,
 } from '@material-ui/core/styles';
+import Canvas from 'components/Canvas';
 import {
   setCanvasTool,
 } from 'actions/canvas';
-import {
-  Tools,
-} from 'react-sketch';
 import SocketClient from 'lib/SocketClient';
-import PointerIcon from 'mdi-material-ui/CursorDefaultOutline';
 
 const SOCKET_EVENT_ICE_CANDIDATE = 'ice-candidate';
 const SOCKET_EVENT_USER_JOINED = 'user-joined';
@@ -199,19 +200,14 @@ class App extends React.Component {
     const codeEditorLibrary = new Library();
 
     this.state = {
-      constraints,
       localStream: null,
       remoteStreams: [],
       connections: {},
       isAddSubMenuOpened: false,
-      isAnnotating: false,
-      codeEditorValue: '',
       windowWidth,
       windowHeight,
       notebook: [],
-      codeEditorLibrary,
       runtime: new Runtime(codeEditorLibrary),
-      notebookAnnotation: null,
       isCanvasActive: true,
       isNotebookActive: false,
     };
@@ -219,8 +215,8 @@ class App extends React.Component {
     this.initWindowEvents();
 
     mediaDevices
-        .getUserMedia(constraints)
-        .then(this.onLocalStreamSuccess);
+      .getUserMedia(constraints)
+      .then(this.onLocalStreamSuccess);
   }
 
 
@@ -237,301 +233,36 @@ class App extends React.Component {
   };
 
   /**
-   * Handler for the component's rendering
-   *
-   * @returns {*} - HTML
-   */
-  render() {
-    const {
-      localStream,
-      remoteStreams,
-      notebook,
-      isAddSubMenuOpened,
-      isCanvasActive,
-      isNotebookActive,
-    } = this.state;
-    const nbMaxRemoteVideosToDisplay = this.getMaxNbRemoteVideosToDisplay();
-    const {
-      classes,
-      theme,
-      tool,
-    } = this.props;
-
-    return (
-        <MuiThemeProvider theme={theme2}>
-          <div className="app-container">
-            <CssBaseline/>
-            <AppBar
-                position="fixed"
-                className={classNames(classes.appBar, {
-                  [classes.appBarShift]: this.state.open,
-                })}
-            >
-              <Toolbar disableGutters={!this.state.open}>
-                <IconButton
-                    color="inherit"
-                    aria-label="Open drawer"
-                    onClick={this.handleDrawerOpen}
-                    className={classNames(classes.menuButton, {
-                      [classes.hide]: this.state.open,
-                    })}
-                >
-                  <MenuIcon/>
-                </IconButton>
-                <Typography variant="h6" color="inherit" noWrap>
-                  <span className="logo-text">NEETOS</span>
-                </Typography>
-              </Toolbar>
-            </AppBar>
-            <Drawer
-                variant="permanent"
-                className={classNames(classes.drawer, {
-                  [classes.drawerOpen]: this.state.open,
-                  [classes.drawerClose]: !this.state.open,
-                })}
-                classes={{
-                  paper: classNames({
-                    [classes.drawerOpen]: this.state.open,
-                    [classes.drawerClose]: !this.state.open,
-                  }),
-                }}
-                open={this.state.open}
-            >
-              <div className={classes.toolbar}>
-                <IconButton onClick={this.handleDrawerClose}>
-                  {theme.direction === 'rtl' ? <ChevronRightIcon/> : <ChevronLeftIcon/>}
-                </IconButton>
-              </div>
-              <Divider/>
-              <List
-                  className="app-sidemenu"
-                  component="nav"
-              >
-                {!isCanvasActive ?
-                    <ListItem
-                        button
-                        className={`${isCanvasActive && 'active'}`}
-                        onClick={this.showCanvas}
-                    >
-                      <ListItemIcon>
-                        <GestureIcon/>
-                      </ListItemIcon>
-                      <ListItemText primary="Canvas"/>
-                    </ListItem>
-                    : null
-                }
-                {!isNotebookActive ?
-                    <ListItem
-                        button
-                        className={`${isNotebookActive && 'active'}`}
-                        onClick={this.showNotebook}
-                    >
-                      <ListItemIcon>
-                        <CodeIcon/>
-                      </ListItemIcon>
-                      <ListItemText primary="Notebook"/>
-                    </ListItem>
-                    : null
-                }
-                {isCanvasActive ?
-                    <React.Fragment>
-                      <ListItem
-                          button
-                          className={`${tool === Tools.Select && 'active'}`}
-                          onClick={this.onChangeCanvasToolToPointer}
-                      >
-                        <ListItemIcon>
-                          <PointerIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="Pointer"/>
-                      </ListItem>
-                      <ListItem
-                          button
-                          className={`${tool === Tools.Pencil && 'active'}`}
-                          onClick={this.onChangeCanvasToolToPencil}
-                      >
-                        <ListItemIcon>
-                          <PencilIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="Draw"/>
-                      </ListItem>
-                      <Divider/>
-                      <ListItem
-                          button
-                          className={`${tool === Tools.Text && 'active'}`}
-                          onClick={this.onChangeCanvasToolToText}
-                      >
-                        <ListItemIcon>
-                          <TextIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="Text"/>
-                      </ListItem>
-                    </React.Fragment>
-                    : null
-                }
-                {isNotebookActive ?
-                    <ListItem
-                        button
-                        onClick={this.onAddNotebookEntry}
-                        className="create-note-btn"
-                    >
-                      <ListItemIcon>
-                        <NoteAddIcon/>
-                      </ListItemIcon>
-                      <ListItemText primary="Create Note"/>
-                    </ListItem>
-                    :
-                    null
-                }
-                <Divider/>
-              </List>
-            </Drawer>
-            <div className="app-content">
-              <div className="code-editor-container">
-                {isNotebookActive ?
-                    <div className="notebook-container">
-                      {notebook.map((notebookEntry, index) => {
-                        const evaluatedClassName = notebookEntry.value ? 'code-editor--evaluated' : '';
-
-                        return (
-                            <div key={index} className={`code-editor ${evaluatedClassName}`}>
-                              <div className="code-editor-wrapper">
-                                <AceEditor
-                                    wrapEnabled={true}
-                                    mode={notebookEntry.type}
-                                    theme="monokai"
-                                    onChange={this.onNotebookEntryChange(notebookEntry.id, notebookEntry.remote)}
-                                    name="pixie-editor"
-                                    debounceChangePeriod={1000}
-                                    focus
-                                    editorProps={{
-                                      $blockScrolling: Infinity,
-                                    }}
-                                    value={notebookEntry.value}
-                                    setOptions={{
-                                      enableBasicAutocompletion: true,
-                                      enableLiveAutocompletion: true,
-                                      showPrintMargin: false,
-                                      highlightActiveLine: false,
-                                      showLineNumbers: false,
-                                      showGutter: false,
-                                      maxLines: Infinity,
-                                    }}
-                                    style={{
-                                      width: '100%',
-                                      backgroundColor: '#272822',
-                                    }}
-                                />
-                              </div>
-                              <div className="code-editor__render">
-                                <span ref={this.onNotebookEntryInit(notebookEntry)}/>
-                              </div>
-                            </div>
-                        );
-                      })}
-                    </div>
-                    :
-                    null
-                }
-                {isCanvasActive ?
-                    <Canvas/>
-                    :
-                    null
-                }
-              </div>
-
-              <div className="user-videos-container">
-                {localStream ?
-                    <Video
-                        autoPlay
-                        className="user-video"
-                        onInit={this.onLocalVideoInit}
-                    />
-                    :
-                    null
-                }
-                {remoteStreams.map((remoteStream, index) =>
-                    index >= nbMaxRemoteVideosToDisplay ?
-                        <Audio
-                            autoPlay
-                            key={remoteStream.clientId}
-                            onInit={this.onRemoteAudioInit(remoteStream)}
-                        />
-                        :
-                        <Video
-                            autoPlay
-                            className="user-video"
-                            key={remoteStream.clientId}
-                            onInit={this.onRemoteVideoInit(remoteStream)}
-                        />
-                )}
-              </div>
-            </div>
-          </div>
-          {isAddSubMenuOpened ?
-              <div
-                  className="create-note-submenu"
-                  ref={this.initNotebookActionSubmenu}
-              >
-                <List
-                    component="nav"
-                    className="create-note-submenu__list"
-                    dense
-                >
-                  <ListItem
-                      button
-                      onClick={this.onAddEntry(NOTEBOOK_ENTRY_TYPE_HTML)}
-                  >
-                    <ListItemText primary="HTML"/>
-                  </ListItem>
-                  <ListItem
-                      button
-                      onClick={this.onAddEntry(NOTEBOOK_ENTRY_TYPE_JAVASCRIPT)}
-                  >
-                    <ListItemText primary="JavaScript"/>
-                  </ListItem>
-                  <ListItem
-                      button
-                      onClick={this.onAddEntry(NOTEBOOK_ENTRY_TYPE_LATEX)}
-                  >
-                    <ListItemText primary="LaTex"/>
-                  </ListItem>
-                </List>
-              </div>
-              :
-              null
-          }
-        </MuiThemeProvider>
-    );
-  }
-
-  initCanvas = (canvas) => {
-    if (!canvas) {
-      return;
-    }
-
-    this._canvas = canvas._fc;
-  };
-
-  /**
    * Handler for canvas tool change to the text tool.
    */
   onChangeCanvasToolToText = () => {
-    this.props.updateCanvasTool(Tools.Text);
+    const {
+      updateCanvasTool,
+    } = this.props;
+
+    updateCanvasTool(Tools.Text);
   };
 
   /**
    * Handler for canvas tool change to the pencil tool.
    */
   onChangeCanvasToolToPencil = () => {
-    this.props.updateCanvasTool(Tools.Pencil);
+    const {
+      updateCanvasTool,
+    } = this.props;
+
+    updateCanvasTool(Tools.Pencil);
   };
 
   /**
    * Handler for canvas tool change to the pointer tool.
    */
   onChangeCanvasToolToPointer = () => {
-    this.props.updateCanvasTool(Tools.Select);
+    const {
+      updateCanvasTool,
+    } = this.props;
+
+    updateCanvasTool(Tools.Select);
   };
 
   /**
@@ -554,7 +285,9 @@ class App extends React.Component {
     });
   };
 
-  initNotebookActionSubmenu = (elem) => {
+  initNotebookActionSubmenu = (ref) => {
+    const elem = ref;
+
     if (!elem) {
       return;
     }
@@ -568,8 +301,12 @@ class App extends React.Component {
    * Event handler for when a new notebook entry is being added.
    */
   onAddNotebookEntry = () => {
+    const {
+      isAddSubMenuOpened,
+    } = this.state;
+
     this.setState({
-      isAddSubMenuOpened: !this.state.isAddSubMenuOpened,
+      isAddSubMenuOpened: !isAddSubMenuOpened,
     });
   };
 
@@ -578,24 +315,25 @@ class App extends React.Component {
    *
    * @param {String} entryType - The notebook entry type.
    */
-  onAddEntry = (entryType) => {
-    return () => {
-      const newEntry = {
-        id: uuid.v4(),
-        type: entryType,
-        value: '',
-      };
-
-      SocketClient.emit(PEER_NOTEBOOK_ADD_ENTRY, newEntry);
-
-      this.setState({
-        isAddSubMenuOpened: false,
-        notebook: [
-          ...this.state.notebook,
-          newEntry,
-        ],
-      });
+  onAddEntry = entryType => () => {
+    const {
+      notebook,
+    } = this.state;
+    const newEntry = {
+      id: uuid.v4(),
+      type: entryType,
+      value: '',
     };
+
+    SocketClient.emit(PEER_NOTEBOOK_ADD_ENTRY, newEntry);
+
+    this.setState({
+      isAddSubMenuOpened: false,
+      notebook: [
+        ...notebook,
+        newEntry,
+      ],
+    });
   };
 
   /**
@@ -605,19 +343,17 @@ class App extends React.Component {
    *
    * @returns {[]}
    */
-  getHTMLVM = (htmlCode) => {
-    return [
-      // List of inputs to the HTML VM.
-      [
-        'html',
-      ],
+  getHTMLVM = htmlCode => [
+    // List of inputs to the HTML VM.
+    [
+      'html',
+    ],
 
-      // The definition to execute the HTML code.
-      // @param {Function} html - Observable 'html' standard library.
-      // @returns {*} - HTML code to render.
-      (html) => html`${htmlCode}`,
-    ];
-  };
+    // The definition to execute the HTML code.
+    // @param {Function} html - Observable 'html' standard library.
+    // @returns {*} - HTML code to render.
+    html => html`${htmlCode}`,
+  ];
 
   /**
    * Returns the parameters for the JavaScript VM.
@@ -627,7 +363,7 @@ class App extends React.Component {
    * @returns {[]}
    */
   getJavaScriptVM = (jsCode) => {
-    const definition = eval(`() => {${jsCode}}`);
+    const definition = eval(`() => {${jsCode}}`); // eslint-disable-line no-eval
 
     return [
       // List of inputs to the JavaScript VM.
@@ -647,19 +383,17 @@ class App extends React.Component {
    *
    * @returns {[]}
    */
-  getLatexVM = (latexCode) => {
-    return [
-      // List of inputs to the LaTex VM.
-      [
-        'tex',
-      ],
+  getLatexVM = latexCode => [
+    // List of inputs to the LaTex VM.
+    [
+      'tex',
+    ],
 
-      // The definition to execute the LaTex code.
-      // @param {Function} html - Observable 'tex' standard library.
-      // @returns {*} - returns the output of LaTex code.
-      (tex) => tex`${latexCode}`,
-    ];
-  };
+    // The definition to execute the LaTex code.
+    // @param {Function} html - Observable 'tex' standard library.
+    // @returns {*} - returns the output of LaTex code.
+    tex => tex`${latexCode}`,
+  ];
 
   /**
    * Returns the Observable Virtual Machine parameters for the given notebook entry type and value.
@@ -688,30 +422,29 @@ class App extends React.Component {
    * @param {{}} notebookEntry - The notebook entry.
    * @returns {Function} - The event handler callback.
    */
-  onNotebookEntryInit = ({ type, value }) => {
-    return (elem) => {
-      // Do nothing if:
-      //  1. The DOM element we're mounting onto is missing.
-      //  2. The entry type is not supported.
-      //  3. The entry has an empty value.
-      if (!elem || !value || !SUPPORTED_NOTEBOOK_TYPES.has(type)) {
-        return;
-      }
+  onNotebookEntryInit = ({ type, value }) => (ref) => {
+    const elem = ref;
 
-      const {
-        runtime,
-      } = this.state;
-      const notebookVM = runtime.module();
-      const inspector = new Inspector(elem);
+    // Do nothing if:
+    //  1. The DOM element we're mounting onto is missing.
+    //  2. The entry type is not supported.
+    //  3. The entry has an empty value.
+    if (!elem || !value || !SUPPORTED_NOTEBOOK_TYPES.has(type)) {
+      return;
+    }
 
-      try {
-        const entryVMParams = this.getEntryTypeVMParams(type, value);
-        notebookVM.variable(inspector).define(null, ...entryVMParams);
-      } catch (err) {
-        elem.innerText = err.message;
-      }
+    const {
+      runtime,
+    } = this.state;
+    const notebookVM = runtime.module();
+    const inspector = new Inspector(elem);
 
-    };
+    try {
+      const entryVMParams = this.getEntryTypeVMParams(type, value);
+      notebookVM.variable(inspector).define(null, ...entryVMParams);
+    } catch (err) {
+      elem.innerText = err.message;
+    }
   };
 
   /**
@@ -742,7 +475,7 @@ class App extends React.Component {
     // 'resize' events can fire at a high rate and should be throttled for optimal performance.
     // See: https://developer.mozilla.org/en-US/docs/Web/Events/resize#Examples
     Win.throttleEvent('resize', 'optimizedResize');
-    Win.on('optimizedResize', this.onWindowResized)
+    Win.on('optimizedResize', this.onWindowResized);
   };
 
   /**
@@ -820,7 +553,7 @@ class App extends React.Component {
           value,
           remote: false,
         };
-      })
+      }),
     });
   };
 
@@ -828,20 +561,15 @@ class App extends React.Component {
    * Handler for content changes within the code editor.
    *
    * @param {String} id - The notebook entry ID.
-   * @param {Boolean} isRemoteEvent - True if the change event was due to a change from a remote peer.
+   * @param {Boolean} isRemoteEvent - True if the event was due to a change from a remote peer.
    */
-  onNotebookEntryChange = (id, isRemoteEvent) => {
-    /**
-     * @param {*} value - The notebook entry value.
-     */
-    return (value) => {
-      // Do not broadcast messages we received from a remote peer.
-      if (!isRemoteEvent) {
-        SocketClient.emit(PEER_NOTEBOOK_ENTRY_CHANGE, id, value);
-      }
-
-      this.updateNotebookEntry(id, value);
+  onNotebookEntryChange = (id, isRemoteEvent) => (value) => {
+    // Do not broadcast messages we received from a remote peer.
+    if (!isRemoteEvent) {
+      SocketClient.emit(PEER_NOTEBOOK_ENTRY_CHANGE, id, value);
     }
+
+    this.updateNotebookEntry(id, value);
   };
 
   /**
@@ -905,13 +633,13 @@ class App extends React.Component {
     clientIds.forEach(async (clientId) => {
       // Do nothing if the clinet is us or we are already aware of the client
       if (SocketClient.getClientId() === clientId || connections[clientId]) {
-        return false;
+        return;
       }
 
       // Create a new peer connection for the user that just joined
       newConnections[clientId] = new RTCPeerConnection(peerConnectionConfig);
       newConnections[clientId].onicecandidate = this.onIceCandidate;
-      newConnections[clientId].onaddstream = (evt) => this.onAddStream(evt, clientId);
+      newConnections[clientId].onaddstream = evt => this.onAddStream(evt, clientId);
 
       // Add our local stream to the the connection
       newConnections[clientId].addStream(localStream);
@@ -924,7 +652,7 @@ class App extends React.Component {
       },
     });
 
-    return this.createOfferForNewUser(senderId)
+    return this.createOfferForNewUser(senderId);
   };
 
   createOfferForNewUser = async (clientId) => {
@@ -933,7 +661,7 @@ class App extends React.Component {
     } = this.state;
 
     if (SocketClient.getClientId() === clientId) {
-      return false;
+      return;
     }
 
     const connection = connections[clientId];
@@ -942,11 +670,13 @@ class App extends React.Component {
       // Create an offer to share media with the new user
       const offerSdp = await connection.createOffer();
 
-      // Set the local descript of the new user's peer connection to the offer we created to share media with hum/her
+      // Set the local description of the new user's peer connection
+      // to the offer we created to share media with hum/her
       await connection.setLocalDescription(offerSdp);
 
       SocketClient.emit(SOCKET_EVENT_ICE_OFFER, clientId, offerSdp);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('An error occurred while creating an offer for client with ID:', clientId, err);
     }
   };
@@ -965,7 +695,7 @@ class App extends React.Component {
 
       this.setState({
         connections: newConnections,
-        remoteStreams: remoteStreams.filter((stream) => stream.clientId !== clientId),
+        remoteStreams: remoteStreams.filter(stream => stream.clientId !== clientId),
       });
     }
   };
@@ -983,9 +713,13 @@ class App extends React.Component {
    * @param {String} clientId - The ID of the peer whose sending the stream.
    */
   onAddStream = (evt, clientId) => {
+    const {
+      remoteStreams,
+    } = this.state;
+
     this.setState({
       remoteStreams: [
-        ...this.state.remoteStreams,
+        ...remoteStreams,
         {
           clientId,
           stream: evt.stream,
@@ -1042,8 +776,8 @@ class App extends React.Component {
         await connection.setLocalDescription(answerSdp);
         SocketClient.emit(SOCKET_EVENT_ICE_OFFER, clientId, answerSdp);
       }
-
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Failed to set offer SDP as a remote SDP for client with ID:', clientId, err);
     }
   };
@@ -1071,7 +805,7 @@ class App extends React.Component {
 
   onStopLocalVideo = () => {
     const {
-      localStream
+      localStream,
     } = this.state;
 
     if (localStream) {
@@ -1083,10 +817,15 @@ class App extends React.Component {
     });
   };
 
-  onLocalVideoInit = (video) => {
+  onLocalVideoInit = (ref) => {
     const {
       localStream,
     } = this.state;
+    const video = ref;
+
+    if (!video) {
+      return;
+    }
 
     if (localStream) {
       video.muted = true;
@@ -1100,12 +839,16 @@ class App extends React.Component {
    * @param {MediaStream} mediaStream
    * @returns {Function} - callback
    */
-  onRemoteVideoInit = (mediaStream) => {
-    return (video) => {
-      if (mediaStream) {
-        video.srcObject = mediaStream.stream;
-      }
-    };
+  onRemoteVideoInit = mediaStream => (ref) => {
+    const video = ref;
+
+    if (!video) {
+      return;
+    }
+
+    if (mediaStream) {
+      video.srcObject = mediaStream.stream;
+    }
   };
 
   /**
@@ -1114,12 +857,16 @@ class App extends React.Component {
    * @param {MediaStream} mediaStream
    * @returns {Function} - callback
    */
-  onRemoteAudioInit = (mediaStream) => {
-    return (audio) => {
-      if (mediaStream) {
-        audio.srcObject = mediaStream.stream;
-      }
-    };
+  onRemoteAudioInit = mediaStream => (ref) => {
+    const audio = ref;
+
+    if (!audio) {
+      return;
+    }
+
+    if (mediaStream) {
+      audio.srcObject = mediaStream.stream;
+    }
   };
 
   /**
@@ -1150,18 +897,285 @@ class App extends React.Component {
           minWidth: width,
           minHeight: height,
           maxWidth: width,
-          maxHeight: height
-        }
-      }
+          maxHeight: height,
+        },
+      },
     };
 
     try {
-      const screenShareStream = await mediaDevices.getUserMedia(constraints);
+      await mediaDevices.getUserMedia(constraints);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Could not get media device to capture the screen', err);
     }
   };
+
+  /**
+   * Handler for the component's rendering
+   *
+   * @returns {*} - HTML
+   */
+  render() {
+    const {
+      localStream,
+      remoteStreams,
+      notebook,
+      isAddSubMenuOpened,
+      isCanvasActive,
+      isNotebookActive,
+    } = this.state;
+    const nbMaxRemoteVideosToDisplay = this.getMaxNbRemoteVideosToDisplay();
+    const {
+      classes,
+      theme,
+      tool,
+    } = this.props;
+
+    return (
+      <MuiThemeProvider theme={theme2}>
+        <div className="app-container">
+          <CssBaseline />
+          <AppBar
+            position="fixed"
+            className={classNames(classes.appBar, {
+              [classes.appBarShift]: this.state.open,
+            })}
+          >
+            <Toolbar disableGutters={!this.state.open}>
+              <IconButton
+                color="inherit"
+                aria-label="Open drawer"
+                onClick={this.handleDrawerOpen}
+                className={classNames(classes.menuButton, {
+                  [classes.hide]: this.state.open,
+                })}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" color="inherit" noWrap>
+                <span className="logo-text">NEETOS</span>
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <Drawer
+            variant="permanent"
+            className={classNames(classes.drawer, {
+              [classes.drawerOpen]: this.state.open,
+              [classes.drawerClose]: !this.state.open,
+            })}
+            classes={{
+              paper: classNames({
+                [classes.drawerOpen]: this.state.open,
+                [classes.drawerClose]: !this.state.open,
+              }),
+            }}
+            open={this.state.open}
+          >
+            <div className={classes.toolbar}>
+              <IconButton onClick={this.handleDrawerClose}>
+                {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+              </IconButton>
+            </div>
+            <Divider />
+            <List
+              className="app-sidemenu"
+              component="nav"
+            >
+              {!isCanvasActive ? (
+                <ListItem
+                  button
+                  className={`${isCanvasActive && 'active'}`}
+                  onClick={this.showCanvas}
+                >
+                  <ListItemIcon>
+                    <GestureIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Canvas" />
+                </ListItem>
+              ) : null}
+              {!isNotebookActive ? (
+                <ListItem
+                  button
+                  className={`${isNotebookActive && 'active'}`}
+                  onClick={this.showNotebook}
+                >
+                  <ListItemIcon>
+                    <CodeIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Notebook" />
+                </ListItem>
+              ) : null}
+              {isCanvasActive ? (
+                <React.Fragment>
+                  <ListItem
+                    button
+                    className={`${tool === Tools.Select && 'active'}`}
+                    onClick={this.onChangeCanvasToolToPointer}
+                  >
+                    <ListItemIcon>
+                      <PointerIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Pointer" />
+                  </ListItem>
+                  <ListItem
+                    button
+                    className={`${tool === Tools.Pencil && 'active'}`}
+                    onClick={this.onChangeCanvasToolToPencil}
+                  >
+                    <ListItemIcon>
+                      <PencilIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Draw" />
+                  </ListItem>
+                  <Divider />
+                  <ListItem
+                    button
+                    className={`${tool === Tools.Text && 'active'}`}
+                    onClick={this.onChangeCanvasToolToText}
+                  >
+                    <ListItemIcon>
+                      <TextIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Text" />
+                  </ListItem>
+                </React.Fragment>
+              ) : null}
+              {isNotebookActive ? (
+                <ListItem
+                  button
+                  onClick={this.onAddNotebookEntry}
+                  className="create-note-btn"
+                >
+                  <ListItemIcon>
+                    <NoteAddIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Create Note" />
+                </ListItem>
+              ) : null}
+              <Divider />
+            </List>
+          </Drawer>
+          <div className="app-content">
+            <div className="code-editor-container">
+              {isNotebookActive ? (
+                <div className="notebook-container">
+                  {notebook.map((notebookEntry) => {
+                    const evaluatedClassName = notebookEntry.value ? 'code-editor--evaluated' : '';
+
+                    return (
+                      <div key={notebookEntry.id} className={`code-editor ${evaluatedClassName}`}>
+                        <div className="code-editor-wrapper">
+                          <AceEditor
+                            wrapEnabled
+                            mode={notebookEntry.type}
+                            theme="monokai"
+                            onChange={
+                              this.onNotebookEntryChange(notebookEntry.id, notebookEntry.remote)
+                            }
+                            name="pixie-editor"
+                            debounceChangePeriod={1000}
+                            focus
+                            editorProps={{
+                              $blockScrolling: Infinity,
+                            }}
+                            value={notebookEntry.value}
+                            setOptions={{
+                              enableBasicAutocompletion: true,
+                              enableLiveAutocompletion: true,
+                              showPrintMargin: false,
+                              highlightActiveLine: false,
+                              showLineNumbers: false,
+                              showGutter: false,
+                              maxLines: Infinity,
+                            }}
+                            style={{
+                              width: '100%',
+                              backgroundColor: '#272822',
+                            }}
+                          />
+                        </div>
+                        <div className="code-editor__render">
+                          <span ref={this.onNotebookEntryInit(notebookEntry)} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null}
+              {isCanvasActive ? <Canvas /> : null}
+            </div>
+
+            <div className="user-videos-container">
+              {localStream ? (
+                <Video
+                  autoPlay
+                  className="user-video"
+                  onInit={this.onLocalVideoInit}
+                />
+              ) : null}
+              {remoteStreams.map((remoteStream, index) => {
+                if (index >= nbMaxRemoteVideosToDisplay) {
+                  return (
+                    <Audio
+                      autoPlay
+                      key={remoteStream.clientId}
+                      onInit={this.onRemoteAudioInit(remoteStream)}
+                    />
+                  );
+                }
+
+                return (
+                  <Video
+                    autoPlay
+                    className="user-video"
+                    key={remoteStream.clientId}
+                    onInit={this.onRemoteVideoInit(remoteStream)}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        {isAddSubMenuOpened ? (
+          <div
+            className="create-note-submenu"
+            ref={this.initNotebookActionSubmenu}
+          >
+            <List
+              component="nav"
+              className="create-note-submenu__list"
+              dense
+            >
+              <ListItem
+                button
+                onClick={this.onAddEntry(NOTEBOOK_ENTRY_TYPE_HTML)}
+              >
+                <ListItemText primary="HTML" />
+              </ListItem>
+              <ListItem
+                button
+                onClick={this.onAddEntry(NOTEBOOK_ENTRY_TYPE_JAVASCRIPT)}
+              >
+                <ListItemText primary="JavaScript" />
+              </ListItem>
+              <ListItem
+                button
+                onClick={this.onAddEntry(NOTEBOOK_ENTRY_TYPE_LATEX)}
+              >
+                <ListItemText primary="LaTex" />
+              </ListItem>
+            </List>
+          </div>
+        ) : null}
+      </MuiThemeProvider>
+    );
+  }
 }
+
+App.propTypes = {
+  tool: PropTypes.string.isRequired,
+  updateCanvasTool: PropTypes.func.isRequired,
+};
 
 /**
  * Called when a new app's state changes
@@ -1191,8 +1205,10 @@ function mapStateToProps(state) {
  */
 function mapDispatchToProps(dispatch) {
   return {
-    updateCanvasTool: (tool) => dispatch(setCanvasTool(tool)),
+    updateCanvasTool: tool => dispatch(setCanvasTool(tool)),
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(App));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {
+  withTheme: true,
+})(App));

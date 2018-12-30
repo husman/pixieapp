@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   connect,
 } from 'react-redux';
@@ -18,7 +19,12 @@ import {
   CANVAS_PATH_CREATED,
   CANVAS_OBJECT_MODIFIED,
   CANVAS_PEER_EVENT_OBJECT_MODIFIED,
+  CANVAS_PEER_EVENT_OBJECT_DELETE,
+  CANVAS_TEXT_ELEMENT_TYPES,
 } from 'constants/canvas';
+import {
+  KEYBOARD_KEY_BACKSPACE,
+} from 'constants/keyboard';
 
 class Canvas extends React.Component {
   /**
@@ -31,7 +37,11 @@ class Canvas extends React.Component {
       return;
     }
 
-    this._canvas = canvas._fc;
+    const {
+      _fc: frontCanvas,
+    } = canvas;
+
+    this.canvas = frontCanvas;
     this.initCanvasEvents();
   };
 
@@ -40,11 +50,16 @@ class Canvas extends React.Component {
    */
   initCanvasEvents = () => {
     const {
-      _canvas,
+      canvas,
     } = this;
 
-    _canvas.on(CANVAS_PATH_CREATED, this.onCanvasPathCreated);
-    _canvas.on(CANVAS_OBJECT_MODIFIED, this.onCanvasObjectModified);
+    // Document events
+    document.onkeyup = this.onKeyUp;
+
+    // Canvas events
+    canvas.on(CANVAS_PATH_CREATED, this.onCanvasPathCreated);
+    canvas.on(CANVAS_OBJECT_MODIFIED, this.onCanvasObjectModified);
+    canvas.on(CANVAS_OBJECT_MODIFIED, this.onCanvasObjectModified);
 
     this.initCanvasSocketEvents();
   };
@@ -55,32 +70,106 @@ class Canvas extends React.Component {
   initCanvasSocketEvents = () => {
     SocketClient.on(CANVAS_PEER_EVENT_PATH_CREATED, this.onPeerCanvasPathCreated);
     SocketClient.on(CANVAS_PEER_EVENT_OBJECT_MODIFIED, this.onPeerCanvasObjectModified);
+    SocketClient.on(CANVAS_PEER_EVENT_OBJECT_DELETE, this.onPeerDeleteObjects);
+  };
+
+  onKeyUp = (evt) => {
+    const {
+      target,
+      key,
+    } = evt;
+
+    // Do nothing if the target element is empty or the target element is a text field.
+    if (!target || CANVAS_TEXT_ELEMENT_TYPES.has(target.elementType)) {
+      return;
+    }
+
+    switch (key) {
+      case KEYBOARD_KEY_BACKSPACE:
+        this.onDeleteCanvasSelection();
+        break;
+      default:
+      // Do nothing
+    }
+  };
+
+  /**
+   * Handler for canvas 'delete selection' events.
+   */
+  onDeleteCanvasSelection = () => {
+    const {
+      canvas,
+    } = this;
+    const selection = canvas.getActiveObject();
+    const selectionGroup = canvas.getActiveGroup();
+    const ids = [];
+
+    if (selection) {
+      canvas.remove(selection);
+      ids.push(selection.id);
+    } else if (selectionGroup) {
+      const objectsInGroup = selectionGroup.getObjects();
+      canvas.discardActiveGroup();
+
+      objectsInGroup.forEach((object) => {
+        ids.push(object.id);
+        canvas.remove(object);
+      });
+    }
+
+    if (ids.length > 0) {
+      SocketClient.emit(CANVAS_PEER_EVENT_OBJECT_DELETE, { ids });
+    }
+  };
+
+  /**
+   * Event handler for when we receive a 'delete object[s]' event from a peer.
+   *
+   * @param {Array} ids - Array of object UUIDs.
+   */
+  onPeerDeleteObjects = ({ ids }) => {
+    const {
+      canvas,
+    } = this;
+    const elements = canvas
+      .getObjects()
+      .filter(obj => ids.indexOf(obj.id) !== -1);
+
+    elements.forEach(elem => canvas.remove(elem));
   };
 
   /**
    * Event handler for when we receive a modified canvas object path from a peer.
    *
-   * @param {{}} path - The path corresponding to the object.
-   * @param {Number} width - The width of the peer's canvas.
-   * @param {Number} height - The height of the peer's canvas.
-   * @param {String} id - The UUID for the object that was modified.
+   * @param {{}} data - The path corresponding to the object.
    */
-  onPeerCanvasObjectModified = ({ path, width, height, id }) => {
+  onPeerCanvasObjectModified = (data) => {
     const {
-      _canvas,
+      canvas,
     } = this;
-    const element = _canvas.getObjects().find(obj => obj.id === id);
+    const {
+      path,
+      width,
+      height,
+      id,
+    } = data;
+    const element = canvas.getObjects().find(obj => obj.id === id);
     const isNewText = !element && path.type === 'i-text';
     const isTextEdit = element && element.text !== path.text;
 
     if (isNewText) {
-      this.onPeerCanvasNewText({ path, width, height, id });
+      this.onPeerCanvasNewText({
+        path,
+        width,
+        height,
+        id,
+      });
       return;
     }
 
     if (isTextEdit) {
       element.text = path.text;
-      this._canvas.renderAll();
+      this.canvas.renderAll();
       return;
     }
 
@@ -92,15 +181,17 @@ class Canvas extends React.Component {
     const {
       width: activeWidth,
       height: activeHeight,
-    } = _canvas;
+    } = canvas;
     const xFactor = activeWidth / width;
     const yFactor = activeHeight / height;
 
-    const p = fabric['Path'].fromObject(path);
-    const scaleX = p.scaleX;
-    const scaleY = p.scaleY;
-    const left = p.left;
-    const top = p.top;
+    const p = fabric.Path.fromObject(path);
+    const {
+      scaleX,
+      scaleY,
+      left,
+      top,
+    } = p;
 
     const tempScaleX = scaleX * xFactor;
     const tempScaleY = scaleY * yFactor;
@@ -121,22 +212,25 @@ class Canvas extends React.Component {
 
     element.setCoords();
 
-    _canvas.calcOffset();
-    _canvas.renderAll();
+    canvas.calcOffset();
+    canvas.renderAll();
   };
 
   /**
    * Event handler for when we receive a new text on the canvas from a peer.
    *
-   * @param {{}} path - The path corresponding to the text.
-   * @param {Number} width - The width of the peer's canvas.
-   * @param {Number} height - The height of the peer's canvas.
-   * @param {String} id - The UUID for the object that was modified.
+   * @param {{}} data - The path corresponding to the text.
    */
-  onPeerCanvasNewText = ({ path, width, height, id }) => {
+  onPeerCanvasNewText = (data) => {
     const {
-      _canvas,
-      _canvas: {
+      path,
+      width,
+      height,
+      id,
+    } = data;
+    const {
+      canvas,
+      canvas: {
         width: activeWidth,
         height: activeHeight,
       },
@@ -144,7 +238,7 @@ class Canvas extends React.Component {
     const xFactor = activeWidth / width;
     const yFactor = activeHeight / height;
 
-    const p = fabric['Path'].fromObject(path);
+    const p = fabric.Path.fromObject(path);
     const originalLeft = p.left;
     const originalTop = p.top;
 
@@ -158,8 +252,8 @@ class Canvas extends React.Component {
     });
     text.id = id;
 
-    _canvas.add(text);
-    _canvas.renderAll();
+    canvas.add(text);
+    canvas.renderAll();
   };
 
   /**
@@ -169,13 +263,16 @@ class Canvas extends React.Component {
    */
   onCanvasObjectModified = (evt) => {
     const {
-      _canvas,
+      canvas,
     } = this;
+    const {
+      target,
+    } = evt;
     const data = {
-      id: evt.target.id,
-      path: evt.target.toJSON(),
-      width: _canvas.width,
-      height: _canvas.height,
+      id: target.id,
+      path: target.toJSON(),
+      width: canvas.width,
+      height: canvas.height,
     };
 
     SocketClient.emit(CANVAS_PEER_EVENT_OBJECT_MODIFIED, data);
@@ -188,16 +285,19 @@ class Canvas extends React.Component {
    */
   onCanvasPathCreated = (evt) => {
     const {
-      _canvas,
+      canvas,
     } = this;
+    const {
+      path,
+    } = evt;
 
-    evt.path.id = uuid.v4();
+    path.id = uuid.v4();
 
     const data = {
-      path: evt.path.toJSON(),
-      width: _canvas.width,
-      height: _canvas.height,
-      id: evt.path.id,
+      path: path.toJSON(),
+      width: canvas.width,
+      height: canvas.height,
+      id: path.id,
     };
 
     SocketClient.emit(CANVAS_PEER_EVENT_PATH_CREATED, data);
@@ -206,15 +306,18 @@ class Canvas extends React.Component {
   /**
    * Event handler for when we receive a new path from a peer.
    *
-   * @param {{}} path - The newly created path.
-   * @param {Number} width - The width of the peer's canvas.
-   * @param {Number} height - The height of the peer's canvas.
-   * @param {String} id - The UUID for the new path.
+   * @param {{}} data - The newly created path.
    */
-  onPeerCanvasPathCreated = ({ path, width, height, id }) => {
+  onPeerCanvasPathCreated = (data) => {
     const {
-      _canvas,
-      _canvas: {
+      path,
+      width,
+      height,
+      id,
+    } = data;
+    const {
+      canvas,
+      canvas: {
         width: activeWidth,
         height: activeHeight,
       },
@@ -222,12 +325,13 @@ class Canvas extends React.Component {
     const xFactor = activeWidth / width;
     const yFactor = activeHeight / height;
 
-    const p = fabric['Path'].fromObject(path);
-    const scaleX = p.scaleX;
-    const scaleY = p.scaleY;
-    const left = p.left;
-    const top = p.top;
-
+    const p = fabric.Path.fromObject(path);
+    const {
+      scaleX,
+      scaleY,
+      left,
+      top,
+    } = p;
     const tempScaleX = scaleX * xFactor;
     const tempScaleY = scaleY * yFactor;
     const tempLeft = left * xFactor;
@@ -241,9 +345,9 @@ class Canvas extends React.Component {
 
     p.setCoords();
 
-    _canvas.add(p);
-    _canvas.calcOffset();
-    _canvas.renderAll();
+    canvas.add(p);
+    canvas.calcOffset();
+    canvas.renderAll();
   };
 
   render() {
@@ -252,18 +356,22 @@ class Canvas extends React.Component {
     } = this.props;
 
     return (
-        <SketchField
-            tool={tool}
-            lineColor={CANVAS_DEFAULT_DRAWING_COLOR}
-            lineWidth={CANVAS_DEFAULT_STROKE_WIDTH}
-            className="canvas"
-            ref={this.initCanvas}
-            width="100%"
-            height="100%"
-        />
+      <SketchField
+        tool={tool}
+        lineColor={CANVAS_DEFAULT_DRAWING_COLOR}
+        lineWidth={CANVAS_DEFAULT_STROKE_WIDTH}
+        className="canvas"
+        ref={this.initCanvas}
+        width="100%"
+        height="100%"
+      />
     );
-  };
+  }
 }
+
+Canvas.propTypes = {
+  tool: PropTypes.string.isRequired,
+};
 
 /**
  * Called when a new app's state changes
@@ -291,7 +399,7 @@ function mapStateToProps(state) {
  *
  * @return {{}} - The initial props to pass to the component.
  */
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps() {
   return {};
 }
 

@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class Audio extends React.Component {
   /**
@@ -44,13 +45,25 @@ export default class Audio extends React.Component {
     } = this.props;
 
     return (
-        <audio
-            autoPlay={autoPlay}
-            ref={this.onInit}
-            className={className}
-        >
-          Your device does not support audios.
-        </audio>
+      <audio
+        autoPlay={autoPlay}
+        ref={this.onInit}
+        className={className}
+      >
+        Your device does not support audios.
+      </audio>
     );
   }
 }
+
+Audio.defaultProps = {
+  autoPlay: false,
+  className: undefined,
+  onInit: undefined,
+};
+
+Audio.propTypes = {
+  autoPlay: PropTypes.bool,
+  className: PropTypes.string,
+  onInit: PropTypes.func,
+};
