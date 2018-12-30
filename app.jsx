@@ -7,12 +7,15 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, compose } from 'redux';
 import 'sass/index.scss';
-import reducer from './reducers'
+import io from 'socket.io-client';
+import reducer from 'reducers';
 import SocketClient from 'lib/SocketClient';
 import App from 'components/App';
-import io from 'socket.io-client';
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const composeEnhancers = (
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ // eslint-disable-line no-underscore-dangle
+  || compose
+);
 
 // Initialize the network socket.
 const roomName = 'pixiedev';
@@ -22,15 +25,8 @@ const socket = io('http://localhost:4000', {
 });
 SocketClient.init(socket);
 
-const store = createStore(
-    reducer,
-    undefined,
-    composeEnhancers()
-);
+const store = createStore(reducer, undefined, composeEnhancers());
 
-window.onload = () => ReactDOM.render(
-    <Provider store={store}>
-      <App/>
-    </Provider>,
-    document.getElementById('app')
-);
+window.onload = () => {
+  ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('app'));
+};

@@ -15,18 +15,18 @@ import installExtension, {
 let mainWindow = null;
 
 app.on('window-all-closed', () => {
-  if (process.platform != 'darwin') {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
 app.on('ready', () => {
   installExtension(REDUX_DEVTOOLS)
-      .then((name) => console.log(`Added Extension:  ${name}`))
-      .catch((err) => console.log('An error occurred: ', err));
+    .then(name => console.log(`Added Extension:  ${name}`))
+    .catch(err => console.log('An error occurred: ', err));
   installExtension(REACT_DEVELOPER_TOOLS)
-      .then((name) => console.log(`Added Extension:  ${name}`))
-      .catch((err) => console.log('An error occurred: ', err));
+    .then(name => console.log(`Added Extension:  ${name}`))
+    .catch(err => console.log('An error occurred: ', err));
 
   mainWindow = new BrowserWindow();
   mainWindow.loadURL('file:///Users/haleeq/workspace/neetos-vc/pixieapp/index.html');

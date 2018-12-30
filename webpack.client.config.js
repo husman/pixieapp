@@ -9,7 +9,7 @@ module.exports = {
       './electron.js',
     ],
     app: [
-      './app.js',
+      './app.jsx',
     ],
   },
   output: {

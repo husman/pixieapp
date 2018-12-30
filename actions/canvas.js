@@ -16,5 +16,5 @@ export function setCanvasTool(tool) {
   return {
     type: SET_CANVAS_TOOL,
     tool,
-  }
+  };
 }
