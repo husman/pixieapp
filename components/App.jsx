@@ -42,19 +42,16 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import CodeIcon from '@material-ui/icons/Code';
 import GestureIcon from '@material-ui/icons/Gesture';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import PointerIcon from 'mdi-material-ui/CursorDefaultOutline';
-import classNames from 'classnames';
 import {
   Tools,
 } from 'react-sketch';
 import {
   createMuiTheme,
   MuiThemeProvider,
-  withStyles,
 } from '@material-ui/core/styles';
 import Canvas from 'components/Canvas';
 import {
@@ -115,73 +112,6 @@ const SUPPORTED_NOTEBOOK_TYPES = new Set([
  */
 const MAX_NB_REMOTE_VIDEOS_TO_DISPLAY = 5;
 
-const drawerWidth = 240;
-
-const theme2 = createMuiTheme({
-  palette: {
-    type: 'dark',
-  },
-  typography: {
-    useNextVariants: true,
-  },
-});
-
-const styles = theme => ({
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    backgroundColor: '#424242',
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginLeft: 12,
-    marginRight: 36,
-  },
-  hide: {
-    display: 'none',
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-  },
-  drawerOpen: {
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerClose: {
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    width: theme.spacing.unit * 7 + 1,
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing.unit * 9 + 1,
-    },
-  },
-  toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '0 8px',
-    ...theme.mixins.toolbar,
-  },
-});
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -198,8 +128,17 @@ class App extends React.Component {
       height: windowHeight,
     } = Win.getPrimaryWindowSize();
     const codeEditorLibrary = new Library();
+    const appTheme = createMuiTheme({
+      palette: {
+        type: 'dark',
+      },
+      typography: {
+        useNextVariants: true,
+      },
+    });
 
     this.state = {
+      appTheme,
       localStream: null,
       remoteStreams: [],
       connections: {},
@@ -210,6 +149,7 @@ class App extends React.Component {
       runtime: new Runtime(codeEditorLibrary),
       isCanvasActive: true,
       isNotebookActive: false,
+      isSideMenuExpanded: false,
     };
 
     this.initWindowEvents();
@@ -219,17 +159,22 @@ class App extends React.Component {
       .then(this.onLocalStreamSuccess);
   }
 
-
-  state = {
-    open: false,
+  /**
+   * Dispatched when the user expands the side menu.
+   */
+  onSideMenuExpand = () => {
+    this.setState({
+      isSideMenuExpanded: true,
+    });
   };
 
-  handleDrawerOpen = () => {
-    this.setState({ open: true });
-  };
-
-  handleDrawerClose = () => {
-    this.setState({ open: false });
+  /**
+   * Dispatched when the user collapses the side menu.
+   */
+  onSideMenuCollapse = () => {
+    this.setState({
+      isSideMenuExpanded: false,
+    });
   };
 
   /**
@@ -917,41 +862,41 @@ class App extends React.Component {
    */
   render() {
     const {
+      appTheme,
       localStream,
       remoteStreams,
       notebook,
       isAddSubMenuOpened,
       isCanvasActive,
       isNotebookActive,
+      isSideMenuExpanded,
     } = this.state;
     const nbMaxRemoteVideosToDisplay = this.getMaxNbRemoteVideosToDisplay();
     const {
-      classes,
-      theme,
       tool,
     } = this.props;
 
     return (
-      <MuiThemeProvider theme={theme2}>
+      <MuiThemeProvider theme={appTheme}>
         <div className="app-container">
           <CssBaseline />
           <AppBar
             position="fixed"
-            className={classNames(classes.appBar, {
-              [classes.appBarShift]: this.state.open,
-            })}
+            className={`header-bar ${isSideMenuExpanded ? 'header-bar--expanded' : ''}`}
           >
-            <Toolbar disableGutters={!this.state.open}>
-              <IconButton
-                color="inherit"
-                aria-label="Open drawer"
-                onClick={this.handleDrawerOpen}
-                className={classNames(classes.menuButton, {
-                  [classes.hide]: this.state.open,
-                })}
-              >
-                <MenuIcon />
-              </IconButton>
+            <Toolbar
+              disableGutters={!isSideMenuExpanded}
+            >
+              {!isSideMenuExpanded ? (
+                <IconButton
+                  color="inherit"
+                  aria-label="Open drawer"
+                  onClick={this.onSideMenuExpand}
+                  className="menu-btn"
+                >
+                  <MenuIcon />
+                </IconButton>
+              ) : null}
               <Typography variant="h6" color="inherit" noWrap>
                 <span className="logo-text">NEETOS</span>
               </Typography>
@@ -959,26 +904,20 @@ class App extends React.Component {
           </AppBar>
           <Drawer
             variant="permanent"
-            className={classNames(classes.drawer, {
-              [classes.drawerOpen]: this.state.open,
-              [classes.drawerClose]: !this.state.open,
-            })}
+            className={`app-sidemenu ${isSideMenuExpanded ? 'app-sidemenu__expanded' : 'app-sidemenu__collapsed'}`}
             classes={{
-              paper: classNames({
-                [classes.drawerOpen]: this.state.open,
-                [classes.drawerClose]: !this.state.open,
-              }),
+              paper: isSideMenuExpanded ? 'app-sidemenu__expanded' : 'app-sidemenu__collapsed',
             }}
-            open={this.state.open}
+            open={isSideMenuExpanded}
           >
-            <div className={classes.toolbar}>
-              <IconButton onClick={this.handleDrawerClose}>
-                {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            <div className="app-sidemenu__toolbar">
+              <IconButton onClick={this.onSideMenuCollapse}>
+                <ChevronLeftIcon />
               </IconButton>
             </div>
             <Divider />
             <List
-              className="app-sidemenu"
+              className="app-sidemenu__buttons"
               component="nav"
             >
               {!isCanvasActive ? (
@@ -1209,6 +1148,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, {
-  withTheme: true,
-})(App));
+export default connect(mapStateToProps, mapDispatchToProps)(App);

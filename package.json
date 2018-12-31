@@ -26,10 +26,10 @@
     "react-ace": "^6.3.2",
     "react-dom": "^16.7.0",
     "react-redux": "^6.0.0",
-    "react-sketch": "git+https://git@github.com/husman/react-sketch.git",
     "redux": "^4.0.1",
     "socket.io-client": "^2.2.0",
     "uuid": "^3.3.2",
+    "react-sketch": "git+https://git@github.com/husman/react-sketch.git",
     "webpack": "^4.20.2",
     "webpack-node-externals": "^1.6.0"
   },
