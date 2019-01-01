@@ -7,14 +7,18 @@
     "node": true
   },
   "rules": {
-    "import/prefer-default-export": false,
-    "jsx-a11y/media-has-caption": false
+    "import/prefer-default-export": 0,
+    "jsx-a11y/media-has-caption": 0,
+    "import/no-extraneous-dependencies": 0
   },
   "globals": {
     "fabric": true
   },
   "settings": {
     "import/resolver": {
+      "webpack": {
+        "config": "configs/webpack.config.eslint.js"
+      },
       "node": {
         "paths": [
           "."

@@ -7,12 +7,12 @@ import PropTypes from 'prop-types';
 import {
   connect,
 } from 'react-redux';
-import Video from 'components/Video';
-import Audio from 'components/Audio';
+import Video from './Video';
+import Audio from './Audio';
 import {
   getCaptureSourceId,
   getScreenSize,
-} from 'utils/capture';
+} from '../utils/capture';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/mode/html';
@@ -20,7 +20,7 @@ import 'brace/mode/latex';
 import 'brace/theme/monokai';
 import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
-import Win from 'utils/window';
+import Win from '../utils/window';
 import {
   Library,
   Inspector,
@@ -53,11 +53,11 @@ import {
   createMuiTheme,
   MuiThemeProvider,
 } from '@material-ui/core/styles';
-import Canvas from 'components/Canvas';
+import Canvas from './Canvas';
 import {
   setCanvasTool,
-} from 'actions/canvas';
-import SocketClient from 'lib/SocketClient';
+} from '../actions/canvas';
+import SocketClient from '../lib/SocketClient';
 
 const SOCKET_EVENT_ICE_CANDIDATE = 'ice-candidate';
 const SOCKET_EVENT_USER_JOINED = 'user-joined';
@@ -121,7 +121,7 @@ class App extends React.Component {
     } = navigator;
     const constraints = {
       video: true,
-      audio: false,
+      audio: true,
     };
     const {
       width: windowWidth,

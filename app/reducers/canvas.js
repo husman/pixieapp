@@ -2,12 +2,8 @@
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
 
-import {
-  SET_CANVAS_TOOL,
-} from 'actions/actionTypes';
-import {
-  Tools,
-} from 'react-sketch';
+import { Tools } from 'react-sketch';
+import { SET_CANVAS_TOOL } from '../actions/actionTypes';
 
 /**
  * The initial state for the canvas.

@@ -1,29 +1,42 @@
-# electron-es6-react
+## Pre-req
+Please install Node v10.13.x
 
-A simple boilerplate app to demonstrate how to use [ES6] and [React] with
-[Electron]. It uses [Babel] to automatically transpile ES6 and JSX code,
-without depending on any package manager besides `npm`.
-
-## How?
-
-The Node and Electron binaries both take a parameter `-r` that automatically
-requires a module before the rest of the code.  The `npm start` script is
-modified using this, which registers Babel and loads the entry point `main.js`.
-
-The renderer entry point `index.html` does basically the same, but loads the
-`scripts/main.js` file, which renders the `views/main.jsx` component into the `body`.
-
-## Installation
-
-```bash
-git clone https://github.com/b52/electron-es6-react.git
-cd electron-es6-react
-npm install
-npm start
+## Setup
+To setup the application and install all of it's dependencies, execute the following command:
+```
+yarn
 ```
 
-[ES6]: http://exploringjs.com/
-[React]: https://facebook.github.io/react/
-[Electron]: http://electron.atom.io/
-[Babel]: http://babeljs.io
+## Starting the development environment
+To start the development environment, execute the following command:
+```
+yarn dev
+```
 
+## Starting multiple instances of the application on development
+To start multiple instances of the application, you will need to set the port to a value other than "8000". For example,
+```
+export PORT=9000
+yarn dev
+```
+
+## Running all tests
+To run all tests, execute the following command:
+```
+yarn test-all
+```
+
+## Unit tests
+To run unit tests, execute the following command:
+```
+yarn test
+```
+
+## End-to-end tests
+To run end-to-end tests, execute the following command:
+```
+yarn test-e2e
+```
+
+## License
+Copyright © 2018-present Neetos LLC. All rights reserved.

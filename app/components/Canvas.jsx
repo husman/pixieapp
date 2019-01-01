@@ -10,7 +10,7 @@ import {
 import {
   SketchField,
 } from 'react-sketch';
-import SocketClient from 'lib/SocketClient';
+import SocketClient from '../lib/SocketClient';
 import uuid from 'uuid';
 import {
   CANVAS_DEFAULT_DRAWING_COLOR,
@@ -21,10 +21,10 @@ import {
   CANVAS_PEER_EVENT_OBJECT_MODIFIED,
   CANVAS_PEER_EVENT_OBJECT_DELETE,
   CANVAS_TEXT_ELEMENT_TYPES,
-} from 'constants/canvas';
+} from '../constants/canvas';
 import {
   KEYBOARD_KEY_BACKSPACE,
-} from 'constants/keyboard';
+} from '../constants/keyboard';
 
 class Canvas extends React.Component {
   /**
