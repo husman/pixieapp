@@ -52,6 +52,13 @@ export const CANVAS_PEER_EVENT_OBJECT_MODIFIED = 'canvas:object:modified';
 export const CANVAS_PEER_EVENT_OBJECT_DELETE = 'canvas:object:delete';
 
 /**
+ * This peer event is dispatched when images are created on the canvas.
+ *
+ * @type {String}
+ */
+export const CANVAS_PEER_EVENT_IMAGE_CREATED = 'canvas:image:created';
+
+/**
  * DOM element type for the 'text' field.
  *
  * @type {string}
