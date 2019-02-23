@@ -125,6 +125,30 @@ body {
   }
 }
 
+.canvas-files-submenu {
+  position: absolute;
+  border: 1px solid #555;
+  border-left: 0;
+  background-color: #333;
+  z-index: 1201;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+  left: 73px;
+  height: 200px;
+  overflow: auto;
+
+  .canvas-files-submenu__list {
+    padding: 0;
+  }
+
+  .canvas-files-submenu__image {
+    width: 150px;
+  }
+
+  @media screen and (max-width: 599px) {
+    left: 57px;
+  }
+}
+
 .app-container {
   min-height: 250px;
 
@@ -181,4 +205,10 @@ body {
     background-color: rgba(100, 255, 100, 0.1);
     box-shadow: 0 1px 30px rgba(255, 255, 0, 0.1);
   }
+}
+
+.upload-status {
+  position: fixed;
+  left: 50%;
+  top: 50%;
 }

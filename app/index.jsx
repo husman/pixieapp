@@ -19,8 +19,8 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 // Initialize the network socket.
 const roomName = 'pixiedev';
-// const host = 'https://pixiehd.neetos.com';
-const host = 'http://localhost:4000';
+const host = 'https://pixiehd.neetos.com';
+// const host = 'http://localhost:4000';
 
 const socket = io(host, {
   autoConnect: false,

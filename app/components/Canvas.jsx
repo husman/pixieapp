@@ -10,8 +10,8 @@ import {
 import {
   SketchField,
 } from 'react-sketch';
-import SocketClient from '../lib/SocketClient';
 import uuid from 'uuid';
+import SocketClient from '../lib/SocketClient';
 import {
   CANVAS_DEFAULT_DRAWING_COLOR,
   CANVAS_DEFAULT_STROKE_WIDTH,
@@ -21,10 +21,13 @@ import {
   CANVAS_PEER_EVENT_OBJECT_MODIFIED,
   CANVAS_PEER_EVENT_OBJECT_DELETE,
   CANVAS_TEXT_ELEMENT_TYPES,
+  CANVAS_PEER_EVENT_IMAGE_CREATED,
 } from '../constants/canvas';
 import {
   KEYBOARD_KEY_BACKSPACE,
 } from '../constants/keyboard';
+import Uploader from './FileUploader';
+import CanvasLib from '../lib/Canvas';
 
 class Canvas extends React.Component {
   /**
@@ -42,6 +45,7 @@ class Canvas extends React.Component {
     } = canvas;
 
     this.canvas = frontCanvas;
+    CanvasLib.init(this.canvas);
     this.initCanvasEvents();
   };
 
@@ -60,6 +64,7 @@ class Canvas extends React.Component {
     canvas.on(CANVAS_PATH_CREATED, this.onCanvasPathCreated);
     canvas.on(CANVAS_OBJECT_MODIFIED, this.onCanvasObjectModified);
     canvas.on(CANVAS_OBJECT_MODIFIED, this.onCanvasObjectModified);
+    canvas.on(CANVAS_OBJECT_MODIFIED, this.onCanvasObjectModified);
 
     this.initCanvasSocketEvents();
   };
@@ -71,6 +76,49 @@ class Canvas extends React.Component {
     SocketClient.on(CANVAS_PEER_EVENT_PATH_CREATED, this.onPeerCanvasPathCreated);
     SocketClient.on(CANVAS_PEER_EVENT_OBJECT_MODIFIED, this.onPeerCanvasObjectModified);
     SocketClient.on(CANVAS_PEER_EVENT_OBJECT_DELETE, this.onPeerDeleteObjects);
+    SocketClient.on(CANVAS_PEER_EVENT_IMAGE_CREATED, this.onCanvasImageCreated);
+  };
+
+  /**
+   * Dispatched when a peer adds an image to the canvas.
+   *
+   * @param {{}} data
+   */
+  onCanvasImageCreated = (data) => {
+    const {
+      canvas,
+    } = this;
+    const {
+      path,
+      width,
+      height,
+      id,
+    } = data;
+    const {
+      width: activeWidth,
+      height: activeHeight,
+    } = canvas;
+    const xFactor = activeWidth / width;
+    const yFactor = activeHeight / height;
+    const left = path.left * xFactor;
+    const top = path.top * yFactor;
+    const imgWidth = path.width * xFactor;
+    const imgHeight = path.height * yFactor;
+
+    fabric.Image.fromURL(path.src, (element) => {
+      const img = element.set({
+        left,
+        top,
+        width: imgWidth,
+        height: imgHeight,
+      });
+
+      img.id = id;
+
+      canvas.add(img);
+      canvas.calcOffset();
+      canvas.renderAll();
+    });
   };
 
   onKeyUp = (evt) => {
@@ -356,15 +404,18 @@ class Canvas extends React.Component {
     } = this.props;
 
     return (
-      <SketchField
-        tool={tool}
-        lineColor={CANVAS_DEFAULT_DRAWING_COLOR}
-        lineWidth={CANVAS_DEFAULT_STROKE_WIDTH}
-        className="canvas"
-        ref={this.initCanvas}
-        width="100%"
-        height="100%"
-      />
+      <React.Fragment>
+        <Uploader />
+        <SketchField
+          tool={tool}
+          lineColor={CANVAS_DEFAULT_DRAWING_COLOR}
+          lineWidth={CANVAS_DEFAULT_STROKE_WIDTH}
+          className="canvas"
+          ref={this.initCanvas}
+          width="100%"
+          height="100%"
+        />
+      </React.Fragment>
     );
   }
 }

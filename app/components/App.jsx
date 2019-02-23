@@ -7,12 +7,6 @@ import PropTypes from 'prop-types';
 import {
   connect,
 } from 'react-redux';
-import Video from './Video';
-import Audio from './Audio';
-import {
-  getCaptureSourceId,
-  getScreenSize,
-} from '../utils/capture';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/mode/html';
@@ -20,7 +14,6 @@ import 'brace/mode/latex';
 import 'brace/theme/monokai';
 import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
-import Win from '../utils/window';
 import {
   Library,
   Inspector,
@@ -46,6 +39,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import GestureIcon from '@material-ui/icons/Gesture';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import PointerIcon from 'mdi-material-ui/CursorDefaultOutline';
+import ImagesIcon from 'mdi-material-ui/ImageFilter';
 import {
   Tools,
 } from 'react-sketch';
@@ -53,11 +47,20 @@ import {
   createMuiTheme,
   MuiThemeProvider,
 } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Win from '../utils/window';
 import Canvas from './Canvas';
 import {
   setCanvasTool,
 } from '../actions/canvas';
 import SocketClient from '../lib/SocketClient';
+import Video from './Video';
+import Audio from './Audio';
+import {
+  getCaptureSourceId,
+  getScreenSize,
+} from '../utils/capture';
+import CanvasLib from '../lib/Canvas';
 
 const SOCKET_EVENT_ICE_CANDIDATE = 'ice-candidate';
 const SOCKET_EVENT_USER_JOINED = 'user-joined';
@@ -242,6 +245,18 @@ class App extends React.Component {
     elem.style.top = `${anchorBoundingRect.top}px`;
   };
 
+  initFilesSubmenu = (ref) => {
+    const elem = ref;
+
+    if (!elem) {
+      return;
+    }
+
+    const anchorElem = document.querySelector('.canvas-files-btn');
+    const anchorBoundingRect = anchorElem.getBoundingClientRect();
+    elem.style.top = `${anchorBoundingRect.top}px`;
+  };
+
   /**
    * Event handler for when a new notebook entry is being added.
    */
@@ -252,6 +267,19 @@ class App extends React.Component {
 
     this.setState({
       isAddSubMenuOpened: !isAddSubMenuOpened,
+    });
+  };
+
+  /**
+   * Event handler for when the files menu is opened.
+   */
+  onOpenFilesSubmenu = () => {
+    const {
+      isFilesMenuOpened,
+    } = this.state;
+
+    this.setState({
+      isFilesMenuOpened: !isFilesMenuOpened,
     });
   };
 
@@ -855,6 +883,10 @@ class App extends React.Component {
     }
   };
 
+  onAddImageToCanvas = url => () => {
+    CanvasLib.onAddImageToCanvas(url);
+  };
+
   /**
    * Handler for the component's rendering
    *
@@ -867,12 +899,15 @@ class App extends React.Component {
       remoteStreams,
       notebook,
       isAddSubMenuOpened,
+      isFilesMenuOpened,
       isCanvasActive,
       isNotebookActive,
       isSideMenuExpanded,
     } = this.state;
     const nbMaxRemoteVideosToDisplay = this.getMaxNbRemoteVideosToDisplay();
     const {
+      canvasFiles,
+      isUploading,
       tool,
     } = this.props;
 
@@ -976,6 +1011,16 @@ class App extends React.Component {
                       <TextIcon />
                     </ListItemIcon>
                     <ListItemText primary="Text" />
+                  </ListItem>
+                  <ListItem
+                    button
+                    onClick={this.onOpenFilesSubmenu}
+                    className="canvas-files-btn"
+                  >
+                    <ListItemIcon>
+                      <ImagesIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Create Note" />
                   </ListItem>
                 </React.Fragment>
               ) : null}
@@ -1106,12 +1151,57 @@ class App extends React.Component {
             </List>
           </div>
         ) : null}
+        {isFilesMenuOpened ? (
+          <div
+            className="canvas-files-submenu"
+            ref={this.initFilesSubmenu}
+          >
+            {canvasFiles && canvasFiles.length > 0 ? (
+              <List
+                component="nav"
+                className="canvas-files-submenu__list"
+                dense
+              >
+                {canvasFiles.map((canvasFile) => {
+                  if (canvasFile.type === 'pdf') {
+                    return canvasFile.pages.map(url => (
+                      <img
+                        src={url}
+                        onClick={this.onAddImageToCanvas(url)}
+                        className="canvas-files-submenu__image"
+                      />
+                    ));
+                  }
+
+                  return (
+                    <ListItem
+                      button
+                      onClick={this.onAddImageToCanvas(canvasFile.url)}
+                    >
+                      <img
+                        src={canvasFile.url}
+                        className="canvas-files-submenu__image"
+                      />
+                    </ListItem>
+                  );
+                })}
+              </List>
+            ) : null}
+          </div>
+        ) : null}
+        {isUploading ? (
+          <div className="upload-status">
+            <CircularProgress />
+          </div>
+        ) : null}
       </MuiThemeProvider>
     );
   }
 }
 
 App.propTypes = {
+  canvasFiles: PropTypes.array,
+  isUploading: PropTypes.bool,
   tool: PropTypes.string.isRequired,
   updateCanvasTool: PropTypes.func.isRequired,
 };
@@ -1126,11 +1216,15 @@ App.propTypes = {
 function mapStateToProps(state) {
   const {
     canvas: {
+      isUploading,
+      files: canvasFiles,
       tool,
     },
   } = state;
 
   return {
+    isUploading,
+    canvasFiles,
     tool,
   };
 }
