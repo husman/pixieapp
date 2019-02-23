@@ -26,7 +26,8 @@ import {
 import {
   KEYBOARD_KEY_BACKSPACE,
 } from '../constants/keyboard';
-import FileUploader from './FileUploader';
+import Uploader from './FileUploader';
+import CanvasLib from '../lib/Canvas';
 
 class Canvas extends React.Component {
   /**
@@ -44,6 +45,7 @@ class Canvas extends React.Component {
     } = canvas;
 
     this.canvas = frontCanvas;
+    CanvasLib.init(this.canvas);
     this.initCanvasEvents();
   };
 
@@ -116,53 +118,6 @@ class Canvas extends React.Component {
       canvas.add(img);
       canvas.calcOffset();
       canvas.renderAll();
-    });
-  };
-
-  onAddImageToCanvas = (file) => {
-    const {
-      canvas,
-    } = this;
-
-    fabric.Image.fromURL(file.img, (element) => {
-      const ratio = element.width / element.height;
-      let width = canvas.width / 2;
-      let height = canvas.height / 2;
-
-      if (element.width > element.height) {
-        height = width / ratio;
-      } else {
-        width = height * ratio;
-      }
-
-      const imgLeft = (canvas.width - width) / 2;
-      const imgTop = (canvas.height - height) / 2;
-
-      const img = element.set({
-        left: imgLeft,
-        top: imgTop,
-        width,
-        height,
-      });
-
-      img.id = uuid.v4();
-
-      canvas.add(img);
-
-      const data = {
-        path: {
-          left: imgLeft,
-          top: imgTop,
-          width,
-          height,
-          src: file.img,
-        },
-        width: canvas.width,
-        height: canvas.height,
-        id: img.id,
-      };
-
-      SocketClient.emit(CANVAS_PEER_EVENT_IMAGE_CREATED, data);
     });
   };
 
@@ -450,9 +405,7 @@ class Canvas extends React.Component {
 
     return (
       <React.Fragment>
-        <FileUploader
-          onAddToCanvas={this.onAddImageToCanvas}
-        />
+        <Uploader />
         <SketchField
           tool={tool}
           lineColor={CANVAS_DEFAULT_DRAWING_COLOR}

@@ -3,7 +3,11 @@
  */
 
 import { Tools } from 'react-sketch';
-import { SET_CANVAS_TOOL } from '../actions/actionTypes';
+import {
+  SET_CANVAS_TOOL,
+  CANVAS_UPLOAD_COMPLETE,
+  CANVAS_UPLOAD_START,
+} from '../actions/actionTypes';
 
 /**
  * The initial state for the canvas.
@@ -28,6 +32,20 @@ export default function canvas(state = initialState, action) {
       return {
         ...state,
         tool: action.tool,
+      };
+    case CANVAS_UPLOAD_COMPLETE:
+      return {
+        ...state,
+        isUploading: false,
+        files: [
+          ...(state.files || []),
+          action.file,
+        ],
+      };
+    case CANVAS_UPLOAD_START:
+      return {
+        ...state,
+        isUploading: true,
       };
     default:
       return state;

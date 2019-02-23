@@ -1,75 +1,79 @@
 import React from 'react';
 import DropzoneComponent from 'react-dropzone-component';
 import PropTypes from 'prop-types';
+import {
+  connect,
+} from 'react-redux';
+import {
+  canvasUploadComplete,
+  canvasUploadStart,
+} from '../actions/canvas';
 
 // const host = 'http://localhost:4000';
-const host = 'https://pixiehd.neetos.com';
+// const host = 'https://pixiehd.neetos.com';
+const host = 'http://184.73.115.12:9000';
 
 const componentConfig = {
   iconFiletypes: ['.jpg', '.png', '.gif'],
   showFiletypeIcon: true,
   postUrl: `${host}/upload`,
-  dropzoneSelector: 'body',
 };
 
-export default class FileUploader extends React.Component {
-  state = {
-    files: [],
-  };
-
+export class FileUploader extends React.Component {
   onSuccess = (file) => {
     const {
-      name: title,
       xhr: {
         response,
       },
     } = file;
+    const uploadedFiles = JSON.parse(response);
     const {
-      responseText: img,
-    } = JSON.parse(response);
-    const {
-      files,
-    } = this.state;
-    const newFile = {
-      title,
-      img: `${host}/${img}`,
-    };
+      onCanvasUploadComplete,
+    } = this.props;
 
-    this.setState({
-      files: [
-        ...files,
-        newFile,
-      ],
+    if (!uploadedFiles || !uploadedFiles.length) {
+      return;
+    }
+
+    uploadedFiles.sort();
+
+    onCanvasUploadComplete({
+      type: 'pdf',
+      pages: uploadedFiles,
     });
-
-    this.onAddToCanvas(newFile);
   };
 
   onAccept = (file, done) => {
     done();
   };
 
-  onAddToCanvas = (file) => {
+  onSending = (file) => {
     const {
-      onAddToCanvas,
+      onCanvasUploadStart,
     } = this.props;
 
-    if (onAddToCanvas) {
-      onAddToCanvas(file);
-    }
+    onCanvasUploadStart(file);
   };
 
   render() {
+    const {
+      selector,
+    } = this.props;
     const eventHandlers = {
       complete: this.onComplete,
       success: this.onSuccess,
+      sending: this.onSending,
     };
     const djsConfig = {
-      acceptedFiles: 'image/jpeg,image/png,image/gif',
+      acceptedFiles: 'image/jpeg,image/png,image/gif,.pdf',
       previewsContainer: false,
       accept: this.onAccept,
       dictDefaultMessage: 'UPLOAD',
     };
+
+    if (selector) {
+      componentConfig.dropzoneSelector = 'body';
+    }
 
     return (
       <DropzoneComponent
@@ -82,9 +86,38 @@ export default class FileUploader extends React.Component {
 }
 
 FileUploader.defaultProps = {
-  onAddToCanvas: undefined,
+  selector: true,
 };
 
 FileUploader.propTypes = {
-  onAddToCanvas: PropTypes.func,
+  onCanvasUploadComplete: PropTypes.func.isRequired,
+  onCanvasUploadStart: PropTypes.func.isRequired,
+  selector: PropTypes.bool,
 };
+
+/**
+ * Called when a new app's state changes
+ *
+ * @param {{}} state
+ *
+ * @return {{}} - The props to pass to the components
+ */
+function mapStateToProps() {
+  return {};
+}
+
+/**
+ * Provides the initial state props to the component.
+ *
+ * @param {Function} dispatch - Used to dispatch actions.
+ *
+ * @return {{}} - The initial props to pass to the component.
+ */
+function mapDispatchToProps(dispatch) {
+  return {
+    onCanvasUploadComplete: file => dispatch(canvasUploadComplete(file)),
+    onCanvasUploadStart: file => dispatch(canvasUploadStart(file)),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FileUploader);
