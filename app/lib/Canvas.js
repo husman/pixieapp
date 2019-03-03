@@ -29,8 +29,6 @@ class Canvas {
       canvas,
     } = this;
 
-    console.error('onAddImageToCanvas(...)', canvas);
-
     if (!canvas) {
       return;
     }

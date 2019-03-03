@@ -31,7 +31,7 @@ const POSSIBLE_CAPTURE_SOURCES = new Set([
  *
  * @returns {Promise} - A promise that resolves to an array of capture sources or an error.
  */
-async function getSources() {
+export async function getSources() {
   return new Promise((resolve, reject) => {
     const options = {
       types: [

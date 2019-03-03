@@ -40,6 +40,9 @@ import GestureIcon from '@material-ui/icons/Gesture';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import PointerIcon from 'mdi-material-ui/CursorDefaultOutline';
 import ImagesIcon from 'mdi-material-ui/ImageFilter';
+import blue from '@material-ui/core/colors/blue';
+import blueGrey from '@material-ui/core/colors/blueGrey';
+
 import {
   Tools,
 } from 'react-sketch';
@@ -47,7 +50,6 @@ import {
   createMuiTheme,
   MuiThemeProvider,
 } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Win from '../utils/window';
 import Canvas from './Canvas';
 import {
@@ -57,10 +59,11 @@ import SocketClient from '../lib/SocketClient';
 import Video from './Video';
 import Audio from './Audio';
 import {
-  getCaptureSourceId,
+  getSources,
   getScreenSize,
 } from '../utils/capture';
 import CanvasLib from '../lib/Canvas';
+import ScreenShareDialog from './ScreenShareDialog';
 
 const SOCKET_EVENT_ICE_CANDIDATE = 'ice-candidate';
 const SOCKET_EVENT_USER_JOINED = 'user-joined';
@@ -133,6 +136,8 @@ class App extends React.Component {
     const codeEditorLibrary = new Library();
     const appTheme = createMuiTheme({
       palette: {
+        primary: blue,
+        secondary: blueGrey,
         type: 'dark',
       },
       typography: {
@@ -142,6 +147,7 @@ class App extends React.Component {
 
     this.state = {
       appTheme,
+      screenShareStream: null,
       localStream: null,
       remoteStreams: [],
       connections: {},
@@ -245,18 +251,6 @@ class App extends React.Component {
     elem.style.top = `${anchorBoundingRect.top}px`;
   };
 
-  initFilesSubmenu = (ref) => {
-    const elem = ref;
-
-    if (!elem) {
-      return;
-    }
-
-    const anchorElem = document.querySelector('.canvas-files-btn');
-    const anchorBoundingRect = anchorElem.getBoundingClientRect();
-    elem.style.top = `${anchorBoundingRect.top}px`;
-  };
-
   /**
    * Event handler for when a new notebook entry is being added.
    */
@@ -273,13 +267,15 @@ class App extends React.Component {
   /**
    * Event handler for when the files menu is opened.
    */
-  onOpenFilesSubmenu = () => {
+  onToggleScreenShareDialog = async () => {
     const {
-      isFilesMenuOpened,
+      isScreenShareDialogOpened,
     } = this.state;
+    const screenShareSources = await getSources();
 
     this.setState({
-      isFilesMenuOpened: !isFilesMenuOpened,
+      isScreenShareDialogOpened: !isScreenShareDialogOpened,
+      screenShareSources,
     });
   };
 
@@ -806,6 +802,22 @@ class App extends React.Component {
     }
   };
 
+  onScreenShareVideoInit = (ref) => {
+    const {
+      screenShareStream,
+    } = this.state;
+    const video = ref;
+
+    if (!video) {
+      return;
+    }
+
+    if (screenShareStream) {
+      video.muted = true;
+      video.srcObject = screenShareStream;
+    }
+  };
+
   /**
    * Initializes a video element with the stream provided
    *
@@ -847,8 +859,8 @@ class App extends React.Component {
    *
    * @returns {Promise}
    */
-  onShareScreen = async () => {
-    const screenCaptureSourceId = await getCaptureSourceId();
+  onShareScreen = async (sourceId) => {
+    const screenCaptureSourceId = sourceId;
 
     if (!screenCaptureSourceId) {
       return;
@@ -876,7 +888,11 @@ class App extends React.Component {
     };
 
     try {
-      await mediaDevices.getUserMedia(constraints);
+      const screenShareStream = await mediaDevices.getUserMedia(constraints);
+      this.setState({
+        screenShareStream,
+        isScreenShareDialogOpened: false,
+      });
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Could not get media device to capture the screen', err);
@@ -899,15 +915,15 @@ class App extends React.Component {
       remoteStreams,
       notebook,
       isAddSubMenuOpened,
-      isFilesMenuOpened,
+      isScreenShareDialogOpened,
       isCanvasActive,
       isNotebookActive,
       isSideMenuExpanded,
+      screenShareSources = [],
+      screenShareStream,
     } = this.state;
     const nbMaxRemoteVideosToDisplay = this.getMaxNbRemoteVideosToDisplay();
     const {
-      canvasFiles,
-      isUploading,
       tool,
     } = this.props;
 
@@ -1014,7 +1030,7 @@ class App extends React.Component {
                   </ListItem>
                   <ListItem
                     button
-                    onClick={this.onOpenFilesSubmenu}
+                    onClick={this.onToggleScreenShareDialog}
                     className="canvas-files-btn"
                   >
                     <ListItemIcon>
@@ -1086,7 +1102,13 @@ class App extends React.Component {
                   })}
                 </div>
               ) : null}
-              {isCanvasActive ? <Canvas /> : null}
+              {isCanvasActive && !screenShareStream ? <Canvas /> : null}
+              {screenShareStream ? (
+                <Video
+                  autoPlay
+                  onInit={this.onScreenShareVideoInit}
+                />
+              ) : null}
             </div>
 
             <div className="user-videos-container">
@@ -1151,47 +1173,12 @@ class App extends React.Component {
             </List>
           </div>
         ) : null}
-        {isFilesMenuOpened ? (
-          <div
-            className="canvas-files-submenu"
-            ref={this.initFilesSubmenu}
-          >
-            {canvasFiles && canvasFiles.length > 0 ? (
-              <List
-                component="nav"
-                className="canvas-files-submenu__list"
-                dense
-              >
-                {canvasFiles.map((canvasFile) => {
-                  if (canvasFile.type === 'pdf') {
-                    return canvasFile.pages.map(url => (
-                      <img
-                        src={url}
-                        onClick={this.onAddImageToCanvas(url)}
-                        className="canvas-files-submenu__image"
-                      />
-                    ));
-                  }
-
-                  return (
-                    <ListItem
-                      button
-                      onClick={this.onAddImageToCanvas(canvasFile.url)}
-                    >
-                      <img
-                        src={canvasFile.url}
-                        className="canvas-files-submenu__image"
-                      />
-                    </ListItem>
-                  );
-                })}
-              </List>
-            ) : null}
-          </div>
-        ) : null}
-        {isUploading ? (
-          <div className="upload-status">
-            <CircularProgress />
+        {isScreenShareDialogOpened ? (
+          <div className="screen-share-dialog-overlay">
+            <ScreenShareDialog
+              sources={screenShareSources}
+              onClose={this.onToggleScreenShareDialog}
+            />
           </div>
         ) : null}
       </MuiThemeProvider>
@@ -1200,8 +1187,6 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-  canvasFiles: PropTypes.array,
-  isUploading: PropTypes.bool,
   tool: PropTypes.string.isRequired,
   updateCanvasTool: PropTypes.func.isRequired,
 };
