@@ -2,14 +2,14 @@
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
 
-import './sass/presenter_toolbar.scss';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { render } from 'react-dom';
-import PresenterToolbar from './components/PresenterToolbar';
 import { applyMiddleware, compose, createStore } from 'redux';
 import { electronEnhancer } from 'redux-electron-store';
 import createSagaMiddleware from 'redux-saga';
+import './sass/index.scss';
+import PresenterToolbar from './components/PresenterToolbar';
 import reducer from './reducers';
 import sagas from './sagas';
 
