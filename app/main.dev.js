@@ -1,0 +1,134 @@
+/**
+ * Copyright 2019 Neetos LLC. All rights reserved.
+ */
+
+/* eslint global-require: off */
+/* eslint no-console: off */
+
+/**
+ * This module executes inside of electron's main process. You can start
+ * electron renderer process from here and communicate with the other processes
+ * through IPC.
+ *
+ * When running `yarn build` or `yarn build-main`, this file is compiled to
+ * `./app/main.prod.js` using webpack. This gives us some performance wins.
+ *
+ */
+import {
+  app,
+} from 'electron';
+import { autoUpdater } from 'electron-updater';
+import windowManager from 'electron-window-manager';
+import log from 'electron-log';
+import createSagaMiddleware from 'redux-saga';
+import { createStore, applyMiddleware, compose } from 'redux';
+import { electronEnhancer } from 'redux-electron-store';
+import reducers from './reducers';
+import sagas from './sagas';
+
+// Redux
+const sagaMiddleware = createSagaMiddleware();
+const store = createStore(
+  reducers,
+  compose(
+    applyMiddleware(sagaMiddleware),
+    electronEnhancer({
+      dispatchProxy: a => store.dispatch(a),
+    }),
+  ),
+);
+sagaMiddleware.run(sagas);
+
+export default class AppUpdater {
+  constructor() {
+    log.transports.file.level = 'info';
+    autoUpdater.logger = log;
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+}
+
+if (process.env.NODE_ENV === 'production') {
+  const sourceMapSupport = require('source-map-support');
+  sourceMapSupport.install();
+}
+
+/**
+ * Installs development extensions.
+ *
+ * @return {Promise}
+ */
+const installExtensions = async () => {
+  const installer = require('electron-devtools-installer');
+  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+  const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS'];
+
+  return Promise
+    .all(extensions.map(name => installer.default(installer[name], forceDownload)))
+    .catch(console.log);
+};
+
+/**
+ * Add event listeners...
+ */
+
+app.on('window-all-closed', () => {
+  app.quit();
+});
+
+app.on('ready', async () => {
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+    await installExtensions();
+  }
+
+  windowManager.createNew(
+    'main',
+    'Pixie',
+    `file://${__dirname}/app.html`,
+    false,
+    {
+      show: true,
+      resizable: true,
+      width: 865,
+      height: 700,
+    },
+  )
+    .create();
+
+  windowManager.createNew(
+    'presenter-toolbar',
+    false,
+    `file://${__dirname}/presenterToolbar.html`,
+    false,
+    {
+      frame: false,
+      show: false,
+      width: 370,
+      height: 65,
+    },
+  )
+    .create();
+
+  const winFullscreenBorderOverlay = windowManager.createNew(
+    'presenter-overlay',
+    false,
+    `file://${__dirname}/presenterOverlay.html`,
+    false,
+    {
+      frame: false,
+      focusable: false,
+      transparent: true,
+      alwaysOnTop: true,
+      resizable: true,
+      show: false,
+    },
+  );
+  winFullscreenBorderOverlay.create();
+
+  winFullscreenBorderOverlay.onReady(true, () => {
+    winFullscreenBorderOverlay.maximize();
+    winFullscreenBorderOverlay.object.setIgnoreMouseEvents(true);
+  });
+
+  // eslint-disable-next-line
+  new AppUpdater();
+});

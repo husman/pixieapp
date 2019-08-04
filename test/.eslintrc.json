@@ -1,0 +1,31 @@
+{
+  "extends": [
+    "airbnb",
+    "plugin:testcafe/recommended"
+  ],
+  "parser": "babel-eslint",
+  "env": {
+    "jest/globals": true
+  },
+  "plugins": [
+    "jest",
+    "testcafe"
+  ],
+  "rules": {
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error"
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "configs/webpack.config.eslint.js"
+      },
+      "node": {
+        "paths": [
+          "."
+        ]
+      }
+    }
+  }
+}

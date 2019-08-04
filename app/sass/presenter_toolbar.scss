@@ -1,0 +1,84 @@
+/**
+ * Copyright 2019 Neetos LLC. All rights reserved.
+ */
+@import '../../node_modules/font-awesome/css/font-awesome.min.css';
+@import './fonts';
+
+@font-face {
+  font-family: 'Pixie';
+  src: url('../fonts/NeetosPixie.ttf') format('truetype');
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+html, body {
+  overflow: hidden;
+}
+
+body {
+  padding: 5px;
+  background-color: #272822;
+}
+
+.screen-share-dialog {
+  position: absolute;
+  padding: 30px 40px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #828282;
+  background-color: #ffffff;
+  text-align: center;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
+}
+
+.screen-share-dialog__item {
+  display: inline-block;
+  text-align: center;
+  margin: 10px 0;
+  border: 3px solid transparent;
+  color: #7a7a7a;
+}
+
+.screen-share-dialog__button {
+  border: 3px solid transparent;
+  height: 120px;
+  outline: none;
+  margin: 0 7px;
+}
+
+.screen-share-dialog__item--selected {
+  border: 3px solid #5dae74;
+  outline: none;
+}
+
+.screen-share-dialog__title {
+  white-space: nowrap;
+  color: #7a7a7a;
+  margin: 15px 30px;
+}
+
+.screen-share-dialog__label {
+  margin: 10px 0;
+
+  &.selected {
+    font-weight: bold;
+  }
+}
+
+.screen-share-dialog__actions {
+  margin-top: 10px;
+
+  .screen-share-dialog__cancel_button {
+    text-transform: none;
+  }
+
+  .screen-share-dialog__share_button {
+    text-transform: none;
+    margin: 0 15px;
+  }
+}

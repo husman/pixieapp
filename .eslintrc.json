@@ -1,0 +1,40 @@
+{
+  "root": true,
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "import/prefer-default-export": 0,
+    "jsx-a11y/media-has-caption": 0,
+    "import/no-extraneous-dependencies": 0,
+    "arrow-body-style": 0,
+    "no-param-reassign": 0,
+    "no-confusing-arrow": 0,
+    "no-return-assign": 0,
+    "jsx-a11y/anchor-is-valid": 0,
+    "jsx-a11y/click-events-have-key-events": 0,
+    "jsx-a11y/no-static-element-interactions": 0,
+    "react/require-default-props": 0,
+    "prefer-destructuring": 0,
+    "no-mixed-operators": 0
+  },
+  "globals": {
+    "fabric": true,
+    "OT": true
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "configs/webpack.config.eslint.js"
+      },
+      "node": {
+        "paths": [
+          "."
+        ]
+      }
+    }
+  }
+}

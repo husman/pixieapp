@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixie</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./dist/style.css" />
+  <script src="http://static.opentok.com/v2/js/opentok.min.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+  {
+    const scripts = [];
+
+    // Dynamically insert the DLL script in development env in the
+    // renderer process
+    if (process.env.NODE_ENV === 'development') {
+      scripts.push('../dll/renderer.dev.dll.js');
+    }
+
+    // Dynamically insert the bundled app script in the renderer process
+    const port = process.env.PORT || 8000;
+    scripts.push(process.env.HOT ? 'http://localhost:' + port + '/dist/renderer.dev.js' : './dist/renderer.prod.js');
+
+    document.write(
+      scripts
+        .map(script => `<script defer src="${script}"><\/script>`)
+        .join('')
+    );
+  }
+</script>
+</body>
+</html>
