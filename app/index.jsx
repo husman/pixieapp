@@ -25,7 +25,6 @@ import sagas from './sagas';
 import SocketClient from './lib/SocketClient';
 import App from './components/App';
 import { updateSettings } from './mutations/settings';
-import { APP_VIEW_USER_VIDEOS } from './constants/app';
 
 // Localization
 const localeData = require('react-intl/locale-data/ja');
@@ -84,10 +83,6 @@ const store = createStore(
 );
 sagaMiddleware.run(sagas);
 
-// Initialize the network socket.
-const roomName = 'pixiedev';
-// const host = 'https://pixiehd.neetos.com';
-const host = 'http://localhost:4000';
 const {
   user: {
     firstName,
@@ -98,6 +93,11 @@ const {
 } = store.getState();
 
 // WebSockets
+// Initialize the network socket.
+const roomName = 'pixiedev';
+const host = 'https://pixiehd.neetos.com';
+// const host = 'http://localhost:4000';
+
 const socket = io(host, {
   autoConnect: true,
   query: `roomName=${roomName}&firstName=${firstName}&isMicEnabled=${isMicEnabled}`,
