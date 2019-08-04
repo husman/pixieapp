@@ -37,6 +37,9 @@ const StyledLocalVideoContainer = styled.div`
 `;
 
 function App({
+  sessionId,
+  apiKey,
+  token,
   firstName,
   isVideoEnabled,
   mode,
@@ -71,13 +74,18 @@ function App({
         <Chat />
       )}
       <Dialogs />
-      <OpentokSession />
+      {sessionId && apiKey && token && (
+        <OpentokSession />
+      )}
     </StyledContainer>
   );
 }
 
 App.propTypes = {
   firstName: string.isRequired,
+  sessionId: string.isRequired,
+  apiKey: string.isRequired,
+  token: string.isRequired,
   mode: number.isRequired,
   isVideoEnabled: bool.isRequired,
   isRightPanelOpened: bool,
@@ -89,6 +97,9 @@ function mapStateToProps(state) {
       firstName,
     },
     view: {
+      sessionId,
+      apiKey,
+      token,
       isVideoEnabled,
       mode,
       isRightPanelOpened,
@@ -96,6 +107,9 @@ function mapStateToProps(state) {
   } = state;
 
   return {
+    sessionId,
+    apiKey,
+    token,
     firstName,
     isVideoEnabled,
     mode,

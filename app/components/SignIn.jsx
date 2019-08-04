@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   func,
 } from 'prop-types';
@@ -14,8 +14,24 @@ function SignIn({
   onSetUserInfo,
 }) {
   const [firstName, setFirstName] = useState('');
+  const [meetingId, setMeetingId] = useState('');
+  const onSubmit = useCallback(() => {
+    onSetUserInfo({
+      firstName,
+      meetingId,
+    });
+  }, [firstName, meetingId]);
+
   return (
     <div>
+      <StyledLabel>
+        Meeting ID
+      </StyledLabel>
+      <input
+        type="text"
+        onChange={({ target: { value } }) => setMeetingId(value)}
+        value={meetingId}
+      />
       <StyledLabel>
         First name
       </StyledLabel>
@@ -28,8 +44,8 @@ function SignIn({
         <input
           type="button"
           value="Submit"
-          onClick={() => onSetUserInfo({ firstName })}
-          disabled={!firstName}
+          onClick={onSubmit}
+          disabled={!firstName || !meetingId}
         />
       </div>
     </div>
@@ -42,7 +58,7 @@ SignIn.propTypes = {
 
 function mapDispatchToProps(dispatch) {
   return {
-    onSetUserInfo: ({ firstName, lastName }) => dispatch(setUserInfo({ firstName, lastName })),
+    onSetUserInfo: sessionData => dispatch(setUserInfo(sessionData)),
   };
 }
 

@@ -22,9 +22,12 @@ import {
   OPEN_CHAT_PANEL,
   OPEN_PARTICIPANTS_PANEL,
   CLOSE_RIGHT_PANEL,
+  SET_SESSION_ID,
 } from '../actions/view';
 import {
-  USER_JOINED, USER_LEFT,
+  SET_USER_INFO,
+  USER_JOINED,
+  USER_LEFT,
 } from '../actions/user';
 import { REMOTE_CHAT_MESSAGE_RECEIVED } from '../actions/chat';
 
@@ -42,6 +45,10 @@ const initialState = {
   screenShareStream: null,
   users: [],
   chatAlertCount: 0,
+  meetingId: '',
+  apiKey: '',
+  sessionId: '',
+  token: '',
 };
 
 /**
@@ -171,6 +178,18 @@ export default function view(state = initialState, action) {
       return {
         ...state,
         users: state.users.filter(({ id }) => id !== action.clientId),
+      };
+    case SET_USER_INFO:
+      return {
+        ...state,
+        meetingId: action.meetingId,
+      };
+    case SET_SESSION_ID:
+      return {
+        ...state,
+        apiKey: action.apiKey,
+        sessionId: action.sessionId,
+        token: action.token,
       };
     default:
       return state;

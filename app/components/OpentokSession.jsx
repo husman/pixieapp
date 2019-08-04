@@ -3,8 +3,8 @@ import {
   func,
   bool,
   instanceOf,
+  string,
 } from 'prop-types';
-import OpenTok from 'opentok';
 import { connect } from 'react-redux';
 import {
   OTSession,
@@ -21,13 +21,10 @@ import {
   streamDestroyed,
 } from '../actions/video';
 
-const apiKey = '46003032';
-const secret = '135571e6887919f56e5b7d48b0f6e8e9adc47da3';
-const opentok = new OpenTok(apiKey, secret);
-const sessionId = '1_MX40NjAwMzAzMn5-MTU2MzYzODIzMjA4N354TFh1MHlZc1prd3pML0dLT3M5QXIwckp-fg';
-const token = opentok.generateToken(sessionId);
-
 function OpentokSession({
+  apiKey,
+  sessionId,
+  token,
   isMicEnabled,
   isVideoEnabled,
   isScreenSharing,
@@ -95,7 +92,6 @@ function OpentokSession({
                 srcObject,
               },
             }) => {
-              console.log('videoType', videoType, streamId);
               if (videoType === 'custom') {
                 onSetScreenShareStream(srcObject, streamId);
               } else {
@@ -124,12 +120,16 @@ function OpentokSession({
 function mapStateToProps(state) {
   const {
     view: {
+      meetingId,
       mode,
       isMicEnabled,
       isVideoEnabled,
       localVideo,
       remoteStreams,
       isScreenSharing,
+      sessionId,
+      apiKey,
+      token,
     },
     screenShare: {
       stream: screenShareSourceStream,
@@ -143,6 +143,7 @@ function mapStateToProps(state) {
   }
 
   return {
+    meetingId,
     mode,
     isMicEnabled,
     isVideoEnabled,
@@ -150,6 +151,9 @@ function mapStateToProps(state) {
     remoteStreams,
     isScreenSharing,
     screenShareSource,
+    sessionId,
+    apiKey,
+    token,
   };
 }
 
@@ -174,6 +178,9 @@ OpentokSession.propTypes = {
   onRemoteVideoChanged: func.isRequired,
   onSetScreenShareStream: func.isRequired,
   onStreamDestroyed: func.isRequired,
+  sessionId: string.isRequired,
+  apiKey: string.isRequired,
+  token: string.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToState)(OpentokSession);

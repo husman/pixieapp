@@ -14,7 +14,6 @@ export default function chat(state = initialState, action) {
       return {
         ...state,
         firstName: action.firstName,
-        lastName: action.lastName,
       };
     default:
       return state;
