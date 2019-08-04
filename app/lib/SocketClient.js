@@ -16,19 +16,21 @@ import {
 class SocketClient {
   socket = null;
 
-  init(socket, store) {
-    if (!socket) {
+  init(socket) {
+    const { store } = this;
+
+    if (!socket || !store) {
       return;
     }
 
     this.socket = socket;
-    this.store = store;
 
     this.on(CHAT_PEER_EVENT_MESSAGE, (clientId, data) => {
       store.dispatch(remoteChatMessageReceived(clientId, data));
     });
 
     this.on(PEER_EVENT_USER_JOINED, (clientId, data) => {
+      console.log('PEER_EVENT_USER_JOINED', clientId, data);
       store.dispatch(userJoined(clientId, data));
     });
 
@@ -106,6 +108,14 @@ class SocketClient {
     }
 
     socket.open();
+  }
+
+  setSocket(socket) {
+    this.socket = socket;
+  }
+
+  setStore(store) {
+    this.store = store;
   }
 }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import {
   bool,
   number,
+  string,
 } from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
@@ -20,6 +21,7 @@ import MediaToolbar from './MediaToolbar';
 import Dialogs from './Dialogs';
 import VideosView from './VideosView';
 import Chat from './Chat';
+import SignIn from './SignIn';
 
 const StyledContainer = styled.div`
   display: flex;
@@ -35,10 +37,15 @@ const StyledLocalVideoContainer = styled.div`
 `;
 
 function App({
+  firstName,
   isVideoEnabled,
   mode,
   isRightPanelOpened,
 }) {
+  if (!firstName) {
+    return (<SignIn />);
+  }
+
   return (
     <StyledContainer className="video-mode-container">
       <Header />
@@ -70,6 +77,7 @@ function App({
 }
 
 App.propTypes = {
+  firstName: string.isRequired,
   mode: number.isRequired,
   isVideoEnabled: bool.isRequired,
   isRightPanelOpened: bool,
@@ -77,6 +85,9 @@ App.propTypes = {
 
 function mapStateToProps(state) {
   const {
+    user: {
+      firstName,
+    },
     view: {
       isVideoEnabled,
       mode,
@@ -85,6 +96,7 @@ function mapStateToProps(state) {
   } = state;
 
   return {
+    firstName,
     isVideoEnabled,
     mode,
     isRightPanelOpened,

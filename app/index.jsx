@@ -14,17 +14,11 @@ import { Provider } from 'react-redux';
 import { applyMiddleware, createStore, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import './sass/index.scss';
-import io from 'socket.io-client';
-import ApolloClient from 'apollo-boost';
-import { ApolloProvider } from 'react-apollo';
-import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 import { electronEnhancer } from 'redux-electron-store';
-import Cache from './lib/Cache';
 import reducer from './reducers';
 import sagas from './sagas';
 import SocketClient from './lib/SocketClient';
 import App from './components/App';
-import { updateSettings } from './mutations/settings';
 
 // Localization
 const localeData = require('react-intl/locale-data/ja');
@@ -83,56 +77,26 @@ const store = createStore(
 );
 sagaMiddleware.run(sagas);
 
-const {
-  user: {
-    firstName,
-  },
-  view: {
-    isMicEnabled,
-  },
-} = store.getState();
-
 // WebSockets
-// Initialize the network socket.
-const roomName = 'pixiedev';
-const host = 'https://pixiehd.neetos.com';
+// // Initialize the network socket.
+// const roomName = 'pixiedev';
+// // const host = 'https://pixiehd.neetos.com';
 // const host = 'http://localhost:4000';
-
-const socket = io(host, {
-  autoConnect: true,
-  query: `roomName=${roomName}&firstName=${firstName}&isMicEnabled=${isMicEnabled}`,
-});
-
-SocketClient.init(socket, store);
-
-// GraphQL
-const apolloClient = new ApolloClient({
-  uri: host,
-  cache: Cache,
-  clientState: {
-    defaults: {
-      videoEnabled: true,
-      micEnabled: true,
-    },
-    resolvers: {
-      Mutation: {
-        updateSettings,
-      },
-    },
-  },
-});
+//
+// const socket = io(host, {
+//   autoConnect: false,
+//   query: `roomName=${roomName}&firstName=${firstName}&isMicEnabled=${isMicEnabled}`,
+// });
+//
+SocketClient.setStore(store);
 
 window.onload = () => {
   render(
-    <ApolloProvider client={apolloClient}>
-      <ApolloHooksProvider client={apolloClient}>
-        <IntlProvider {...i18n}>
-          <Provider store={store}>
-            <App />
-          </Provider>
-        </IntlProvider>
-      </ApolloHooksProvider>
-    </ApolloProvider>,
+    <IntlProvider {...i18n}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </IntlProvider>,
     document.getElementById('app'),
   );
 };

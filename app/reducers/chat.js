@@ -22,7 +22,7 @@ export default function chat(state = initialState, action) {
           ...state.messages,
           {
             type: 'local-message',
-            user: 'Haleeq',
+            user: action.user,
             message: action.text,
             date: action.date,
           },
