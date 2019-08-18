@@ -5,16 +5,17 @@ import { APP_VIEW_SCREEN_SHARE } from '../constants/app';
 
 const StyledContainer = styled.div`
   text-align: center;
-  height: ${({ mode }) => mode === APP_VIEW_SCREEN_SHARE ? '200px' : '100vh'};
+  height: ${({ mode }) => mode === APP_VIEW_SCREEN_SHARE ? '100px' : '100vh'};
   overflow-y: auto;
   position: relative;
-  padding: 15px 0 15px 15px;
+  margin: 15px 0 15px 15px;
 `;
 
 const StyledVideoContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   width: 100%;
+  height: 100%;
   position: absolute;
   left: 50%;
   top: 50%;

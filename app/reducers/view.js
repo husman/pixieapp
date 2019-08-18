@@ -166,6 +166,7 @@ export default function view(state = initialState, action) {
     case REMOTE_SCREEN_SHARING_STOPPED:
       return {
         ...state,
+        mode: APP_VIEW_USER_VIDEOS,
         screenShareStream: null,
         screenShareStreamId: null,
       };
