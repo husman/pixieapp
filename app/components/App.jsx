@@ -12,7 +12,7 @@ import {
   APP_VIEW_CANVAS,
 } from '../constants/app';
 import ScreenShareView from './ScreenShareView';
-import CanvasMode from './CanvasMode';
+import CanvasView from './CanvasView';
 import OpentokSession from './OpentokSession';
 import Header from './Header';
 import RightToolbar from './RightToolbar';
@@ -32,7 +32,7 @@ const StyledContainer = styled.div`
 
 const StyledLocalVideoContainer = styled.div`
   position: absolute;
-  bottom: 10px;
+  bottom: 0;
   right: 10px;
 `;
 
@@ -62,7 +62,7 @@ function App({
         <ScreenShareView />
       )}
       {mode === APP_VIEW_CANVAS && (
-        <CanvasMode />
+        <CanvasView />
       )}
       {isVideoEnabled && (
         <StyledLocalVideoContainer>

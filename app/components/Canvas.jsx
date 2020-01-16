@@ -9,6 +9,7 @@ import {
 } from 'react-redux';
 import {
   SketchField,
+  Tools,
 } from 'react-sketch';
 import uuid from 'uuid';
 import SocketClient from '../lib/SocketClient';
@@ -420,8 +421,12 @@ class Canvas extends React.Component {
   }
 }
 
+Canvas.defaultProps = {
+  tool: Tools.Pencil,
+};
+
 Canvas.propTypes = {
-  tool: PropTypes.string.isRequired,
+  tool: PropTypes.string,
 };
 
 /**

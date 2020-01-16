@@ -12,13 +12,10 @@ import { connect } from 'react-redux';
 import UserVideo from './UserVideo';
 import VideoControls from './VideoControls';
 import PlaceholderIcon from '../svgs/user-video-placeholder.svg';
-import { APP_VIEW_USER_VIDEO } from '../constants/app';
 
 const StyledUserVideoContainer = styled.div`
-  margin-right: ${({ mode }) => mode === APP_VIEW_USER_VIDEO ? 0 : 15}px;
+  margin-right: 15px;
   position: relative;
-  width: ${({ mode }) => mode === APP_VIEW_USER_VIDEO ? '100vh' : 'auto'};
-  height: 100%;
   
   :hover {
     .video-controls {
@@ -63,7 +60,7 @@ function RemoteUserVideos({
         </StyledVideoControls>
       )}
       {hasVideo && (<UserVideo stream={srcObject} />)}
-      {!hasVideo && (<PlaceholderIcon height="99.4%" />)}
+      {!hasVideo && (<PlaceholderIcon height="100" />)}
       <StyledVideoLabel>
         Remote
       </StyledVideoLabel>
