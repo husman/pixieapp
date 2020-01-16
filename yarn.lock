@@ -9190,6 +9190,11 @@ mute-stream@0.0.7:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
 
+mxgraph@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/mxgraph/-/mxgraph-4.0.3.tgz#7918ad2f087ee8d52313aea16f6137e6065f559d"
+  integrity sha512-MonxQ6aVnk3iOfS1Ql0vSq2MhFY+ZHXjJ/mEk1FEvn1+dP4h/a6ehlaxqpLnqj4s304k8/Aiib2U/SQ1oqzOFQ==
+
 nan@^2.10.0, nan@^2.9.2:
   version "2.12.1"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.12.1.tgz#7b1aa193e9aa86057e3c7bbd0ac448e770925552"

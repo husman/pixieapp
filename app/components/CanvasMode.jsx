@@ -1231,6 +1231,10 @@ class CanvasMode extends React.Component {
   }
 }
 
+CanvasMode.defaultProps = {
+  tool: Tools.Pencil,
+};
+
 CanvasMode.propTypes = {
   tool: PropTypes.string.isRequired,
   updateCanvasTool: PropTypes.func.isRequired,

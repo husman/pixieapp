@@ -7,7 +7,7 @@
  *
  * @type {String}
  */
-export const CANVAS_DEFAULT_DRAWING_COLOR = '#ccff00';
+export const CANVAS_DEFAULT_DRAWING_COLOR = '#000000';
 
 /**
  * The default drawing stroke width.

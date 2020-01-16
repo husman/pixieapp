@@ -23,6 +23,7 @@ import {
   OPEN_PARTICIPANTS_PANEL,
   CLOSE_RIGHT_PANEL,
   SET_SESSION_ID,
+  SET_APP_MODE,
 } from '../actions/view';
 import {
   SET_USER_INFO,
@@ -191,6 +192,11 @@ export default function view(state = initialState, action) {
         apiKey: action.apiKey,
         sessionId: action.sessionId,
         token: action.token,
+      };
+    case SET_APP_MODE:
+      return {
+        ...state,
+        mode: action.mode,
       };
     default:
       return state;

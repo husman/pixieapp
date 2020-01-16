@@ -38,6 +38,7 @@ const StyledCloseButton = styled.div`
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+  z-index: 1;
 `;
 
 const StyledBadgeContainer = styled.div`

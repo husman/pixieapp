@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  bool,
   instanceOf,
 } from 'prop-types';
 import styled from 'styled-components';
@@ -8,7 +7,8 @@ import { connect } from 'react-redux';
 import UserVideo from './UserVideo';
 
 const StyledUserVideoContainer = styled.div`
-  width: 200px
+  width: 100px;
+  height: 100px;
   position: relative;
   display: inline-block;
   
