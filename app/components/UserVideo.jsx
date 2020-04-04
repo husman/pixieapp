@@ -8,7 +8,7 @@ import styled from 'styled-components';
 const StyledUserVideo = styled.video`
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 `;
 
 function UserVideo({

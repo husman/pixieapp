@@ -9,13 +9,14 @@ import {
 } from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import Grid from '@material-ui/core/Grid';
 import UserVideo from './UserVideo';
 import VideoControls from './VideoControls';
 import PlaceholderIcon from '../svgs/user-video-placeholder.svg';
 
 const StyledUserVideoContainer = styled.div`
+  margin-right: 15px;
   position: relative;
+  height: 100%;
   
   :hover {
     .video-controls {
@@ -43,40 +44,29 @@ const StyledVideoLabel = styled.div`
   text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.6);
 `;
 
-function RemoteUserVideos({
+function RemoteCanvasUserVideos({
   mode,
   remoteStreams,
 }) {
-  return (
-    <Grid
-      container
-      spacing={3}
-      style={{
-        padding: '0 15px',
-      }}
-    >
-      {remoteStreams.map(({
-        streamId,
-        hasAudio,
-        hasVideo,
-        srcObject,
-      }) => hasVideo && (
-        <Grid item xs={6}>
-          <StyledUserVideoContainer key={streamId} mode={mode}>
-            {!hasAudio && (
-              <StyledVideoControls className="video-controls">
-                <VideoControls hasVideo={false} audioEnabled={hasAudio} />
-              </StyledVideoControls>
-            )}
-            <UserVideo stream={srcObject} />
-            <StyledVideoLabel>
-              Remote
-            </StyledVideoLabel>
-          </StyledUserVideoContainer>
-        </Grid>
-      ))}
-    </Grid>
-  );
+  return remoteStreams.map(({
+    streamId,
+    hasAudio,
+    hasVideo,
+    srcObject,
+  }) => (
+    <StyledUserVideoContainer key={streamId} mode={mode}>
+      {!hasAudio && (
+        <StyledVideoControls className="video-controls">
+          <VideoControls hasVideo={false} audioEnabled={hasAudio} />
+        </StyledVideoControls>
+      )}
+      {hasVideo && (<UserVideo stream={srcObject} />)}
+      {!hasVideo && (<PlaceholderIcon height="100" />)}
+      <StyledVideoLabel>
+        Remote
+      </StyledVideoLabel>
+    </StyledUserVideoContainer>
+  ));
 }
 
 /**
@@ -100,7 +90,7 @@ function mapStateToProps(state) {
   };
 }
 
-RemoteUserVideos.propTypes = {
+RemoteCanvasUserVideos.propTypes = {
   remoteStreams: arrayOf(
     shape({
       streamId: string,
@@ -112,4 +102,4 @@ RemoteUserVideos.propTypes = {
   mode: number.isRequired,
 };
 
-export default connect(mapStateToProps)(RemoteUserVideos);
+export default connect(mapStateToProps)(RemoteCanvasUserVideos);

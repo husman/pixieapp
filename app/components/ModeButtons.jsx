@@ -11,7 +11,6 @@ import {
   APP_VIEW_USER_VIDEOS,
   APP_VIEW_SCREEN_SHARE,
   APP_VIEW_CANVAS,
-  APP_VIEW_NOTEBOOKS,
 } from '../constants/app';
 
 const StyledFlexContainer = styled.div`
@@ -37,8 +36,6 @@ function isModeType(mode, modeType) {
       return APP_MODE_VIDEO.has(mode);
     case APP_VIEW_CANVAS:
       return mode === APP_VIEW_CANVAS;
-    case APP_VIEW_NOTEBOOKS:
-      return mode === APP_VIEW_NOTEBOOKS;
     default:
       return false;
   }
@@ -94,25 +91,6 @@ function ModeButton({
             <FormattedMessage
               id="button.mode.video"
               defaultMessage="Video"
-            />
-          </IconButton>
-        </StyledButtonContainer>
-        <StyledButtonContainer active={isModeType(mode, APP_VIEW_NOTEBOOKS)}>
-          <IconButton
-            active={isModeType(mode, APP_VIEW_NOTEBOOKS)}
-            icon={(
-              <Icon
-                type="notebook-entry"
-                fontSize={1.3}
-              />
-            )}
-            fontSize="0.85em"
-            data-mode={APP_VIEW_NOTEBOOKS}
-            onClick={setMode}
-          >
-            <FormattedMessage
-              id="button.mode.notebook"
-              defaultMessage="Notebook"
             />
           </IconButton>
         </StyledButtonContainer>

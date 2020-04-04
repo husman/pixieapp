@@ -31,6 +31,11 @@ import {
   USER_LEFT,
 } from '../actions/user';
 import { REMOTE_CHAT_MESSAGE_RECEIVED } from '../actions/chat';
+import {
+  APP_UPDATE_AVAILABLE,
+  APP_UPDATE_DOWNLOADED,
+  CLOSE_APP_UPDATE_NOTICE,
+} from '../actions/app';
 
 /**
  * The initial state for the canvas.
@@ -50,6 +55,8 @@ const initialState = {
   apiKey: '',
   sessionId: '',
   token: '',
+  appUpdateAvailable: false,
+  appUpdateDownloaded: false,
 };
 
 /**
@@ -197,6 +204,24 @@ export default function view(state = initialState, action) {
       return {
         ...state,
         mode: action.mode,
+      };
+    case APP_UPDATE_AVAILABLE:
+      return {
+        ...state,
+        appUpdateAvailable: true,
+        appUpdateDownloaded: false,
+      };
+    case APP_UPDATE_DOWNLOADED:
+      return {
+        ...state,
+        appUpdateAvailable: false,
+        appUpdateDownloaded: true,
+      };
+    case CLOSE_APP_UPDATE_NOTICE:
+      return {
+        ...state,
+        appUpdateAvailable: false,
+        appUpdateDownloaded: false,
       };
     default:
       return state;

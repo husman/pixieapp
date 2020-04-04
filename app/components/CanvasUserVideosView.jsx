@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import RemoteUserVideos from './RemoteUserVideos';
+import RemoteCanvasUserVideos from './RemoteCanvasUserVideos';
 
 const StyledContainer = styled.div`
   text-align: center;
@@ -15,13 +15,14 @@ const StyledVideoContainer = styled.div`
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
+  height: 100%;
 `;
 
 function CanvasUserVideosView() {
   return (
     <StyledContainer>
       <StyledVideoContainer>
-        <RemoteUserVideos />
+        <RemoteCanvasUserVideos />
       </StyledVideoContainer>
     </StyledContainer>
   );

@@ -8,14 +8,7 @@ function VideosView({
   remoteStreams,
 }) {
   return (
-    <React.Fragment>
-      {remoteStreams.length < 2 && (
-        <UserVideoView />
-      )}
-      {remoteStreams.length > 1 && (
-        <UserVideosView />
-      )}
-    </React.Fragment>
+    <UserVideoView />
   );
 }
 
