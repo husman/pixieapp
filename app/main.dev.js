@@ -16,6 +16,7 @@
  */
 import {
   app,
+  ipcMain,
 } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import windowManager from 'electron-window-manager';
@@ -25,6 +26,10 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { electronEnhancer } from 'redux-electron-store';
 import reducers from './reducers';
 import sagas from './sagas';
+import {
+  appUpdateAvailable,
+  appUpdateDownloaded,
+} from './actions/app';
 
 // Redux
 const sagaMiddleware = createSagaMiddleware();
@@ -39,12 +44,22 @@ const store = createStore(
 );
 sagaMiddleware.run(sagas);
 
-export default class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
+export function initAppUpdater() {
+  log.transports.file.level = 'info';
+  autoUpdater.logger = log;
+  autoUpdater.checkForUpdatesAndNotify();
+
+  autoUpdater.on('update-available', () => {
+    store.dispatch(appUpdateAvailable());
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    store.dispatch(appUpdateDownloaded());
+  });
+
+  ipcMain.on('quit-and-install', () => {
+    autoUpdater.quitAndInstall();
+  });
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -82,7 +97,7 @@ app.on('ready', async () => {
 
   windowManager.createNew(
     'main',
-    'Pixie',
+    'Pixie Canvas',
     `file://${__dirname}/app.html`,
     false,
     {
@@ -129,6 +144,5 @@ app.on('ready', async () => {
     winFullscreenBorderOverlay.object.setIgnoreMouseEvents(true);
   });
 
-  // eslint-disable-next-line
-  new AppUpdater();
+  initAppUpdater();
 });

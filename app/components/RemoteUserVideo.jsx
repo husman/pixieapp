@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   bool,
   arrayOf,
@@ -8,13 +8,14 @@ import {
 } from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
+import Grid from '@material-ui/core/Grid';
 import UserVideo from './UserVideo';
 import VideoControls from './VideoControls';
 import PlaceholderIcon from '../svgs/user-video-placeholder.svg';
 
 const StyledUserVideoContainer = styled.div`
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 100%;
   
   :hover {
@@ -22,6 +23,15 @@ const StyledUserVideoContainer = styled.div`
       display: block;
     }
   }
+`;
+
+const MultiUserVideoContainer = styled(StyledUserVideoContainer)`
+  padding-left: 15px;
+  padding-right: ${({ paddingRight }) => paddingRight ? '15px' : '0'};
+`;
+
+const PlacehonderContainer = styled(StyledUserVideoContainer)`
+  background-color: #757575;
 `;
 
 const StyledVideoControls = styled.div`
@@ -46,25 +56,66 @@ const StyledVideoLabel = styled.div`
 function RemoteUserVideo({
   remoteStreams,
 }) {
-  return remoteStreams.map(({
-    streamId,
-    hasAudio,
-    hasVideo,
-    srcObject,
-  }) => (
-    <StyledUserVideoContainer key={streamId}>
-      {!hasAudio && (
-        <StyledVideoControls className="video-controls">
-          <VideoControls hasVideo={false} audioEnabled={hasAudio} />
-        </StyledVideoControls>
-      )}
-      {hasVideo && (<UserVideo stream={srcObject} />)}
-      {!hasVideo && (<PlaceholderIcon height="99.4%" />)}
-      <StyledVideoLabel>
-        Remote
-      </StyledVideoLabel>
-    </StyledUserVideoContainer>
-  ));
+  if (remoteStreams.length === 0) {
+    return (
+      <PlacehonderContainer>
+        <PlaceholderIcon height="100%" />
+      </PlacehonderContainer>
+    );
+  }
+
+  if (remoteStreams.length === 1) {
+    return remoteStreams.map(({
+      streamId,
+      hasAudio,
+      srcObject,
+    }) => (
+      <StyledUserVideoContainer key={streamId}>
+        {!hasAudio && (
+          <StyledVideoControls className="video-controls">
+            <VideoControls hasVideo={false} audioEnabled={hasAudio} />
+          </StyledVideoControls>
+        )}
+        <UserVideo stream={srcObject} />
+        <StyledVideoLabel>
+          Remote
+        </StyledVideoLabel>
+      </StyledUserVideoContainer>
+    ));
+  }
+
+  return (
+    <Grid
+      container
+      justify="center"
+      alignItems="center"
+    >
+      {remoteStreams.map(({
+        streamId,
+        hasAudio,
+        srcObject,
+      }, index) => (
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          container
+        >
+          <MultiUserVideoContainer key={streamId} paddingRight={index % 2 !== 0}>
+            {!hasAudio && (
+              <StyledVideoControls className="video-controls">
+                <VideoControls hasVideo={false} audioEnabled={hasAudio} />
+              </StyledVideoControls>
+            )}
+            <UserVideo stream={srcObject} />
+            <StyledVideoLabel>
+              Remote
+            </StyledVideoLabel>
+          </MultiUserVideoContainer>
+        </Grid>
+      ))}
+    </Grid>
+  );
 }
 
 /**
@@ -82,7 +133,7 @@ function mapStateToProps(state) {
   } = state;
 
   return {
-    remoteStreams,
+    remoteStreams: remoteStreams.filter(({ hasVideo }) => hasVideo),
   };
 }
 

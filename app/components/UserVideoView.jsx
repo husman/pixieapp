@@ -4,6 +4,7 @@ import RemoteUserVideo from './RemoteUserVideo';
 
 const StyledContainer = styled.div`
   text-align: center;
+  width: 100%;
   height: 100%;
   overflow-y: auto;
   position: relative;
@@ -11,6 +12,8 @@ const StyledContainer = styled.div`
 
 const StyledVideoContainer = styled.div`
   display: flex;
+  justify-content: center;
+  width: 100%;
   height: 100%;
 `;
 

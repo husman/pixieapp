@@ -8,7 +8,6 @@ const StyledContainer = styled.div`
   height: ${({ mode }) => mode === APP_VIEW_SCREEN_SHARE ? '100px' : '100vh'};
   overflow-y: auto;
   position: relative;
-  margin: 15px 0 15px 15px;
 `;
 
 const StyledVideoContainer = styled.div`

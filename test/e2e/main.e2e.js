@@ -10,7 +10,7 @@ const assertNoConsoleErrors = async (t) => {
 
 fixture`Main Window`.page('../../app/app.html').afterEach(assertNoConsoleErrors);
 
-test('The window title should be "Pixie"', async (t) => {
+test('The window title should be "Pixie Canvas"', async (t) => {
   const getPageTitle = ClientFunction(() => document.title);
-  await t.expect(getPageTitle()).eql('Pixie');
+  await t.expect(getPageTitle()).eql('Pixie Canvas');
 });

@@ -8,7 +8,7 @@ import { render } from 'react-dom';
 import { applyMiddleware, compose, createStore } from 'redux';
 import { electronEnhancer } from 'redux-electron-store';
 import createSagaMiddleware from 'redux-saga';
-import './sass/index.scss';
+import './sass/presenter_toolbar.scss';
 import PresenterToolbar from './components/PresenterToolbar';
 import reducer from './reducers';
 import sagas from './sagas';

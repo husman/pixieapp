@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   bool,
   number,
@@ -6,6 +6,11 @@ import {
 } from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
+import Button from '@material-ui/core/Button';
+import { ipcRenderer } from 'electron';
+
 import {
   APP_VIEW_USER_VIDEOS,
   APP_VIEW_SCREEN_SHARE,
@@ -23,6 +28,8 @@ import VideosView from './VideosView';
 import Chat from './Chat';
 import SignIn from './SignIn';
 
+import { closeAppUpdateNotice } from '../actions/app';
+
 const StyledContainer = styled.div`
   display: flex;
   height: 100%;
@@ -36,6 +43,15 @@ const StyledLocalVideoContainer = styled.div`
   right: 10px;
 `;
 
+const AppUpdateActionButtons = styled.div`
+  padding-top: 10px;
+`;
+
+const InstallUpdatesActionButton = styled.div`
+  display: inline;
+  margin-right: 15px;
+`;
+
 function App({
   sessionId,
   apiKey,
@@ -44,14 +60,71 @@ function App({
   isVideoEnabled,
   mode,
   isRightPanelOpened,
+  appUpdateAvailable,
+  appUpdateDownloaded,
+  onCloseAppUpdateNotice,
 }) {
   if (!firstName) {
     return (<SignIn />);
   }
 
+  const onInstallAndRestartApp = useCallback(() => {
+    ipcRenderer.send('quit-and-install');
+  }, []);
+
   return (
     <StyledContainer className="video-mode-container">
       <Header />
+      {appUpdateAvailable && (
+        <Snackbar
+          open
+          autoHideDuration={30000}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          onClose={onCloseAppUpdateNotice}
+        >
+          <Alert severity="info">
+            Updates are available!
+          </Alert>
+        </Snackbar>
+      )}
+      {appUpdateDownloaded && (
+        <Snackbar
+          open
+          autoHideDuration={30000}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          onClose={onCloseAppUpdateNotice}
+        >
+          <Alert severity="info">
+            Updates are ready! would you like to install them now?
+            <AppUpdateActionButtons>
+              <InstallUpdatesActionButton>
+                <Button
+                  size="small"
+                  variant="contained"
+                  color="primary"
+                  onClick={onInstallAndRestartApp}
+                >
+                  Install & Restart
+                </Button>
+              </InstallUpdatesActionButton>
+              <Button
+                size="small"
+                variant="contained"
+                color="secondary"
+                onClick={onCloseAppUpdateNotice}
+              >
+                Cancel
+              </Button>
+            </AppUpdateActionButtons>
+          </Alert>
+        </Snackbar>
+      )}
       {!isRightPanelOpened && (
         <RightToolbar />
       )}
@@ -89,6 +162,8 @@ App.propTypes = {
   mode: number.isRequired,
   isVideoEnabled: bool.isRequired,
   isRightPanelOpened: bool,
+  appUpdateAvailable: bool,
+  appUpdateDownloaded: bool,
 };
 
 function mapStateToProps(state) {
@@ -103,6 +178,8 @@ function mapStateToProps(state) {
       isVideoEnabled,
       mode,
       isRightPanelOpened,
+      appUpdateAvailable,
+      appUpdateDownloaded,
     },
   } = state;
 
@@ -114,7 +191,15 @@ function mapStateToProps(state) {
     isVideoEnabled,
     mode,
     isRightPanelOpened,
+    appUpdateAvailable,
+    appUpdateDownloaded,
   };
 }
 
-export default connect(mapStateToProps)(App);
+function mapDispatchToProps(dispatch) {
+  return {
+    onCloseAppUpdateNotice: () => dispatch(closeAppUpdateNotice()),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

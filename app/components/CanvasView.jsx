@@ -12,20 +12,32 @@ const StyledVideoContainer = styled.div`
   width: 100%;
 `;
 
-function CanvasView() {
+function CanvasView({
+  remoteStreams,
+}) {
+  const remoteVideosEnabled = remoteStreams.length > 0;
+
   return (
     <React.Fragment>
       <StyledVideoContainer>
         <CanvasToolbar />
         <Canvas />
       </StyledVideoContainer>
-      <CanvasUserVideosView />
+      {remoteVideosEnabled && (<CanvasUserVideosView />)}
     </React.Fragment>
   );
 }
 
-function mapStateToProps() {
-  return {};
+function mapStateToProps(state) {
+  const {
+    view: {
+      remoteStreams,
+    },
+  } = state;
+
+  return {
+    remoteStreams: remoteStreams.filter(({ hasVideo }) => hasVideo),
+  };
 }
 
 function mapDispatchToState() {
