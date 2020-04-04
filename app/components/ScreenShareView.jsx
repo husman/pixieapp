@@ -9,8 +9,8 @@ const StyledVideoContainer = styled.div`
   flex: 1;
   text-align: center;
   overflow: hidden;
-  width: 100vw;
-  height: 70vh;
+  width: 100%;
+  height: 100%;
 `;
 const StyledVideo = styled.video`
   width: 100%;
@@ -42,26 +42,25 @@ function ScreenShareView({
     }
   }, [screenShareStream]);
 
+  if (!screenShareStream) {
+    return null;
+  }
+
   return (
     <React.Fragment>
-      {screenShareStream && (
-        <React.Fragment>
-          <StyledPresenterLabelContainer className="video-mode-presenter-label">
-            <StyledPresenterLabel>
-              Remote
-            </StyledPresenterLabel>
-          </StyledPresenterLabelContainer>
-          <StyledVideoContainer>
-            <StyledVideo
-              autoPlay
-              ref={initScreenShareVideo}
-            >
-              Your device does not support videos.
-            </StyledVideo>
-          </StyledVideoContainer>
-        </React.Fragment>
-      )}
-      <UserVideosView mode={mode} />
+      <StyledPresenterLabelContainer className="video-mode-presenter-label">
+        <StyledPresenterLabel>
+          Remote
+        </StyledPresenterLabel>
+      </StyledPresenterLabelContainer>
+      <StyledVideoContainer>
+        <StyledVideo
+          autoPlay
+          ref={initScreenShareVideo}
+        >
+          Your device does not support videos.
+        </StyledVideo>
+      </StyledVideoContainer>
     </React.Fragment>
   );
 }
