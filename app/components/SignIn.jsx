@@ -25,7 +25,7 @@ function SignIn({
   return (
     <div>
       <StyledLabel>
-        Meeting ID
+        Meeting ID (v0.2.0)
       </StyledLabel>
       <input
         type="text"
