@@ -65,6 +65,9 @@
       "app/main.prod.js",
       "package.json"
     ],
+    "mac": {
+      "entitlements": "entitlements.mac.plist"
+    },
     "dmg": {
       "contents": [
         {
