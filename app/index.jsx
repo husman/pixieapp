@@ -14,11 +14,16 @@ import { Provider } from 'react-redux';
 import { applyMiddleware, createStore, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import './sass/index.scss';
-import { electronEnhancer } from 'redux-electron-store';
+import { ipcRenderer } from 'electron';
+import { forwardToMain, replayActionRenderer, getInitialStateRenderer } from 'electron-redux';
 import reducer from './reducers';
 import sagas from './sagas';
 import SocketClient from './lib/SocketClient';
 import App from './components/App';
+import {
+  appUpdateAvailable,
+  appUpdateDownloaded,
+} from './actions/app';
 
 // Localization
 const localeData = require('react-intl/locale-data/ja');
@@ -65,16 +70,33 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 // Redux
 const sagaMiddleware = createSagaMiddleware();
+const initialState = getInitialStateRenderer();
+
 const store = createStore(
   reducer,
+  initialState,
   compose(
-    applyMiddleware(sagaMiddleware),
-    electronEnhancer({
-      dispatchProxy: a => store.dispatch(a),
-    }),
+    applyMiddleware(
+      forwardToMain, // IMPORTANT! This goes first
+      sagaMiddleware,
+    ),
     composeEnhancers(),
   ),
 );
+
+// const store = createStore(
+//   reducer,
+//   compose(
+//     applyMiddleware(sagaMiddleware),
+//     electronEnhancer({
+//       dispatchProxy: a => store.dispatch(a),
+//     }),
+//     composeEnhancers(),
+//   ),
+// );
+
+replayActionRenderer(store);
+
 sagaMiddleware.run(sagas);
 
 // WebSockets
@@ -89,6 +111,12 @@ sagaMiddleware.run(sagas);
 // });
 //
 SocketClient.setStore(store);
+
+ipcRenderer.on('app-update-available', () => {
+  console.log('WTF - app-update-available');
+  store.dispatch(appUpdateAvailable());
+});
+ipcRenderer.on('update-downloaded', () => store.dispatch(appUpdateDownloaded()));
 
 window.onload = () => {
   render(

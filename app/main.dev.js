@@ -17,32 +17,28 @@
 import {
   app,
   ipcMain,
+  ipcRenderer,
 } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import windowManager from 'electron-window-manager';
 import log from 'electron-log';
-import createSagaMiddleware from 'redux-saga';
-import { createStore, applyMiddleware, compose } from 'redux';
-import { electronEnhancer } from 'redux-electron-store';
+import { createStore, applyMiddleware } from 'redux';
+import { forwardToRenderer, triggerAlias, replayActionMain } from 'electron-redux';
 import reducers from './reducers';
-import sagas from './sagas';
 import {
   appUpdateAvailable,
-  appUpdateDownloaded,
 } from './actions/app';
 
 // Redux
-const sagaMiddleware = createSagaMiddleware();
 const store = createStore(
   reducers,
-  compose(
-    applyMiddleware(sagaMiddleware),
-    electronEnhancer({
-      dispatchProxy: a => store.dispatch(a),
-    }),
+  applyMiddleware(
+    triggerAlias, // optional, see below
+    forwardToRenderer, // IMPORTANT! This goes last
   ),
 );
-sagaMiddleware.run(sagas);
+
+replayActionMain(store);
 
 export function initAppUpdater() {
   log.transports.file.level = 'info';
@@ -50,11 +46,11 @@ export function initAppUpdater() {
   autoUpdater.checkForUpdatesAndNotify();
 
   autoUpdater.on('update-available', () => {
-    store.dispatch(appUpdateAvailable());
+    ipcRenderer.sendSync('app-update-available');
   });
 
   autoUpdater.on('update-downloaded', () => {
-    store.dispatch(appUpdateDownloaded());
+    ipcRenderer.sendSync('app-update-downloaded');
   });
 
   ipcMain.on('quit-and-install', () => {

@@ -9,7 +9,9 @@ import styled from 'styled-components';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
-import { ipcRenderer } from 'electron';
+import {
+  ipcRenderer,
+} from 'electron';
 
 import {
   APP_VIEW_USER_VIDEOS,
@@ -65,7 +67,13 @@ function App({
   onCloseAppUpdateNotice,
 }) {
   if (!firstName) {
-    return (<SignIn />);
+    return (
+      <SignIn
+        appUpdateAvailable={appUpdateAvailable}
+        appUpdateDownloaded={appUpdateDownloaded}
+        onCloseAppUpdateNotice={onCloseAppUpdateNotice}
+      />
+    );
   }
 
   const onInstallAndRestartApp = useCallback(() => {
