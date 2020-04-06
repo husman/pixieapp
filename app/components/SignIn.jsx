@@ -93,7 +93,7 @@ function SignIn({
         </Snackbar>
       )}
       <StyledLabel>
-        Meeting ID (v0.2.0)
+        Meeting ID (v0.4.0)
       </StyledLabel>
       <input
         type="text"
