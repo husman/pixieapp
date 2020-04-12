@@ -17,7 +17,6 @@
 import {
   app,
   ipcMain,
-  ipcRenderer,
 } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import windowManager from 'electron-window-manager';
@@ -27,6 +26,7 @@ import { forwardToRenderer, triggerAlias, replayActionMain } from 'electron-redu
 import reducers from './reducers';
 import {
   appUpdateAvailable,
+  appUpdateDownloaded,
 } from './actions/app';
 
 // Redux
@@ -46,11 +46,11 @@ export function initAppUpdater() {
   autoUpdater.checkForUpdatesAndNotify();
 
   autoUpdater.on('update-available', () => {
-    ipcRenderer.sendSync('app-update-available');
+    store.dispatch(appUpdateAvailable());
   });
 
   autoUpdater.on('update-downloaded', () => {
-    ipcRenderer.sendSync('app-update-downloaded');
+    store.dispatch(appUpdateDownloaded());
   });
 
   ipcMain.on('quit-and-install', () => {

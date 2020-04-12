@@ -5,28 +5,35 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { render } from 'react-dom';
-import { applyMiddleware, compose, createStore } from 'redux';
-import { electronEnhancer } from 'redux-electron-store';
+import { applyMiddleware, createStore, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import { forwardToMain, getInitialStateRenderer, replayActionRenderer } from 'electron-redux';
 import './sass/presenter_toolbar.scss';
 import PresenterToolbar from './components/PresenterToolbar';
 import reducer from './reducers';
 import sagas from './sagas';
 
-// Redux
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+// Redux
 const sagaMiddleware = createSagaMiddleware();
+const initialState = getInitialStateRenderer();
+
 const store = createStore(
   reducer,
+  initialState,
   compose(
-    applyMiddleware(sagaMiddleware),
-    electronEnhancer({
-      dispatchProxy: a => store.dispatch(a),
-    }),
+    applyMiddleware(
+      forwardToMain, // IMPORTANT! This goes first
+      sagaMiddleware,
+    ),
     composeEnhancers(),
   ),
 );
+
+replayActionRenderer(store);
+
 sagaMiddleware.run(sagas);
 
 window.onload = () => {

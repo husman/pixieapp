@@ -1,7 +1,7 @@
 {
   "name": "pixieapp",
   "productName": "Pixie",
-  "version": "0.4.0",
+  "version": "0.10.0",
   "description": "Copyright 2019 Neetos LLC. All rights reserved.",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -55,6 +55,7 @@
   },
   "main": "./app/main.prod.js",
   "build": {
+    "afterSign": "scripts/notarize.js",
     "productName": "Pixie",
     "appId": "com.neetos.Pixie",
     "files": [
@@ -66,9 +67,12 @@
       "package.json"
     ],
     "mac": {
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
       "entitlements": "entitlements.mac.plist"
     },
     "dmg": {
+      "sign": false,
       "contents": [
         {
           "x": 130,
@@ -102,10 +106,8 @@
       "output": "release"
     },
     "publish": {
-      "provider": "github",
-      "owner": "husman",
-      "repo": "pixieapp",
-      "private": true
+      "provider": "s3",
+      "bucket": "pixie-canvas"
     }
   },
   "repository": {
@@ -156,9 +158,11 @@
     "cross-env": "^5.2.0",
     "cross-spawn": "^6.0.5",
     "css-loader": "^2.1.0",
+    "dotenv": "^8.2.0",
     "electron": "^4.0.0",
     "electron-builder": "^22.5.0",
     "electron-devtools-installer": "^2.2.4",
+    "electron-notarize": "^0.3.0",
     "eslint": "^5.11.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-erb": "^0.0.2",

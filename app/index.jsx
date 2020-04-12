@@ -84,17 +84,6 @@ const store = createStore(
   ),
 );
 
-// const store = createStore(
-//   reducer,
-//   compose(
-//     applyMiddleware(sagaMiddleware),
-//     electronEnhancer({
-//       dispatchProxy: a => store.dispatch(a),
-//     }),
-//     composeEnhancers(),
-//   ),
-// );
-
 replayActionRenderer(store);
 
 sagaMiddleware.run(sagas);
