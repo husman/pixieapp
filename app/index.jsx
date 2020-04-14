@@ -102,7 +102,6 @@ sagaMiddleware.run(sagas);
 SocketClient.setStore(store);
 
 ipcRenderer.on('app-update-available', () => {
-  console.log('WTF - app-update-available');
   store.dispatch(appUpdateAvailable());
 });
 ipcRenderer.on('update-downloaded', () => store.dispatch(appUpdateDownloaded()));
