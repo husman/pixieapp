@@ -13,7 +13,6 @@ import {
   StyledPresenterContainer,
 } from './presenter.styles';
 import {
-  DraggableIcon,
   Icon,
 } from './Icon';
 import {
@@ -33,7 +32,7 @@ function PresenterToolbar({
 }) {
   return (
     <StyledPresenterContainer>
-      <DraggableIcon
+      <Icon
         type="vertical-menu"
         color="white"
         marginRight={15}

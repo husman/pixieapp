@@ -26,6 +26,7 @@ const StyledPeopleIconContainer = styled.div`
 
 const StyledChatIconContainer = styled.div`
   position: relative;
+  cursor: pointer;
 `;
 
 const StyledBadgeContainer = styled.div`
@@ -54,7 +55,7 @@ function RightToolbar({
             onClick={onOpenParticipantsPanel}
           />
         </StyledPeopleIconContainer>
-        <StyledChatIconContainer>
+        <StyledChatIconContainer onClick={onOpenChatPanel}>
           {chatAlertCount > 0 && (
             <StyledBadgeContainer>
               <div className="square-box">
@@ -69,7 +70,6 @@ function RightToolbar({
             color="white"
             backgroundColor="#53bef6"
             padding={10}
-            onClick={onOpenChatPanel}
           />
         </StyledChatIconContainer>
       </StyledContainer>

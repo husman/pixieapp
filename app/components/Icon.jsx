@@ -3,23 +3,18 @@ import { string } from 'prop-types';
 import styled from 'styled-components';
 
 const StyledContainer = styled.span`
-  background: ${props => props.background || props.backgroundColor || 'initial'}; 
-  border: ${props => props.border || 0}px ${props => props.borderColor} solid; 
-  color: ${props => props.color || 'intial'}; 
-  margin-left: ${props => props.marginLeft || 0}px; 
-  margin-right: ${props => props.marginRight || 0}px; 
-  font-size: ${props => props.fontSize || 1}em; 
+  background: ${props => props.background || props.backgroundColor || 'initial'};
+  border: ${props => props.border || 0}px ${props => props.borderColor} solid;
+  color: ${props => props.color || 'intial'};
+  margin-left: ${props => props.marginLeft || 0}px;
+  margin-right: ${props => props.marginRight || 0}px;
+  font-size: ${props => props.fontSize || 1}em;
   padding: ${props => props.padding || 0}px;
   box-shadow: ${props => props.boxShadow || 'none'};
   cursor: pointer;
   font-family: 'Pixie';
   border-radius: 50%;
   display: inline-block;
-`;
-
-const StyledDraggableContainer = styled(StyledContainer)`
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
 `;
 
 function IconContent({
@@ -41,17 +36,6 @@ function Icon({
   );
 }
 
-function DraggableIcon({
-  type,
-  ...styles
-}) {
-  return (
-    <StyledDraggableContainer {...styles}>
-      <IconContent type={type} />
-    </StyledDraggableContainer>
-  );
-}
-
 Icon.propTypes = {
   type: string.isRequired,
 };
@@ -60,11 +44,6 @@ IconContent.propTypes = {
   type: string.isRequired,
 };
 
-DraggableIcon.propTypes = {
-  type: string.isRequired,
-};
-
 export {
-  DraggableIcon,
   Icon,
 };

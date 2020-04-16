@@ -17,6 +17,8 @@ html {
 
 html, body {
   overflow: hidden;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
 }
 
 body {

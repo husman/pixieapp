@@ -2,7 +2,7 @@
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Button from '@material-ui/core/Button';
@@ -21,7 +21,9 @@ function ScreenShareDialog({
   onClose,
   onStartSharing,
 }) {
-  const [sourceId, setSourceId] = useState(null);
+  const [defaultSource] = sources;
+  console.log('defaultSource', defaultSource);
+  const [sourceId, setSourceId] = useState(defaultSource ? defaultSource.id : null);
   const onSelectScreen = useCallback(source => setSourceId(source), [sourceId]);
 
   return (
