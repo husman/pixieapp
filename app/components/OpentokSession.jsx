@@ -159,7 +159,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToState(dispatch) {
   return {
-    ontoggleLocalVideo: () => dispatch(toggleLocalVideo()),
     onAddRemoteVideo: value => dispatch(addRemoteVideo(value)),
     onRemoteAudioChanged: (streamId, value) => dispatch(remoteAudioChanged(streamId, value)),
     onRemoteVideoChanged: (streamId, value) => dispatch(remoteVideoChanged(streamId, value)),

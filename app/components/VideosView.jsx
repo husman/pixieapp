@@ -1,31 +1,36 @@
 import React from 'react';
-import { instanceOf, arrayOf } from 'prop-types';
+import { instanceOf } from 'prop-types';
 import { connect } from 'react-redux';
 import UserVideoView from './UserVideoView';
-import UserVideosView from './UserVideosView';
+import ScreenShareView from './ScreenShareView';
 
 function VideosView({
-  remoteStreams,
+  screenShareStream,
 }) {
-  return (
-    <UserVideoView />
-  );
-}
 
-VideosView.propTypes = {
-  remoteStreams: arrayOf(instanceOf(MediaStream)),
-};
+  if (screenShareStream) {
+    return <ScreenShareView />;
+  }
+
+  return <UserVideoView />;
+}
 
 function mapStateToProps(state) {
   const {
     view: {
-      remoteStreams,
+      mode,
+      screenShareStream,
     },
   } = state;
 
   return {
-    remoteStreams,
+    mode,
+    screenShareStream,
   };
 }
+
+VideosView.propTypes = {
+  screenShareStream: instanceOf(MediaStream),
+};
 
 export default connect(mapStateToProps)(VideosView);

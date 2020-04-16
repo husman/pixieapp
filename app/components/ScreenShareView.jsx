@@ -13,12 +13,9 @@ const StyledVideoContainer = styled.div`
   height: 100%;
 `;
 const StyledVideo = styled.video`
+  object-fit: cover;
   width: 100%;
   height: 100%;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  border-radius: 3px;
 `;
 const StyledPresenterLabelContainer = styled.div`
   position: relative;
@@ -33,7 +30,6 @@ const StyledPresenterLabel = styled.div`
 `;
 
 function ScreenShareView({
-  mode,
   screenShareStream,
 }) {
   const initScreenShareVideo = useCallback((video) => {

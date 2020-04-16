@@ -15,10 +15,8 @@ import {
 
 import {
   APP_VIEW_USER_VIDEOS,
-  APP_VIEW_SCREEN_SHARE,
   APP_VIEW_CANVAS,
 } from '../constants/app';
-import ScreenShareView from './ScreenShareView';
 import CanvasView from './CanvasView';
 import OpentokSession from './OpentokSession';
 import Header from './Header';
@@ -138,9 +136,6 @@ function App({
       )}
       {mode === APP_VIEW_USER_VIDEOS && (
         <VideosView />
-      )}
-      {mode === APP_VIEW_SCREEN_SHARE && (
-        <ScreenShareView />
       )}
       {mode === APP_VIEW_CANVAS && (
         <CanvasView />

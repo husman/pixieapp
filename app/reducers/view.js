@@ -12,11 +12,10 @@ import {
   STOP_SCREEN_SHARING,
   SET_SCREEN_SHARING_STREAM,
   REMOTE_SCREEN_SHARING_STOPPED,
-  REMOVE_REMOTE_STREAM,
+  REMOVE_REMOTE_STREAM, SET_LOCAL_VIDEO_STREAM,
 } from '../actions/video';
 import {
   APP_VIEW_USER_VIDEOS,
-  APP_VIEW_SCREEN_SHARE,
 } from '../constants/app';
 import {
   OPEN_CHAT_PANEL,
@@ -109,7 +108,11 @@ export default function view(state = initialState, action) {
     case TOGGLE_LOCAL_VIDEO:
       return {
         ...state,
-        isVideoEnabled: action.isVideoEnabled,
+        isVideoEnabled: !state.isVideoEnabled,
+      };
+    case SET_LOCAL_VIDEO_STREAM:
+      return {
+        ...state,
         localVideo: action.stream,
       };
     case ADD_REMOTE_VIDEO:
@@ -166,7 +169,7 @@ export default function view(state = initialState, action) {
     case SET_SCREEN_SHARING_STREAM:
       return {
         ...state,
-        mode: APP_VIEW_SCREEN_SHARE,
+        mode: APP_VIEW_USER_VIDEOS,
         isScreenSharing: false,
         screenShareStream: action.stream,
         screenShareStreamId: action.streamId,

@@ -129,26 +129,7 @@ function mapStateToProps(state) {
 function mapDispatchToState(dispatch) {
   return {
     onToggleAudio: () => dispatch(toggleLocalAudio()),
-    onToggleVideo: async (isVideoEnabled) => {
-      const { mediaDevices } = navigator;
-      let stream = null;
-
-      try {
-        if (isVideoEnabled) {
-          const constraints = {
-            audio: false,
-            video: true,
-          };
-
-          stream = await mediaDevices.getUserMedia(constraints);
-        }
-
-        dispatch(toggleLocalVideo(isVideoEnabled, stream));
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Could not get media device to capture the screen', err);
-      }
-    },
+    onToggleVideo: () => dispatch(toggleLocalVideo()),
     onOpenScreenShareDialog: sources => dispatch(openScreenShareDialog(sources)),
   };
 }

@@ -17,11 +17,17 @@ export const CLOSE_SCREEN_SHARE_DIALOG = 'CLOSE_SCREEN_SHARE_DIALOG';
 export const REMOTE_SCREEN_SHARING_STOPPED = 'REMOTE_SCREEN_SHARING_STOPPED';
 export const REMOVE_REMOTE_STREAM = 'REMOVE_REMOTE_STREAM';
 export const OPENTOK_STREAM_DESTROYED = 'OPENTOK_STREAM_DESTROYED';
+export const SET_LOCAL_VIDEO_STREAM = 'SET_LOCAL_VIDEO_STREAM';
 
-export function toggleLocalVideo(isVideoEnabled, stream) {
+export function toggleLocalVideo() {
   return {
     type: TOGGLE_LOCAL_VIDEO,
-    isVideoEnabled,
+  };
+}
+
+export function setLocalVideoStream(stream) {
+  return {
+    type: SET_LOCAL_VIDEO_STREAM,
     stream,
   };
 }

@@ -2,13 +2,15 @@
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
 
-import { call, put, select, takeEvery } from 'redux-saga/effects';
+import { put, select, takeEvery } from 'redux-saga/effects';
 import io from 'socket.io-client';
 import axios from 'axios';
 import {
   OPENTOK_STREAM_DESTROYED,
   remoteScreenSharingStopped,
   removeRemoteStream,
+  TOGGLE_LOCAL_VIDEO,
+  setLocalVideoStream,
 } from '../actions/video';
 import {
   SEND_CHAT_TEXT,
@@ -73,10 +75,33 @@ function* connectToSession({
   }
 }
 
+function* initLocalUserVideo() {
+  const isVideoEnabled = yield select(({ view }) => view.isVideoEnabled);
+  const { mediaDevices } = navigator;
+  let stream = null;
+
+  try {
+    const constraints = {
+      audio: false,
+      video: true,
+    };
+
+    if (isVideoEnabled) {
+      stream = yield mediaDevices.getUserMedia(constraints);
+    }
+
+    yield put(setLocalVideoStream(stream));
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Could not get media device to capture the screen', err);
+  }
+}
+
 function* sagas() {
   yield takeEvery(OPENTOK_STREAM_DESTROYED, remoteStreamDestroyed);
   yield takeEvery(SEND_CHAT_TEXT, sendChatMessage);
   yield takeEvery(SET_USER_INFO, connectToSession);
+  yield takeEvery(TOGGLE_LOCAL_VIDEO, initLocalUserVideo);
 }
 
 export default sagas;
