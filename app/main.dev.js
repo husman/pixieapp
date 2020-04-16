@@ -25,7 +25,6 @@ import { createStore, applyMiddleware } from 'redux';
 import { forwardToRenderer, triggerAlias, replayActionMain } from 'electron-redux';
 import reducers from './reducers';
 import {
-  appUpdateAvailable,
   appUpdateDownloaded,
 } from './actions/app';
 
@@ -44,10 +43,6 @@ export function initAppUpdater() {
   log.transports.file.level = 'info';
   autoUpdater.logger = log;
   autoUpdater.checkForUpdatesAndNotify();
-
-  autoUpdater.on('update-available', () => {
-    store.dispatch(appUpdateAvailable());
-  });
 
   autoUpdater.on('update-downloaded', () => {
     store.dispatch(appUpdateDownloaded());
