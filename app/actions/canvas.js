@@ -2,10 +2,13 @@
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
 
+import { Tools } from 'react-sketch';
 import {
   CANVAS_UPLOAD_COMPLETE,
   CANVAS_UPLOAD_START,
   SET_CANVAS_TOOL,
+  FILE_UPLOADER_INIT,
+  CANVAS_INSERT_IMAGE_DOCUMENT,
 } from './actionTypes';
 
 /**
@@ -44,5 +47,30 @@ export function canvasUploadStart(file) {
   return {
     type: CANVAS_UPLOAD_START,
     file,
+  };
+}
+
+/**
+ * Dispatched when the Canvas file uploader initializes
+ *
+ * @param {{}} dropzone - The reference to the Dropzone element
+ * @return {{}} - Action
+ */
+export function onFileUploaderInit(dropzone) {
+  return {
+    type: FILE_UPLOADER_INIT,
+    dropzone,
+  };
+}
+
+/**
+ * Dispatched when a user adds an image document into the canvas
+ *
+ * @return {{}} - Action
+ */
+export function addedImageDocumentToCanvas() {
+  return {
+    type: CANVAS_INSERT_IMAGE_DOCUMENT,
+    tool: Tools.Select,
   };
 }

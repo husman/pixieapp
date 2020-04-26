@@ -9,7 +9,7 @@ const StyledMediaToolbarContainer = styled.div`
   border-radius: 7px;
   color: white;
   position: absolute;
-  bottom: 15px;
+  bottom: ${({ isCanvasModeWithVideoActive }) => isCanvasModeWithVideoActive ? 115 : 15}px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(45, 45, 45, 0.9);

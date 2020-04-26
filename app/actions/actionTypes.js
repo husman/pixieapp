@@ -29,3 +29,17 @@ export const CANVAS_UPLOAD_START = 'CANVAS_UPLOAD_START';
  * @type {string}
  */
 export const SET_SCREEN_SHARE_STREAM = 'SET_SCREEN_SHARE_STREAM';
+
+/**
+ * Dispatched when the file uploader initializes.
+ *
+ * @type {string}
+ */
+export const FILE_UPLOADER_INIT = 'FILE_UPLOADER_INIT';
+
+/**
+ * Dispatched when a user adds an image document into the canvas.
+ *
+ * @type {string}
+ */
+export const CANVAS_INSERT_IMAGE_DOCUMENT = 'CANVAS_INSERT_IMAGE_DOCUMENT';

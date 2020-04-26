@@ -57,6 +57,7 @@ class Canvas {
       img.id = uuid.v4();
 
       canvas.add(img);
+      canvas.setActiveObject(img);
 
       const data = {
         path: {

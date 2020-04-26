@@ -67,7 +67,6 @@ import {
   getSources,
   getScreenSize,
 } from '../utils/capture';
-import CanvasLib from '../lib/Canvas';
 import ScreenShareDialog from './ScreenShareDialog';
 
 const SOCKET_EVENT_ICE_CANDIDATE = 'ice-candidate';
@@ -941,10 +940,6 @@ class CanvasMode extends React.Component {
       // eslint-disable-next-line no-console
       console.error('Could not get media device to capture the screen', err);
     }
-  };
-
-  onAddImageToCanvas = url => () => {
-    CanvasLib.onAddImageToCanvas(url);
   };
 
   /**

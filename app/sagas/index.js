@@ -21,6 +21,8 @@ import {
 import SocketClient from '../lib/SocketClient';
 import { setSessionId } from '../actions/view';
 import { SET_USER_INFO } from '../actions/user';
+import { CANVAS_UPLOAD_COMPLETE } from '../actions/actionTypes';
+import CanvasLib from '../lib/Canvas';
 
 function* remoteStreamDestroyed({
   event: {
@@ -97,11 +99,31 @@ function* initLocalUserVideo() {
   }
 }
 
+function* canvasUploadComplete({
+  file: {
+    type,
+    url, // provided by image uploads
+    urls, // provided by pdf uploads
+  },
+}) {
+  switch (type) {
+    case 'image':
+      CanvasLib.onAddImageToCanvas(url);
+      break;
+    case 'pdf':
+      CanvasLib.onAddImageToCanvas(urls[0]);
+      break;
+    default:
+      console.error('unrecognized image type');
+  }
+}
+
 function* sagas() {
   yield takeEvery(OPENTOK_STREAM_DESTROYED, remoteStreamDestroyed);
   yield takeEvery(SEND_CHAT_TEXT, sendChatMessage);
   yield takeEvery(SET_USER_INFO, connectToSession);
   yield takeEvery(TOGGLE_LOCAL_VIDEO, initLocalUserVideo);
+  yield takeEvery(CANVAS_UPLOAD_COMPLETE, canvasUploadComplete);
 }
 
 export default sagas;

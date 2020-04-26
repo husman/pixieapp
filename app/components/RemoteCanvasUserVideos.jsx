@@ -14,10 +14,10 @@ import VideoControls from './VideoControls';
 import PlaceholderIcon from '../svgs/user-video-placeholder.svg';
 
 const StyledUserVideoContainer = styled.div`
-  margin-right: 15px;
   position: relative;
+  width: 25%;
   height: 100%;
-  
+
   :hover {
     .video-controls {
       display: block;

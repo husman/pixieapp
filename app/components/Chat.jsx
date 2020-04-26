@@ -1,23 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
-  func,
   bool,
-  arrayOf,
-  shape,
-  string,
-  instanceOf,
+  number,
 } from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import ChatHeader from './ChatHeader';
-import ChatTextfield from './ChatTextfield';
 import ChatBody from './ChatBody';
 import ParticipantsBody from './ParticipantsBody';
-import { sendChatText } from '../actions/chat';
+import AddToCanvasBody from './AddToCanvasBody';
+import { APP_VIEW_CANVAS } from '../constants/app';
 
 const StyledContainer = styled.div`
   position: absolute;
-  width: 300px;
+  width: ${({ isCanvasMode }) => isCanvasMode ? '450' : '300'}px;
   top: 43px;
   right: 0;
   bottom: 0;
@@ -36,13 +32,18 @@ const StyledColumnFlexBox = styled.div`
 function Chat({
   isChatPanelOpened,
   isParticipantsPanelOpened,
+  isAddPanelOpened,
+  mode,
 }) {
+  const isCanvasMode = mode === APP_VIEW_CANVAS;
+
   return (
-    <StyledContainer>
+    <StyledContainer isCanvasMode={isCanvasMode}>
       <StyledColumnFlexBox>
         <ChatHeader />
         {isChatPanelOpened && <ChatBody />}
         {isParticipantsPanelOpened && <ParticipantsBody />}
+        {isCanvasMode && isAddPanelOpened && <AddToCanvasBody />}
       </StyledColumnFlexBox>
     </StyledContainer>
   );
@@ -51,6 +52,8 @@ function Chat({
 Chat.propTypes = {
   isChatPanelOpened: bool,
   isParticipantsPanelOpened: bool,
+  isAddPanelOpened: bool,
+  mode: number.isRequired,
 };
 
 
@@ -59,12 +62,16 @@ function mapStateToProps(state) {
     view: {
       isChatPanelOpened,
       isParticipantsPanelOpened,
+      isAddPanelOpened,
+      mode,
     },
   } = state;
 
   return {
     isChatPanelOpened,
     isParticipantsPanelOpened,
+    isAddPanelOpened,
+    mode,
   };
 }
 

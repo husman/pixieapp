@@ -1,5 +1,6 @@
 export const OPEN_CHAT_PANEL = 'OPEN_RIGHT_PANEL';
 export const OPEN_PARTICIPANTS_PANEL = 'OPEN_PARTICIPANTS_PANEL';
+export const OPEN_ADD_PANEL = 'OPEN_ADD_PANEL';
 export const CLOSE_RIGHT_PANEL = 'CLOSE_RIGHT_PANEL';
 export const SET_SESSION_ID = 'SET_SESSION_ID';
 export const SET_APP_MODE = 'SET_APP_MODE';
@@ -13,6 +14,12 @@ export function openChatPanel() {
 export function openParticipantsPanel() {
   return {
     type: OPEN_PARTICIPANTS_PANEL,
+  };
+}
+
+export function openAddPanel() {
+  return {
+    type: OPEN_ADD_PANEL,
   };
 }
 

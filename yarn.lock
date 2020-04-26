@@ -11440,6 +11440,13 @@ react-redux@^5.1.1:
     react-dom "^16.2.0"
     react-dropzone "4.2.7"
 
+react-skylight@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/react-skylight/-/react-skylight-0.5.1.tgz#bf7f9d7f2929a83fe16cac8edacdeda025218d40"
+  integrity sha512-gwzTlsKuSvDbKCASZZAeQ/Dma4XxHl2bVxe6u32t3KLDnlNtKO+P8Au4GdNi1sdCuSwhsP8A0/E3SMHKI4LMjg==
+  dependencies:
+    prop-types "^15.5.10"
+
 react-svg-core@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/react-svg-core/-/react-svg-core-3.0.3.tgz#5d856efeaa4d089b0afeebe885b20b8c9500d162"

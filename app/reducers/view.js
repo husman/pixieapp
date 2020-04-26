@@ -1,7 +1,10 @@
 /**
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
-import { SET_SCREEN_SHARE_STREAM } from '../actions/actionTypes';
+import {
+  CANVAS_INSERT_IMAGE_DOCUMENT,
+  SET_SCREEN_SHARE_STREAM,
+} from '../actions/actionTypes';
 import {
   TOGGLE_LOCAL_AUDIO,
   TOGGLE_LOCAL_VIDEO,
@@ -12,9 +15,11 @@ import {
   STOP_SCREEN_SHARING,
   SET_SCREEN_SHARING_STREAM,
   REMOTE_SCREEN_SHARING_STOPPED,
-  REMOVE_REMOTE_STREAM, SET_LOCAL_VIDEO_STREAM,
+  REMOVE_REMOTE_STREAM,
+  SET_LOCAL_VIDEO_STREAM,
 } from '../actions/video';
 import {
+  APP_VIEW_CANVAS,
   APP_VIEW_USER_VIDEOS,
 } from '../constants/app';
 import {
@@ -22,7 +27,7 @@ import {
   OPEN_PARTICIPANTS_PANEL,
   CLOSE_RIGHT_PANEL,
   SET_SESSION_ID,
-  SET_APP_MODE,
+  SET_APP_MODE, OPEN_ADD_PANEL,
 } from '../actions/view';
 import {
   SET_USER_INFO,
@@ -81,6 +86,7 @@ export default function view(state = initialState, action) {
         isRightPanelOpened: true,
         isChatPanelOpened: true,
         isParticipantsPanelOpened: false,
+        isAddPanelOpened: false,
         chatAlertCount: 0,
       };
     case OPEN_PARTICIPANTS_PANEL:
@@ -88,7 +94,16 @@ export default function view(state = initialState, action) {
         ...state,
         isRightPanelOpened: true,
         isChatPanelOpened: false,
+        isAddPanelOpened: false,
         isParticipantsPanelOpened: true,
+      };
+    case OPEN_ADD_PANEL:
+      return {
+        ...state,
+        isRightPanelOpened: true,
+        isChatPanelOpened: false,
+        isParticipantsPanelOpened: false,
+        isAddPanelOpened: true,
       };
     case REMOTE_CHAT_MESSAGE_RECEIVED:
       return {
@@ -203,11 +218,22 @@ export default function view(state = initialState, action) {
         sessionId: action.sessionId,
         token: action.token,
       };
-    case SET_APP_MODE:
+    case SET_APP_MODE: {
+      const isPreviousModeCanvas = state.mode === APP_VIEW_CANVAS;
+      const newMode = action.mode;
+      const isSwitchingModeFromCanvas = (
+        isPreviousModeCanvas
+        && state.isAddPanelOpened
+        && newMode !== APP_VIEW_CANVAS
+      );
+
       return {
         ...state,
         mode: action.mode,
+        isRightPanelOpened: isSwitchingModeFromCanvas ? false : state.isRightPanelOpened,
+        isAddPanelOpened: false,
       };
+    }
     case APP_UPDATE_AVAILABLE:
       return {
         ...state,
@@ -225,6 +251,11 @@ export default function view(state = initialState, action) {
         ...state,
         appUpdateAvailable: false,
         appUpdateDownloaded: false,
+      };
+    case CANVAS_INSERT_IMAGE_DOCUMENT:
+      return {
+        ...state,
+        isRightPanelOpened: false,
       };
     default:
       return state;

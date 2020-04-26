@@ -2,11 +2,12 @@
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
 
-// import { Tools } from 'react-sketch';
 import {
   SET_CANVAS_TOOL,
   CANVAS_UPLOAD_COMPLETE,
   CANVAS_UPLOAD_START,
+  FILE_UPLOADER_INIT,
+  CANVAS_INSERT_IMAGE_DOCUMENT,
 } from '../actions/actionTypes';
 
 /**
@@ -15,7 +16,6 @@ import {
  * @type {{}}
  */
 const initialState = {
-  // tool: Tools.Pencil,
 };
 
 /**
@@ -46,6 +46,16 @@ export default function canvas(state = initialState, action) {
       return {
         ...state,
         isUploading: true,
+      };
+    case FILE_UPLOADER_INIT:
+      return {
+        ...state,
+        dropzone: action.dropzone,
+      };
+    case CANVAS_INSERT_IMAGE_DOCUMENT:
+      return {
+        ...state,
+        tool: action.tool,
       };
     default:
       return state;

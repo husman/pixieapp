@@ -1,13 +1,15 @@
 import React from 'react';
 import { func, number } from 'prop-types';
 import { connect } from 'react-redux';
+import { FormattedNumber } from 'react-intl';
 import styled from 'styled-components';
 import { Icon } from './Icon';
 import {
   openChatPanel,
   openParticipantsPanel,
+  openAddPanel,
 } from '../actions/view';
-import { FormattedNumber } from 'react-intl';
+import { APP_VIEW_CANVAS } from '../constants/app';
 
 const StyledRelativeContainer = styled.div`
   position: relative;
@@ -22,9 +24,16 @@ const StyledContainer = styled.div`
 
 const StyledPeopleIconContainer = styled.div`
   margin-bottom: 15px;
+  cursor: pointer;
 `;
 
 const StyledChatIconContainer = styled.div`
+  position: relative;
+  cursor: pointer;
+  margin-bottom: 15px;
+`;
+
+const StyledAddToCanvasIconContainer = styled.div`
   position: relative;
   cursor: pointer;
 `;
@@ -40,8 +49,10 @@ const StyledBadgeContainer = styled.div`
 
 function RightToolbar({
   chatAlertCount,
+  mode,
   onOpenChatPanel,
   onOpenParticipantsPanel,
+  onOpenAddPanel,
 }) {
   return (
     <StyledRelativeContainer>
@@ -72,6 +83,25 @@ function RightToolbar({
             padding={10}
           />
         </StyledChatIconContainer>
+        {mode === APP_VIEW_CANVAS && (
+          <StyledAddToCanvasIconContainer onClick={onOpenAddPanel}>
+            {chatAlertCount > 0 && (
+              <StyledBadgeContainer>
+                <div className="square-box">
+                  <div className="square-content">
+                    <FormattedNumber value={chatAlertCount} />
+                  </div>
+                </div>
+              </StyledBadgeContainer>
+            )}
+            <Icon
+              type="add-to-canvas"
+              color="white"
+              backgroundColor="#ff0000"
+              padding={10}
+            />
+          </StyledAddToCanvasIconContainer>
+        )}
       </StyledContainer>
     </StyledRelativeContainer>
   );
@@ -87,11 +117,13 @@ function mapStateToProps(state) {
   const {
     view: {
       chatAlertCount,
+      mode,
     },
   } = state;
 
   return {
     chatAlertCount,
+    mode,
   };
 }
 
@@ -99,6 +131,7 @@ function mapDispatchToProps(dispatch) {
   return {
     onOpenChatPanel: () => dispatch(openChatPanel()),
     onOpenParticipantsPanel: () => dispatch(openParticipantsPanel()),
+    onOpenAddPanel: () => dispatch(openAddPanel()),
   };
 }
 

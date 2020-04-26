@@ -11,10 +11,6 @@ const StyledContainer = styled.div`
 `;
 
 const StyledVideoContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: center;
   height: 100%;
 `;
 

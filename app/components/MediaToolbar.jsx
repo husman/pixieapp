@@ -22,6 +22,7 @@ import {
   openScreenShareDialog,
 } from '../actions/video';
 import { getSources } from '../utils/capture';
+import { APP_VIEW_CANVAS } from '../constants/app';
 
 function terminateApp() {
   const windowManager = remote.require('electron-window-manager');
@@ -32,6 +33,7 @@ function MediaToolbar({
   isMicEnabled,
   isVideoEnabled,
   localVideo,
+  isCanvasModeWithVideoActive,
   onToggleAudio,
   onToggleVideo,
   onOpenScreenShareDialog,
@@ -54,7 +56,10 @@ function MediaToolbar({
 
   return (
     <StyledMediaToolbarRoot>
-      <StyledMediaToolbarContainer className="media-toolbar">
+      <StyledMediaToolbarContainer
+        isCanvasModeWithVideoActive={isCanvasModeWithVideoActive}
+        className="media-toolbar"
+      >
         <a onClick={onToggleAudio}>
           <Icon
             type={isMicEnabled ? 'mic' : 'mic-off'}
@@ -115,14 +120,19 @@ function mapStateToProps(state) {
       isMicEnabled,
       isScreenSharing,
       localVideo,
+      remoteStreams,
+      mode,
     },
   } = state;
+  const streams = remoteStreams.filter(({ hasVideo }) => hasVideo);
+  const isCanvasModeWithVideoActive = mode === APP_VIEW_CANVAS && streams.length > 0;
 
   return {
     isVideoEnabled,
     isMicEnabled,
     isScreenSharing,
     localVideo,
+    isCanvasModeWithVideoActive,
   };
 }
 

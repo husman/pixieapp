@@ -4,7 +4,10 @@ import {
   func,
   number,
 } from 'prop-types';
-import { FormattedMessage, FormattedNumber } from 'react-intl';
+import {
+  injectIntl,
+  FormattedMessage,
+} from 'react-intl';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import IconButton from './IconButton';
@@ -14,7 +17,9 @@ import {
   closeRightPanel,
   openChatPanel,
   openParticipantsPanel,
+  openAddPanel,
 } from '../actions/view';
+import { APP_VIEW_CANVAS } from '../constants/app';
 
 const StyledContainer = styled.div`
   display: flex;
@@ -51,9 +56,12 @@ function ChatHeader({
   chatAlertCount,
   isChatPanelOpened,
   isParticipantsPanelOpened,
+  isAddPanelOpened,
   onCloseRightPanel,
   onOpenChatPanel,
   onOpenParticipantsPanel,
+  onOpenAddPanel,
+  mode,
 }) {
   return (
     <StyledContainer>
@@ -99,6 +107,22 @@ function ChatHeader({
           />
         </IconButton>
       </StyledIconContainer>
+      {mode === APP_VIEW_CANVAS && (
+        <StyledIconContainer
+          onClick={onOpenAddPanel}
+          active={isAddPanelOpened}
+        >
+          <IconButton
+            active={isAddPanelOpened}
+            icon={<Icon type="add-to-canvas" />}
+          >
+            <FormattedMessage
+              id="panel.tab.add.label"
+              defaultMessage="Add"
+            />
+          </IconButton>
+        </StyledIconContainer>
+      )}
     </StyledContainer>
   );
 }
@@ -123,6 +147,8 @@ function mapStateToProps(state) {
       chatAlertCount,
       isChatPanelOpened,
       isParticipantsPanelOpened,
+      isAddPanelOpened,
+      mode,
     },
   } = state;
 
@@ -130,6 +156,8 @@ function mapStateToProps(state) {
     chatAlertCount,
     isChatPanelOpened,
     isParticipantsPanelOpened,
+    isAddPanelOpened,
+    mode,
   };
 }
 
@@ -138,7 +166,11 @@ function mapDispatchToProps(dispatch) {
     onCloseRightPanel: () => dispatch(closeRightPanel()),
     onOpenChatPanel: () => dispatch(openChatPanel()),
     onOpenParticipantsPanel: () => dispatch(openParticipantsPanel()),
+    onOpenAddPanel: () => dispatch(openAddPanel()),
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChatHeader);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(injectIntl(ChatHeader));

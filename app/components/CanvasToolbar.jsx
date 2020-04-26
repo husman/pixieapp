@@ -42,9 +42,9 @@ const IconWrapper = styled.div`
 const IconContainer = styled(IconWrapper)`
   border-bottom: 1px solid #BFD4ED;
   cursor: pointer;
-  
+
   :hover {
-    svg { 
+    svg {
       stroke: #087829;
     }
     div {
@@ -58,6 +58,7 @@ function getColor(isActive) {
 }
 
 function CanvasToolbar({
+  dropzone,
   tool,
   updateCanvasTool,
 }) {
@@ -68,6 +69,13 @@ function CanvasToolbar({
   }) => {
     updateCanvasTool(dataset.tool);
   }, [updateCanvasTool]);
+
+  const onOpenFileDialog = useCallback(() => {
+    if (dropzone) {
+      dropzone.hiddenFileInput.click();
+    }
+  }, [dropzone]);
+
   return (
     <StyledRelativeContainer>
       <StyledContainer>
@@ -127,8 +135,8 @@ function CanvasToolbar({
             Text
           </IconLabel>
         </IconContainer>
-        <IconWrapper>
-          <AttachmentIcon width="20" />
+        <IconWrapper onClick={onOpenFileDialog}>
+          <AttachmentIcon />
           <IconLabel>
             Attach
           </IconLabel>
@@ -139,17 +147,23 @@ function CanvasToolbar({
 }
 
 CanvasToolbar.propTypes = {
-  tool: string.isRequired,
+  tool: Tools.Pencil,
+};
+
+CanvasToolbar.propTypes = {
+  tool: string,
   updateCanvasTool: func.isRequired,
 };
 
 function mapStateToProps(state) {
   const {
     canvas: {
+      dropzone,
       tool,
     },
   } = state;
   return {
+    dropzone,
     tool,
   };
 }

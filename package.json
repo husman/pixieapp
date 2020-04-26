@@ -55,10 +55,14 @@
   },
   "main": "./app/main.prod.js",
   "build": {
-    "protocols": [{
-      "name": "Pixie Canvas",
-      "schemes": ["pixie"]
-    }],
+    "protocols": [
+      {
+        "name": "Pixie Canvas",
+        "schemes": [
+          "pixie"
+        ]
+      }
+    ],
     "afterSign": "scripts/notarize.js",
     "productName": "Pixie",
     "appId": "com.neetos.Pixie",
@@ -242,7 +246,7 @@
     "mxgraph": "^4.0.3",
     "opentok": "^2.9.1",
     "opentok-react": "../opentok-react",
-    "prop-types": "^15.6.2",
+    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-ace": "^6.3.2",
     "react-apollo": "^2.5.8",
@@ -252,6 +256,7 @@
     "react-intl": "^2.9.0",
     "react-redux": "^5.1.1",
     "react-sketch": "git+https://git@github.com/husman/react-sketch.git",
+    "react-skylight": "^0.5.1",
     "react-svg-loader": "^3.0.3",
     "redux": "^4.0.1",
     "redux-electron-store": "^0.6.5",
