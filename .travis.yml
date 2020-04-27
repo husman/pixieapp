@@ -19,21 +19,28 @@ cache:
     - $HOME/.cache/electron-builder
 
 before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      ./scripts/add-osx-cert.sh
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      sudo rm /usr/local/bin/docker-compose
+      curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > docker-compose
+      chmod +x docker-compose
+      sudo mv docker-compose /usr/local/bin
+    fi
 
 script:
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      docker-compose run --rm app scripts/release-win-linux.sh
+      make release-win-linux-ci
     else
       yarn release
     fi
 
 after_script:
-  - docker-compose down -v
+  - make clean
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine

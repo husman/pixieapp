@@ -3,17 +3,21 @@ version: '3'
 services:
   app:
     build: .
+    user: 'root'
     restart: 'always'
     environment:
       - CI_USER_TOKEN
+      - CERTIFICATE_OSX_P12
+      - CERTIFICATE_PASSWORD
+      - GH_TOKEN=${CI_USER_TOKEN}
       - APPLEID
       - APPLEIDPASS
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
     volumes:
       - .:/project
-      - ~/.cache/electron:/home/phantomjs/.cache/electron
-      - ~/.cache/electron-builder:/home/phantomjs/.cache/electron-builder
-      - ~/.ssh/known_hosts:/home/phantomjs/.ssh/known_hosts
-      - ~/.ssh/authorized_keys:/home/phantomjs/.ssh/authorized_keys
-      - ~/.ssh/id_rsa:/home/phantomjs/.ssh/id_rsa
+      - ~/.cache/electron:/root/.cache/electron
+      - ~/.cache/electron-builder:/root/.cache/electron-builder
+      - ~/.ssh/known_hosts:/root/.ssh/known_hosts
+      - ~/.ssh/authorized_keys:/root/.ssh/authorized_keys
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa
