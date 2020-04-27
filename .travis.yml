@@ -27,13 +27,13 @@ before_install:
 script:
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      make release-win-linux-ci
+      docker-compose run --rm app scripts/release-win-linux.sh
     else
       yarn release
     fi
 
 after_script:
-  - make clean
+  - docker-compose down -v
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
