@@ -10023,8 +10023,9 @@ opener@^1.5.1:
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.1.tgz#6d2f0e77f1a0af0032aca716c2c1fbb8e7e8abed"
   integrity sha512-goYSy5c2UXE4Ra1xixabeVh1guIX/ZV/YokJksb6q2lubWu6UbvPQ20p542/sFIll1nl8JnCyK9oBaOcCWXwvA==
 
-opentok-react@../opentok-react:
+"opentok-react@git+ssh://git@github.com/husman/opentok-react":
   version "0.9.0"
+  resolved "git+ssh://git@github.com/husman/opentok-react#f0006f1abb30eb473d9f8ccdff576dc2c5cd9795"
   dependencies:
     lodash "^4.13.1"
     prop-types "^15.5.10"
@@ -11430,9 +11431,9 @@ react-redux@^5.1.1:
     react-is "^16.6.0"
     react-lifecycles-compat "^3.0.0"
 
-"react-sketch@git+https://git@github.com/husman/react-sketch.git":
+"react-sketch@git+ssh://git@github.com/husman/react-sketch.git":
   version "0.4.4"
-  resolved "git+https://git@github.com/husman/react-sketch.git#e057e1ca2f18e64689215f1b936569d54213d4f6"
+  resolved "git+ssh://git@github.com/husman/react-sketch.git#e057e1ca2f18e64689215f1b936569d54213d4f6"
   dependencies:
     phantomjs-prebuilt "2.1.7"
     prop-types "^15.6.0"
