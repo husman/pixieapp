@@ -17,8 +17,8 @@ import CanvasLib from '../lib/Canvas';
 
 // const host = 'http://localhost:4000';
 // const host = 'https://pixiehd.neetos.com';
-// const host = 'http://184.73.115.12:9000';
-const host = 'http://localhost:9000';
+const host = 'http://184.73.115.12:9000';
+// const host = 'http://localhost:9000';
 
 const componentConfig = {
   iconFiletypes: ['.jpg', '.png', '.gif'],
