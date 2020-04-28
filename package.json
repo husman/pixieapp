@@ -1,7 +1,7 @@
 {
   "name": "pixieapp",
   "productName": "Pixie",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "Copyright 2019 Neetos LLC. All rights reserved.",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -67,8 +67,7 @@
     "productName": "Pixie",
     "appId": "com.neetos.Pixie",
     "files": [
-      "app/dist/renderer.css",
-      "app/dist/presenterToolbar.css",
+      "app/dist/**",
       "app/app.html",
       "app/presenterToolbar.html",
       "app/presenterOverlay.html",
