@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/husman/pixieapp.svg?token=Uq8zx2AzWVDiE7M68dWB&branch=master)](https://travis-ci.com/husman/pixieapp)
+
 ## Pre-req
 Please install Node v10.13.x
 
