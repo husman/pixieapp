@@ -1,12 +1,12 @@
 /**
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
-@import '../../node_modules/font-awesome/css/font-awesome.min.css';
 @import './fonts';
 
 @font-face {
   font-family: 'Pixie';
-  src: url('../fonts/NeetosPixie.ttf') format('truetype');
+  src: url('../fonts/NeetosPixie.ttf') format('truetype'),
+  url('../fonts/NeetosPixie.woff') format('woff');
 }
 
 html {

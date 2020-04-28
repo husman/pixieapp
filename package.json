@@ -67,7 +67,8 @@
     "productName": "Pixie",
     "appId": "com.neetos.Pixie",
     "files": [
-      "app/dist/",
+      "app/dist/renderer.css",
+      "app/dist/presenterToolbar.css",
       "app/app.html",
       "app/presenterToolbar.html",
       "app/presenterOverlay.html",
