@@ -100,7 +100,7 @@ app.on('ready', async () => {
   )
     .create();
 
-  mainWindow.on('closed', () => {
+  mainWindow.object.on('closed', () => {
     windowManager.closeAll();
   });
 
@@ -140,4 +140,11 @@ app.on('ready', async () => {
   });
 
   initAppUpdater();
+});
+
+// Listen to custom protocole incoming messages
+app.on('open-url', (event, url, c) => {
+  console.log('open-url', event);
+  console.log('open-url', url);
+  console.log('open-url', c);
 });
