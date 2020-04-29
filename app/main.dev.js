@@ -86,7 +86,7 @@ app.on('ready', async () => {
     await installExtensions();
   }
 
-  windowManager.createNew(
+  const mainWindow = windowManager.createNew(
     'main',
     'Pixie Canvas',
     `file://${__dirname}/app.html`,
@@ -99,6 +99,10 @@ app.on('ready', async () => {
     },
   )
     .create();
+
+  mainWindow.on('closed', () => {
+    windowManager.closeAll();
+  });
 
   windowManager.createNew(
     'presenter-toolbar',
