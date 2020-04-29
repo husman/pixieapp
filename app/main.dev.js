@@ -23,10 +23,12 @@ import windowManager from 'electron-window-manager';
 import log from 'electron-log';
 import { createStore, applyMiddleware } from 'redux';
 import { forwardToRenderer, triggerAlias, replayActionMain } from 'electron-redux';
+import urlParse from 'url-parse';
 import reducers from './reducers';
 import {
   appUpdateDownloaded,
 } from './actions/app';
+import { setUserInfo } from './actions/user';
 
 // Redux
 const store = createStore(
@@ -82,7 +84,6 @@ app.on('window-all-closed', () => {
 });
 
 app.on('ready', async () => {
-  log.info(process.argv);
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
@@ -143,9 +144,19 @@ app.on('ready', async () => {
   initAppUpdater();
 });
 
-// Listen to custom protocole incoming messages
-app.on('open-url', (event, url, c) => {
-  log.info('open-url', event);
-  log.info('open-url', url);
-  log.info('open-url', c);
+app.on('open-url', (event, url) => {
+  const {
+    query: {
+      id: meetingId,
+      name: firstName,
+    },
+  } = urlParse(url, true);
+  log.info({ meetingId, firstName });
+
+
+  store.dispatch(
+    setUserInfo({
+      meetingId,
+      firstName,
+    }));
 });

@@ -1,7 +1,7 @@
 {
   "name": "pixieapp",
   "productName": "Pixie",
-  "version": "0.22.0",
+  "version": "0.23.0",
   "description": "Copyright 2019 Neetos LLC. All rights reserved.",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -265,6 +265,7 @@
     "socket.io-client": "^2.2.0",
     "source-map-support": "^0.5.9",
     "styled-components": "^4.2.0",
+    "url-parse": "^1.4.7",
     "uuid": "^3.3.2"
   },
   "devEngines": {
