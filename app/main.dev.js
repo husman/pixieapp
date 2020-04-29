@@ -70,7 +70,7 @@ const installExtensions = async () => {
 
   return Promise
     .all(extensions.map(name => installer.default(installer[name], forceDownload)))
-    .catch(console.log);
+    .catch(log.info);
 };
 
 /**
@@ -144,7 +144,7 @@ app.on('ready', async () => {
 
 // Listen to custom protocole incoming messages
 app.on('open-url', (event, url, c) => {
-  console.log('open-url', event);
-  console.log('open-url', url);
-  console.log('open-url', c);
+  log.info('open-url', event);
+  log.info('open-url', url);
+  log.info('open-url', c);
 });
