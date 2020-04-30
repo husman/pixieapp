@@ -84,8 +84,25 @@ app.on('window-all-closed', () => {
 });
 
 app.on('ready', async () => {
-  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+  if (process.env.NODE_ENV === 'development') {
     await installExtensions();
+  }
+
+  if (process.platform === 'win32' && process.argv.slice(1)) {
+
+    const {
+      query: {
+        id: meetingId,
+        name: firstName,
+      },
+    } = urlParse(process.argv.slice(1), true);
+
+    store.dispatch(
+      setUserInfo({
+        meetingId,
+        firstName,
+      }),
+    );
   }
 
   const mainWindow = windowManager.createNew(
@@ -151,12 +168,12 @@ app.on('open-url', (event, url) => {
       name: firstName,
     },
   } = urlParse(url, true);
-  log.info({ meetingId, firstName });
 
 
   store.dispatch(
     setUserInfo({
       meetingId,
       firstName,
-    }));
+    }),
+  );
 });

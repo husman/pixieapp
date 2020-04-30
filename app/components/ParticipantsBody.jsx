@@ -92,7 +92,7 @@ function ParticipantsBody({
               />
             </StyledMeetingUrlLabel>
             <StyledMeetingUrlTextfield
-              defaultValue={`https://pixiehd.com/${meetingId}`}
+              defaultValue={`pixie://meeting?id=${meetingId}`}
               readOnly
             />
           </StyledFlexContainer>
