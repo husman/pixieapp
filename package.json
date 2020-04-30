@@ -1,7 +1,7 @@
 {
   "name": "pixieapp",
   "productName": "Pixie",
-  "version": "0.24.0",
+  "version": "0.25.0",
   "description": "Copyright 2019 Neetos LLC. All rights reserved.",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -95,10 +95,11 @@
       ]
     },
     "win": {
-      "target": [
-        "nsis",
-        "msi"
-      ]
+      "target": "nsis"
+    },
+    "nsis": {
+      "perMachine": true,
+      "include": "./scripts/installer.nsh"
     },
     "linux": {
       "target": [
