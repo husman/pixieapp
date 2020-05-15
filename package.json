@@ -1,7 +1,7 @@
 {
   "name": "pixieapp",
-  "productName": "Pixie",
-  "version": "0.25.0",
+  "productName": "Pixie Canvas",
+  "version": "0.31.0",
   "description": "Copyright 2019 Neetos LLC. All rights reserved.",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -63,9 +63,8 @@
         ]
       }
     ],
-    "afterSign": "scripts/notarize.js",
-    "productName": "Pixie",
-    "appId": "com.neetos.Pixie",
+    "productName": "Pixie Canvas",
+    "appId": "com.neetos.pixiecanvas",
     "files": [
       "app/dist/**",
       "app/app.html",
@@ -75,9 +74,12 @@
       "package.json"
     ],
     "mac": {
-      "hardenedRuntime": true,
+      "hardenedRuntime": false,
       "gatekeeperAssess": false,
-      "entitlements": "entitlements.mac.plist"
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mas.inherit.plist",
+      "target": ["mas"],
+      "provisioningProfile": "Pixie_Canvas_Mac_App_Store.provisionprofile"
     },
     "dmg": {
       "sign": false,
@@ -93,6 +95,9 @@
           "path": "/Applications"
         }
       ]
+    },
+    "mas": {
+      "entitlements": "entitlements.mac.plist"
     },
     "win": {
       "target": "nsis"
@@ -168,9 +173,9 @@
     "cross-spawn": "^6.0.5",
     "css-loader": "^2.1.0",
     "dotenv": "^8.2.0",
-    "electron": "^4.0.0",
-    "electron-builder": "^22.5.0",
-    "electron-devtools-installer": "^2.2.4",
+    "electron": "^8.2.5",
+    "electron-builder": "^22.6.0",
+    "electron-devtools-installer": "^3.0.0",
     "electron-notarize": "^0.3.0",
     "eslint": "^5.11.0",
     "eslint-config-airbnb": "^17.1.0",
@@ -256,7 +261,7 @@
     "react-hot-loader": "^4.6.3",
     "react-intl": "^2.9.0",
     "react-redux": "^5.1.1",
-    "react-sketch": "git+ssh://git@github.com/husman/react-sketch.git",
+    "react-sketch": "git+ssh://git@github.com/husman/react-sketch.git#master",
     "react-skylight": "^0.5.1",
     "react-svg-loader": "^3.0.3",
     "redux": "^4.0.1",

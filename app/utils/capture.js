@@ -32,16 +32,13 @@ const POSSIBLE_CAPTURE_SOURCES = new Set([
  * @returns {Promise} - A promise that resolves to an array of capture sources or an error.
  */
 export async function getSources() {
-  return new Promise((resolve, reject) => {
-    const options = {
-      types: [
-        'screen',
-      ],
-    };
-    const getSourcesCallback = (error, sources) => (error ? reject(error) : resolve(sources));
+  const options = {
+    types: [
+      'screen',
+    ],
+  };
 
-    desktopCapturer.getSources(options, getSourcesCallback);
-  });
+  return desktopCapturer.getSources(options);
 }
 
 /**
@@ -70,7 +67,13 @@ export async function getCaptureSourceId() {
  * @returns {Electron.Size} - screen dimensions.
  */
 export function getScreenSize() {
-  return screen.getPrimaryDisplay().size;
+  let size = {};
+
+  if (window) {
+    size = window.screen;
+  }
+
+  return size;
 }
 
 export function captureScreen(rect) {

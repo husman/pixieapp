@@ -12,7 +12,20 @@
 }
 
 @font-face {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Avenir Next';
+  src: url('../fonts/AvenirNextRegular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Avenir Next';
+  src: url('../fonts/AvenirNextBold.ttf') format('truetype');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Avenir Next';
+  src: url('../fonts/AvenirNextIt.ttf') format('truetype');
+  font-style: italic;
 }
 
 html, body {
@@ -23,8 +36,7 @@ html, body {
 }
 
 body {
-  background-color: #EBF0F6;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Avenir Next', 'Roboto', sans-serif !important;
 }
 
 #app {

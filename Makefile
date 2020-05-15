@@ -1,3 +1,6 @@
+build-mac: ## CI: Builds and deploys a release for Windows and Linux
+	docker-compose run --rm app yarn package-mac
+
 release-win-linux: ## Dev: Builds and deploys a release for Windows and Linux
 	docker-compose -f docker-compose.yml -f docker-compose-dev.yml run --rm app scripts/release-win-linux.sh
 

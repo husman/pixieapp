@@ -16,18 +16,13 @@
  */
 import {
   app,
-  ipcMain,
 } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import windowManager from 'electron-window-manager';
 import log from 'electron-log';
 import { createStore, applyMiddleware } from 'redux';
 import { forwardToRenderer, triggerAlias, replayActionMain } from 'electron-redux';
 import urlParse from 'url-parse';
 import reducers from './reducers';
-import {
-  appUpdateDownloaded,
-} from './actions/app';
 import { setUserInfo } from './actions/user';
 
 // Redux
@@ -40,20 +35,6 @@ const store = createStore(
 );
 
 replayActionMain(store);
-
-export function initAppUpdater() {
-  log.transports.file.level = 'info';
-  autoUpdater.logger = log;
-  autoUpdater.checkForUpdatesAndNotify();
-
-  autoUpdater.on('update-downloaded', () => {
-    store.dispatch(appUpdateDownloaded());
-  });
-
-  ipcMain.on('quit-and-install', () => {
-    autoUpdater.quitAndInstall();
-  });
-}
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -115,6 +96,9 @@ app.on('ready', async () => {
       resizable: true,
       width: 865,
       height: 700,
+      webPreferences: {
+        nodeIntegration: true,
+      },
     },
   )
     .create();
@@ -133,6 +117,9 @@ app.on('ready', async () => {
       show: false,
       width: 370,
       height: 65,
+      webPreferences: {
+        nodeIntegration: true,
+      },
     },
   )
     .create();
@@ -149,6 +136,9 @@ app.on('ready', async () => {
       alwaysOnTop: true,
       resizable: true,
       show: false,
+      webPreferences: {
+        nodeIntegration: true,
+      },
     },
   );
   winFullscreenBorderOverlay.create();
@@ -157,8 +147,6 @@ app.on('ready', async () => {
     winFullscreenBorderOverlay.maximize();
     winFullscreenBorderOverlay.object.setIgnoreMouseEvents(true);
   });
-
-  initAppUpdater();
 });
 
 app.on('open-url', (event, url) => {

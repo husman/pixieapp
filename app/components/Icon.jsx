@@ -1,5 +1,8 @@
 import React from 'react';
-import { string } from 'prop-types';
+import {
+  bool,
+  string,
+} from 'prop-types';
 import styled from 'styled-components';
 
 const StyledContainer = styled.span`
@@ -13,7 +16,7 @@ const StyledContainer = styled.span`
   box-shadow: ${props => props.boxShadow || 'none'};
   cursor: pointer;
   font-family: 'Pixie';
-  border-radius: 50%;
+  border-radius: ${props => props.rectBorder ? 0 : '50%'};
   display: inline-block;
 `;
 
@@ -27,10 +30,11 @@ function IconContent({
 
 function Icon({
   type,
+  rectBorder,
   ...styles
 }) {
   return (
-    <StyledContainer {...styles}>
+    <StyledContainer rectBorder={rectBorder} {...styles}>
       <IconContent type={type} />
     </StyledContainer>
   );
@@ -42,6 +46,11 @@ Icon.propTypes = {
 
 IconContent.propTypes = {
   type: string.isRequired,
+  rectBorder: bool,
+};
+
+IconContent.defaultProps = {
+  rectBorder: false,
 };
 
 export {

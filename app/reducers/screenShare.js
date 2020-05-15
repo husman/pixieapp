@@ -8,6 +8,7 @@ import {
   START_SCREEN_SHARING,
   STOP_SCREEN_SHARING,
 } from '../actions/video';
+import { USER_SIGN_OUT } from '../actions/user';
 
 /**
  * The initial state for the canvas.
@@ -49,6 +50,8 @@ export default function screenShare(state = initialState, action) {
         isScreenShareDialogOpened: false,
         stream: null,
       };
+    case USER_SIGN_OUT:
+      return initialState;
     default:
       return state;
   }

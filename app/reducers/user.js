@@ -1,4 +1,7 @@
-import { SET_USER_INFO } from '../actions/user';
+import {
+  SET_USER_INFO,
+  USER_SIGN_OUT,
+} from '../actions/user';
 
 /**
  * Copyright 2019 Neetos LLC. All rights reserved.
@@ -14,6 +17,12 @@ export default function chat(state = initialState, action) {
       return {
         ...state,
         firstName: action.firstName,
+        isSignedIn: true,
+      };
+    case USER_SIGN_OUT:
+      return {
+        ...state,
+        isSignedIn: false,
       };
     default:
       return state;

@@ -23,11 +23,7 @@ import {
 } from '../actions/video';
 import { getSources } from '../utils/capture';
 import { APP_VIEW_CANVAS } from '../constants/app';
-
-function terminateApp() {
-  const windowManager = remote.require('electron-window-manager');
-  windowManager.closeAll();
-}
+import { signOut } from '../actions/user';
 
 function MediaToolbar({
   isMicEnabled,
@@ -37,6 +33,7 @@ function MediaToolbar({
   onToggleAudio,
   onToggleVideo,
   onOpenScreenShareDialog,
+  onSignOut,
 }) {
   const onOpenDialog = useCallback(
     async () => onOpenScreenShareDialog(await getSources()),
@@ -81,15 +78,16 @@ function MediaToolbar({
             marginRight={10}
           />
         </a>
-        <Icon
-          type="share"
-          color="white"
-          borderColor="white"
-          border={2}
-          marginRight={15}
-          padding={10}
-          onClick={onOpenDialog}
-        />
+        <a onClick={onOpenDialog}>
+          <Icon
+            type="share"
+            color="white"
+            borderColor="white"
+            border={2}
+            marginRight={15}
+            padding={10}
+          />
+        </a>
         <StyledVerticalBar />
         <Icon
           type="phone-off"
@@ -99,7 +97,7 @@ function MediaToolbar({
           border={2}
           marginLeft={15}
           padding={10}
-          onClick={terminateApp}
+          onClick={onSignOut}
         />
       </StyledMediaToolbarContainer>
     </StyledMediaToolbarRoot>
@@ -141,6 +139,7 @@ function mapDispatchToState(dispatch) {
     onToggleAudio: () => dispatch(toggleLocalAudio()),
     onToggleVideo: () => dispatch(toggleLocalVideo()),
     onOpenScreenShareDialog: sources => dispatch(openScreenShareDialog(sources)),
+    onSignOut: () => dispatch(signOut()),
   };
 }
 

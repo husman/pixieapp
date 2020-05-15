@@ -1,133 +1,112 @@
 import React, { useCallback, useState } from 'react';
+import TextField from './TextField';
+import SignInAudioSettings from './SignInAudioSettings';
 import {
-  func,
-} from 'prop-types';
+  JoinButton,
+  JoinButtonContainer,
+  LinkContainer,
+  SectionLabel,
+  SectionSubLabel,
+  StyledContainer,
+  WelcomeHeading,
+  Link,
+} from './signIn.styles';
 import { connect } from 'react-redux';
-import styled from 'styled-components';
 import { setUserInfo } from '../actions/user';
-import Snackbar from '@material-ui/core/Snackbar';
-import Alert from '@material-ui/lab/Alert';
-import Button from '@material-ui/core/Button';
-import { ipcRenderer } from 'electron';
-
-const StyledLabel = styled.div`
-  color: white;
-`;
-const AppUpdateActionButtons = styled.div`
-  padding-top: 10px;
-`;
-
-const InstallUpdatesActionButton = styled.div`
-  display: inline;
-  margin-right: 15px;
-`;
 
 function SignIn({
-  onSetUserInfo,
-  appUpdateAvailable,
-  appUpdateDownloaded,
-  onCloseAppUpdateNotice,
+  fullName,
+  meetingId,
+  onJoin,
 }) {
-  const [firstName, setFirstName] = useState('');
-  const [meetingId, setMeetingId] = useState('');
-  const onSubmit = useCallback(() => {
-    onSetUserInfo({
-      firstName,
-      meetingId,
-    });
-  }, [firstName, meetingId]);
-  const onInstallAndRestartApp = useCallback(() => {
-    ipcRenderer.send('quit-and-install');
-  }, []);
+  const [meetingUrl, setMeetingUrl] = useState(meetingId);
+  const [name, setName] = useState(fullName);
+
+  const onMeetingUrlChange = useCallback((value) => {
+    setMeetingUrl(value);
+  }, [setMeetingUrl]);
+
+  const onNameChange = useCallback((value) => {
+    setName(value);
+  }, [setName]);
+
+  const onJoinClick = useCallback(() => {
+    onJoin(meetingUrl, name);
+  }, [onJoin, meetingUrl, name]);
 
   return (
-    <div>
-      {appUpdateAvailable && (
-        <Snackbar
-          open
-          autoHideDuration={30000}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-          onClose={onCloseAppUpdateNotice}
-        >
-          <Alert severity="info">
-            Updates are available!
-          </Alert>
-        </Snackbar>
-      )}
-      {appUpdateDownloaded && (
-        <Snackbar
-          open
-          autoHideDuration={30000}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-          onClose={onCloseAppUpdateNotice}
-        >
-          <Alert severity="info">
-            Updates are ready! would you like to install them now?
-            <AppUpdateActionButtons>
-              <InstallUpdatesActionButton>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  onClick={onInstallAndRestartApp}
-                >
-                  Install & Restart
-                </Button>
-              </InstallUpdatesActionButton>
-              <Button
-                size="small"
-                variant="contained"
-                color="secondary"
-                onClick={onCloseAppUpdateNotice}
-              >
-                Cancel
-              </Button>
-            </AppUpdateActionButtons>
-          </Alert>
-        </Snackbar>
-      )}
-      <StyledLabel>
-        Meeting ID
-      </StyledLabel>
-      <input
-        type="text"
-        onChange={({ target: { value } }) => setMeetingId(value)}
-        value={meetingId}
+    <StyledContainer maxWidth="sm">
+      <WelcomeHeading>
+        Welcome to your meeting
+      </WelcomeHeading>
+
+      <TextField
+        required
+        label="Your Meeting URL"
+        value={meetingUrl}
+        onChange={onMeetingUrlChange}
       />
-      <StyledLabel>
-        First name
-      </StyledLabel>
-      <input
-        type="text"
-        onChange={({ target: { value } }) => setFirstName(value)}
-        value={firstName}
+
+      <TextField
+        required
+        label="Your Name (Other participants will see this)"
+        value={name}
+        onChange={onNameChange}
       />
-      <div>
-        <input
-          type="button"
-          value="Submit"
-          onClick={onSubmit}
-          disabled={!firstName || !meetingId}
-        />
-      </div>
-    </div>
+
+      <SectionLabel>
+        Your Audio + Video Settings
+      </SectionLabel>
+
+      <SectionSubLabel>
+        (You can update these settings once the meeting begins)
+      </SectionSubLabel>
+
+      <SignInAudioSettings />
+
+      <JoinButtonContainer>
+        <JoinButton
+          variant="contained"
+          color="primary"
+          onClick={onJoinClick}
+        >
+          Join Meeting
+        </JoinButton>
+      </JoinButtonContainer>
+
+      <LinkContainer>
+        <Link href="#">
+          Need help joining your meeting?
+        </Link>
+      </LinkContainer>
+
+      <LinkContainer>
+        <Link href="#">
+          Need an account?
+        </Link>
+      </LinkContainer>
+    </StyledContainer>
   );
 }
 
-SignIn.propTypes = {
-  onSetUserInfo: func.isRequired,
-};
+function mapStateToProps(state) {
+  const {
+    view: {
+      isMicEnabled,
+      isVideoEnabled,
+    },
+  } = state;
 
-function mapDispatchToProps(dispatch) {
   return {
-    onSetUserInfo: sessionData => dispatch(setUserInfo(sessionData)),
+    isMicEnabled,
+    isVideoEnabled,
   };
 }
 
-export default connect(null, mapDispatchToProps)(SignIn);
+function mapDispatchToProps(dispatch) {
+  return {
+    onJoin: (meetingId, firstName) => dispatch(setUserInfo({ meetingId, firstName })),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);

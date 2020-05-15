@@ -33,6 +33,7 @@ import {
   SET_USER_INFO,
   USER_JOINED,
   USER_LEFT,
+  USER_SIGN_OUT,
 } from '../actions/user';
 import { REMOTE_CHAT_MESSAGE_RECEIVED } from '../actions/chat';
 import {
@@ -48,7 +49,7 @@ import {
  */
 const initialState = {
   mode: APP_VIEW_USER_VIDEOS,
-  isMicEnabled: false,
+  isMicEnabled: true,
   isVideoEnabled: false,
   localVideo: null,
   remoteStreams: [],
@@ -257,6 +258,8 @@ export default function view(state = initialState, action) {
         ...state,
         isRightPanelOpened: false,
       };
+    case USER_SIGN_OUT:
+      return initialState;
     default:
       return state;
   }
