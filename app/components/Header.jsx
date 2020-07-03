@@ -4,7 +4,9 @@ import Logo from './Logo';
 import ModeButtons from './ModeButtons';
 import ProfileButtons from './ProfileButtons';
 
-const StyledContainer = styled.div``;
+const StyledContainer = styled.div`
+  z-index: 2;
+`;
 
 const StyledHeader = styled.div`
   background-color: #EBF0F6;

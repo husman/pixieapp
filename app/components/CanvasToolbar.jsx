@@ -37,6 +37,16 @@ const IconLabel = styled.div`
 
 const IconWrapper = styled.div`
   margin-top: 10px;
+  cursor: pointer;
+
+  :hover {
+    svg {
+      stroke: #087829;
+    }
+    div {
+      color: #087829;
+    }
+  }
 `;
 
 const IconContainer = styled(IconWrapper)`
@@ -107,20 +117,20 @@ function CanvasToolbar({
             Draw
           </IconLabel>
         </IconContainer>
-        <IconContainer
-          onClick={onToolChanged}
-          data-tool={Tools.Circle}
-        >
-          <CircleIcon
-            width="20"
-            stroke={getColor(tool === Tools.Circle)}
-          />
-          <IconLabel
-            isActive={tool === Tools.Circle}
-          >
-            Shape
-          </IconLabel>
-        </IconContainer>
+        {/*<IconContainer*/}
+        {/*  onClick={onToolChanged}*/}
+        {/*  data-tool={Tools.Circle}*/}
+        {/*>*/}
+        {/*  <CircleIcon*/}
+        {/*    width="20"*/}
+        {/*    stroke={getColor(tool === Tools.Circle)}*/}
+        {/*  />*/}
+        {/*  <IconLabel*/}
+        {/*    isActive={tool === Tools.Circle}*/}
+        {/*  >*/}
+        {/*    Shape*/}
+        {/*  </IconLabel>*/}
+        {/*</IconContainer>*/}
         <IconContainer
           onClick={onToolChanged}
           data-tool={Tools.Text}

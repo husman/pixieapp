@@ -6,7 +6,9 @@ import { remote } from 'electron';
 
 export const TOGGLE_LOCAL_VIDEO = 'TOGGLE_LOCAL_VIDEO';
 export const TOGGLE_LOCAL_AUDIO = 'TOGGLE_LOCAL_AUDIO';
-export const ADD_REMOTE_VIDEO = 'ADD_REMOTE_VIDEO';
+export const ADD_REMOTE_STREAM = 'ADD_REMOTE_STREAM';
+export const ADD_REMOTE_AUDIO = 'ADD_REMOTE_AUDIO';
+export const REMOVE_REMOTE_STREAM = 'REMOVE_REMOTE_STREAM';
 export const REMOTE_VIDEO_CHANGED = 'REMOTE_VIDEO_CHANGED';
 export const REMOTE_AUDIO_CHANGED = 'REMOTE_AUDIO_CHANGED';
 export const START_SCREEN_SHARING = 'START_SCREEN_SHARING';
@@ -15,9 +17,10 @@ export const SET_SCREEN_SHARING_STREAM = 'SET_SCREEN_SHARING_STREAM';
 export const OPEN_SCREEN_SHARE_DIALOG = 'OPEN_SCREEN_SHARE_DIALOG';
 export const CLOSE_SCREEN_SHARE_DIALOG = 'CLOSE_SCREEN_SHARE_DIALOG';
 export const REMOTE_SCREEN_SHARING_STOPPED = 'REMOTE_SCREEN_SHARING_STOPPED';
-export const REMOVE_REMOTE_STREAM = 'REMOVE_REMOTE_STREAM';
 export const OPENTOK_STREAM_DESTROYED = 'OPENTOK_STREAM_DESTROYED';
 export const SET_LOCAL_VIDEO_STREAM = 'SET_LOCAL_VIDEO_STREAM';
+export const SET_LOCAL_AUDIO_STREAM = 'SET_LOCAL_AUDIO_STREAM';
+export const UPDATE_REMOTE_STREAM = 'UPDATE_REMOTE_STREAM';
 
 export function toggleLocalVideo() {
   return {
@@ -32,16 +35,41 @@ export function setLocalVideoStream(stream) {
   };
 }
 
+export function setLocalAudioStream(stream) {
+  return {
+    type: SET_LOCAL_AUDIO_STREAM,
+    stream,
+  };
+}
+
 export function toggleLocalAudio() {
   return {
     type: TOGGLE_LOCAL_AUDIO,
   };
 }
 
-export function addRemoteVideo(value) {
+export function addRemoteStream({
+  streamId,
+  streamType,
+}) {
   return {
-    type: ADD_REMOTE_VIDEO,
-    value,
+    type: ADD_REMOTE_STREAM,
+    streamId,
+    streamType,
+  };
+}
+
+export function updateRemoteStream(stream) {
+  return {
+    type: UPDATE_REMOTE_STREAM,
+    stream,
+  };
+}
+
+export function removeRemoteStream(streamId) {
+  return {
+    type: REMOVE_REMOTE_STREAM,
+    streamId,
   };
 }
 
@@ -61,7 +89,9 @@ export function remoteVideoChanged(streamId, value) {
   };
 }
 
-export function startScreenSharing(stream) {
+export function startScreenSharing({
+  sourceId,
+}) {
   const windowManager = remote.require('electron-window-manager');
   const mainWindow = windowManager.get('main').object;
   const presenterOverlay = windowManager.get('presenter-overlay').object;
@@ -75,7 +105,7 @@ export function startScreenSharing(stream) {
 
   return {
     type: START_SCREEN_SHARING,
-    stream,
+    sourceId,
   };
 }
 
@@ -129,13 +159,6 @@ export function openScreenShareDialog(sources) {
 export function remoteScreenSharingStopped() {
   return {
     type: REMOTE_SCREEN_SHARING_STOPPED,
-  };
-}
-
-export function removeRemoteStream(streamId) {
-  return {
-    type: REMOVE_REMOTE_STREAM,
-    streamId,
   };
 }
 

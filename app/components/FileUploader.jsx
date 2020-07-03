@@ -254,7 +254,6 @@ FileUploader.defaultProps = {
 FileUploader.propTypes = {
   onCanvasUploadComplete: PropTypes.func.isRequired,
   onCanvasUploadStart: PropTypes.func.isRequired,
-  closeDocumentPanel: PropTypes.func.isRequired,
   selector: PropTypes.bool,
 };
 

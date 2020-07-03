@@ -9,7 +9,7 @@ function VideosView({
 }) {
 
   if (screenShareStream) {
-    return <ScreenShareView />;
+    return <ScreenShareView screenShareStream={screenShareStream} />;
   }
 
   return <UserVideoView />;
@@ -18,13 +18,15 @@ function VideosView({
 function mapStateToProps(state) {
   const {
     view: {
-      mode,
-      screenShareStream,
+      remoteStreams,
     },
   } = state;
 
+  const {
+    srcObject: screenShareStream = null,
+  } = remoteStreams.find(({ type }) => type === 'screen') || {};
+
   return {
-    mode,
     screenShareStream,
   };
 }

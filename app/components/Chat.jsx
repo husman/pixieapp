@@ -14,12 +14,12 @@ import { APP_VIEW_CANVAS } from '../constants/app';
 const StyledContainer = styled.div`
   position: absolute;
   width: ${({ isCanvasMode }) => isCanvasMode ? '450' : '300'}px;
-  top: 43px;
+  top: 58px;
   right: 0;
   bottom: 0;
   background-color: white;
-  box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 2px 0px 0px 2px;
+  border-radius: 2px 0 0 2px;
+  filter: drop-shadow(30px 10px 4px #4444dd);
 `;
 
 const StyledColumnFlexBox = styled.div`

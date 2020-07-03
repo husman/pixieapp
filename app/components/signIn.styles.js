@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Alert from '@material-ui/lab/Alert';
 
 const WelcomeHeading = styled.div`
   font-size: 1.44em;
@@ -29,6 +31,10 @@ const JoinButtonContainer = styled.div`
   margin-top: 35px;
 `;
 
+const ButtonContainer = styled.div`
+  margin-top: 25px;
+`;
+
 const JoinButton = styled(Button)`
   background-color: #0177B5 !important;
 
@@ -42,6 +48,7 @@ const LinkContainer = styled.div`
 `;
 
 const Link = styled.a`
+  cursor: pointer;
   text-decoration: none;
   color: #0177B5;
   transition: all 0.3s;
@@ -49,6 +56,15 @@ const Link = styled.a`
   :hover {
     color: #015480;
   }
+`;
+
+const Spinner = styled(CircularProgress)`
+  color: white !important;
+`;
+
+const Toast = styled(Alert)`
+  width: 400px;
+  margin: 20px 0;
 `;
 
 export {
@@ -60,4 +76,7 @@ export {
   JoinButton,
   LinkContainer,
   Link,
+  ButtonContainer,
+  Spinner,
+  Toast,
 };

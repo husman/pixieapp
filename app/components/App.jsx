@@ -10,9 +10,14 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   APP_VIEW_USER_VIDEOS,
   APP_VIEW_CANVAS,
+  WELCOME_JOIN_MEETING_VIEW,
+  WELCOME_MEETING_OPTIONS_VIEW,
+  WELCOME_NEW_MEETING_VIEW,
+  WELCOME_VIEW_SIGN_IN,
+  WELCOME_VIEW_SIGN_UP,
+  WELCOME_VIEW_SIGN_UP_SUCCESSFUL,
 } from '../constants/app';
 import CanvasView from './CanvasView';
-import OpentokSession from './OpentokSession';
 import Header from './Header';
 import RightToolbar from './RightToolbar';
 import LocalUserVideo from './LocalUserVideo';
@@ -20,7 +25,11 @@ import MediaToolbar from './MediaToolbar';
 import Dialogs from './Dialogs';
 import VideosView from './VideosView';
 import Chat from './Chat';
+import WelcomeViewJoinMeeting from './WelcomeViewJoinMeeting';
+import WelcomeViewMeetingOptions from './WelcomeViewMeetingOptions';
 import SignIn from './SignIn';
+import SignUp from './SignUp';
+import SignUpSuccess from './SignUpSuccess';
 
 const StyledContainer = styled.div`
   display: flex;
@@ -36,21 +45,38 @@ const StyledLocalVideoContainer = styled.div`
 `;
 
 function App({
-  sessionId,
-  apiKey,
-  token,
+  guest,
   isVideoEnabled,
   mode,
   isRightPanelOpened,
   isSignedIn,
+  welcomeView,
+  meetingId,
 }) {
   return (
     <Fragment>
       <CssBaseline />
-      {!isSignedIn && (
+      {!isSignedIn && !meetingId && welcomeView === WELCOME_VIEW_SIGN_IN && (
         <SignIn />
       )}
-      {isSignedIn && (
+      {!isSignedIn && !meetingId && welcomeView === WELCOME_VIEW_SIGN_UP && (
+        <SignUp />
+      )}
+      {!isSignedIn && !meetingId && welcomeView === WELCOME_VIEW_SIGN_UP_SUCCESSFUL && (
+        <SignUpSuccess />
+      )}
+      {isSignedIn && !meetingId && welcomeView === WELCOME_MEETING_OPTIONS_VIEW && (
+        <WelcomeViewMeetingOptions />
+      )}
+      {(isSignedIn || guest) && !meetingId && welcomeView === WELCOME_JOIN_MEETING_VIEW && (
+        <WelcomeViewJoinMeeting />
+      )}
+      {isSignedIn && !meetingId && welcomeView === WELCOME_NEW_MEETING_VIEW && (
+        <WelcomeViewJoinMeeting
+          isNewMeeting
+        />
+      )}
+      {isSignedIn && meetingId && (
         <StyledContainer className="video-mode-container">
           <Header />
           {!isRightPanelOpened && (
@@ -59,9 +85,7 @@ function App({
           {mode === APP_VIEW_USER_VIDEOS && (
             <VideosView />
           )}
-          {mode === APP_VIEW_CANVAS && (
-            <CanvasView />
-          )}
+          <CanvasView isMounted={mode === APP_VIEW_CANVAS} />
           {isVideoEnabled && (
             <StyledLocalVideoContainer>
               <LocalUserVideo />
@@ -72,9 +96,6 @@ function App({
             <Chat />
           )}
           <Dialogs />
-          {sessionId && apiKey && token && (
-            <OpentokSession />
-          )}
         </StyledContainer>
       )}
     </Fragment>
@@ -83,17 +104,18 @@ function App({
 
 App.defaultProps = {
   isSignedIn: false,
+  welcomeView: WELCOME_VIEW_SIGN_IN,
+  meetingId: '',
 };
 
 App.propTypes = {
   firstName: string.isRequired,
-  sessionId: string.isRequired,
-  apiKey: string.isRequired,
-  token: string.isRequired,
   mode: number.isRequired,
   isVideoEnabled: bool.isRequired,
   isRightPanelOpened: bool,
   isSignedIn: bool,
+  welcomeView: number,
+  meetingId: string,
 };
 
 function mapStateToProps(state) {
@@ -103,26 +125,26 @@ function mapStateToProps(state) {
       firstName,
     },
     view: {
-      sessionId,
-      apiKey,
-      token,
+      guest,
+      meetingId,
       isVideoEnabled,
       mode,
       isRightPanelOpened,
       appUpdateDownloaded,
+      welcomeView,
     },
   } = state;
 
   return {
+    guest,
+    meetingId,
     isSignedIn,
-    sessionId,
-    apiKey,
-    token,
     firstName,
     isVideoEnabled,
     mode,
     isRightPanelOpened,
     appUpdateDownloaded,
+    welcomeView,
   };
 }
 

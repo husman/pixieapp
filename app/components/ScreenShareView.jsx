@@ -61,20 +61,6 @@ function ScreenShareView({
   );
 }
 
-function mapStateToProps(state) {
-  const {
-    view: {
-      mode,
-      screenShareStream,
-    },
-  } = state;
-
-  return {
-    mode,
-    screenShareStream,
-  };
-}
-
 function mapDispatchToState(dispatch) {
   return {
     onStartScreenSharing: stream => dispatch(startScreenSharing(stream)),
@@ -85,4 +71,4 @@ ScreenShareView.propTypes = {
   screenShareStream: instanceOf(MediaStream),
 };
 
-export default connect(mapStateToProps, mapDispatchToState)(ScreenShareView);
+export default connect(null, mapDispatchToState)(ScreenShareView);

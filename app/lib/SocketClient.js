@@ -29,20 +29,14 @@ class SocketClient {
       store.dispatch(remoteChatMessageReceived(clientId, data));
     });
 
-    this.on(PEER_EVENT_USER_JOINED, (clientId, data) => {
-      console.log('PEER_EVENT_USER_JOINED', clientId, data);
-      store.dispatch(userJoined(clientId, data));
+    this.on(PEER_EVENT_USER_JOINED, ({ newUser, users }) => {
+      console.log({ newUser, users });
+      store.dispatch(userJoined(newUser, users));
     });
 
-    this.on(PEER_EVENT_USER_LEFT, (clientId) => {
-      const {
-        view: {
-          users,
-        },
-      } = store.getState();
-      const user = users.find(({ id }) => id === clientId) || {};
-
-      store.dispatch(userLeft(clientId, user));
+    this.on(PEER_EVENT_USER_LEFT, ({ user, users }) => {
+      console.log({ user, users });
+      store.dispatch(userLeft(user, users));
     });
   }
 
@@ -108,6 +102,10 @@ class SocketClient {
     }
 
     socket.open();
+  }
+
+  disconnect() {
+    this.socket.disconnect();
   }
 
   setSocket(socket) {

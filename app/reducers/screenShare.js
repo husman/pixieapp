@@ -42,7 +42,7 @@ export default function screenShare(state = initialState, action) {
       return {
         ...state,
         isScreenShareDialogOpened: false,
-        stream: action.stream,
+        sourceId: action.sourceId,
       };
     case STOP_SCREEN_SHARING:
       return {

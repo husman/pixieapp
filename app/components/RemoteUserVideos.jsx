@@ -11,12 +11,12 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import UserVideo from './UserVideo';
+import UserAudio from './UserAudio';
 import VideoControls from './VideoControls';
-import PlaceholderIcon from '../svgs/user-video-placeholder.svg';
 
 const StyledUserVideoContainer = styled.div`
   position: relative;
-  
+
   :hover {
     .video-controls {
       display: block;
@@ -56,25 +56,35 @@ function RemoteUserVideos({
       }}
     >
       {remoteStreams.map(({
-        streamId,
         hasAudio,
         hasVideo,
         srcObject,
-      }) => hasVideo && (
-        <Grid item xs={6}>
-          <StyledUserVideoContainer key={streamId} mode={mode}>
-            {!hasAudio && (
-              <StyledVideoControls className="video-controls">
-                <VideoControls hasVideo={false} audioEnabled={hasAudio} />
-              </StyledVideoControls>
-            )}
-            <UserVideo stream={srcObject} />
-            <StyledVideoLabel>
-              Remote
-            </StyledVideoLabel>
-          </StyledUserVideoContainer>
-        </Grid>
-      ))}
+        type,
+      }) => {
+        if (srcObject && type === 'video') {
+          return (
+            <Grid item xs={6} key={srcObject.id}>
+              <StyledUserVideoContainer mode={mode}>
+                {!hasAudio && (
+                  <StyledVideoControls className="video-controls">
+                    <VideoControls hasVideo={false} audioEnabled={hasAudio} />
+                  </StyledVideoControls>
+                )}
+                <UserVideo stream={srcObject} />
+                <StyledVideoLabel>
+                  Remote
+                </StyledVideoLabel>
+              </StyledUserVideoContainer>
+            </Grid>
+          );
+        }
+
+        if (srcObject && type === 'audio') {
+         return (
+           <UserAudio stream={srcObject} key={srcObject.id} />
+         );
+        }
+      })}
     </Grid>
   );
 }

@@ -19,6 +19,7 @@ import { forwardToMain, replayActionRenderer, getInitialStateRenderer } from 'el
 import reducer from './reducers';
 import sagas from './sagas';
 import SocketClient from './lib/SocketClient';
+import WebRtcSession from './lib/WebRtcSession';
 import App from './components/App';
 import {
   appUpdateAvailable,
@@ -100,6 +101,7 @@ sagaMiddleware.run(sagas);
 // });
 //
 SocketClient.setStore(store);
+WebRtcSession.setStore(store);
 
 ipcRenderer.on('app-update-available', () => {
   store.dispatch(appUpdateAvailable());

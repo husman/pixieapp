@@ -21,40 +21,11 @@ function Dialogs({
   onCloseScreenShareDialog,
 }) {
   const onShareScreen = useCallback(async (sourceId) => {
-    const screenCaptureSourceId = sourceId;
-
-    if (!screenCaptureSourceId) {
+    if (!sourceId) {
       return;
     }
 
-    const {
-      mediaDevices,
-    } = navigator;
-    const {
-      width,
-      height,
-    } = getScreenSize();
-    const constraints = {
-      audio: false,
-      video: {
-        mandatory: {
-          chromeMediaSource: 'desktop',
-          chromeMediaSourceId: screenCaptureSourceId,
-          minWidth: width,
-          minHeight: height,
-          maxWidth: width,
-          maxHeight: height,
-        },
-      },
-    };
-
-    try {
-      const stream = await mediaDevices.getUserMedia(constraints);
-      onStartScreenSharing(stream);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Could not get media device to capture the screen', err);
-    }
+      onStartScreenSharing(sourceId);
   }, [onStartScreenSharing]);
 
   return (
@@ -89,7 +60,7 @@ function mapStateToProps(state) {
 function mapDispatchtoState(dispatch) {
   return {
     onCloseScreenShareDialog: () => dispatch(closeScreenShareDialog()),
-    onStartScreenSharing: stream => dispatch(startScreenSharing(stream)),
+    onStartScreenSharing: sourceId => dispatch(startScreenSharing({ sourceId })),
   };
 }
 

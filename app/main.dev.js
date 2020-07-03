@@ -23,7 +23,12 @@ import { createStore, applyMiddleware } from 'redux';
 import { forwardToRenderer, triggerAlias, replayActionMain } from 'electron-redux';
 import urlParse from 'url-parse';
 import reducers from './reducers';
-import { setUserInfo } from './actions/user';
+import {
+  setUserInfo,
+  userVerificationError,
+  userVerificationSuccess,
+} from './actions/user';
+import persist from './lib/Store';
 
 // Redux
 const store = createStore(
@@ -53,7 +58,7 @@ const installExtensions = async () => {
 
   return Promise
     .all(extensions.map(name => installer.default(installer[name], forceDownload)))
-    .catch(log.info);
+    .catch(log.warn);
 };
 
 /**
@@ -150,18 +155,37 @@ app.on('ready', async () => {
 });
 
 app.on('open-url', (event, url) => {
+  const parsedUrl = urlParse(url, true);
   const {
-    query: {
-      id: meetingId,
-      name: firstName,
-    },
-  } = urlParse(url, true);
+    host,
+    query,
+  } = parsedUrl;
 
+  switch (host) {
+    case 'user': {
+      const { v } = query;
 
-  store.dispatch(
-    setUserInfo({
-      meetingId,
-      firstName,
-    }),
-  );
+      if(v === '1') {
+        persist.set('userVerified', 1);
+        store.dispatch(userVerificationSuccess());
+      } else {
+        persist.set('userVerified', 0);
+        store.dispatch(userVerificationError());
+      }
+
+      break;
+    }
+    default: {
+      const {
+        id: meetingId,
+        name: firstName,
+      } = query;
+
+      store.dispatch(
+        setUserInfo({
+          meetingId,
+          firstName,
+        }));
+    }
+  }
 });

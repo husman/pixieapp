@@ -9,7 +9,6 @@ import {
   instanceOf,
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { remote } from 'electron';
 import {
   StyledMediaToolbarRoot,
   StyledMediaToolbarContainer,

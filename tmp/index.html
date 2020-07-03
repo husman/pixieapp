@@ -1,0 +1,52 @@
+<script type="text/javascript">
+  /**
+   * Peer connection configuration
+   *
+   * @type {RTCConfiguration}
+   */
+  const pcConfig = {
+    iceServers:
+      [
+        {
+          urls: 'stun:stun.neetos.com:5349',
+          username: 'fake',
+          credential: 'fake',
+        },
+        {
+          urls: 'turn:turn.neetos.com:5349',
+          username: 'fake',
+          credential: 'fake',
+        },
+        // {
+        //   url: 'stun:stun.services.mozilla.com',
+        // },
+        // {
+        //   url: 'stun:stun.l.google.com:19302',
+        // },
+      ],
+  };
+
+  const rtcPeer = new RTCPeerConnection(pcConfig);
+
+  rtcPeer.onconnectionstatechange = (event) => {
+    console.log('onconnectionstatechange', event);
+  };
+
+  rtcPeer.onicegatheringstatechange = (event) => {
+    console.log('onicegatheringstatechange', event);
+  };
+
+  rtcPeer.oniceconnectionstatechange = (event) => {
+    console.log('oniceconnectionstatechange', event);
+  };
+
+  rtcPeer.onsignalingstatechange = (event) => {
+    console.log('onsignalingstatechange', event);
+  };
+
+  rtcPeer.onicecandidate = (event) => {
+    console.log('candidate', event);
+  };
+
+
+</script>

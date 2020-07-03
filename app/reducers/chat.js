@@ -6,7 +6,8 @@ import {
   SEND_CHAT_TEXT,
 } from '../actions/chat';
 import {
-  USER_JOINED, USER_LEFT,
+  USER_JOINED,
+  USER_LEFT,
 } from '../actions/user';
 
 const initialState = {
@@ -49,7 +50,7 @@ export default function chat(state = initialState, action) {
           {
             type: 'notice',
             noticeType: 'user-joined',
-            user: action.user.firstName,
+            user: action.user.displayName,
             date: new Date(),
           },
         ],
@@ -62,7 +63,7 @@ export default function chat(state = initialState, action) {
           {
             type: 'notice',
             noticeType: 'user-left',
-            user: action.user.firstName,
+            user: action.user.displayName,
             date: new Date(),
           },
         ],

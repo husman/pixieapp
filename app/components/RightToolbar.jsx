@@ -85,15 +85,6 @@ function RightToolbar({
         </StyledChatIconContainer>
         {mode === APP_VIEW_CANVAS && (
           <StyledAddToCanvasIconContainer onClick={onOpenAddPanel}>
-            {chatAlertCount > 0 && (
-              <StyledBadgeContainer>
-                <div className="square-box">
-                  <div className="square-content">
-                    <FormattedNumber value={chatAlertCount} />
-                  </div>
-                </div>
-              </StyledBadgeContainer>
-            )}
             <Icon
               type="add-to-canvas"
               color="white"

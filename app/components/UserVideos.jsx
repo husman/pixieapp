@@ -19,7 +19,7 @@ import {
 import UserVideo from './UserVideo';
 import {
   toggleLocalVideo,
-  addRemoteVideo,
+  addRemoteStream,
   remoteAudioChanged,
   remoteVideoChanged,
   setScreenShareStream,
@@ -45,7 +45,7 @@ const StyledUserVideoContainer = styled.div`
   width: 240px
   height: 182px;
   position: relative;
-  
+
   :hover {
     .video-controls {
       display: block;
@@ -250,7 +250,7 @@ function mapStateToProps(state) {
 function mapDispatchToState(dispatch) {
   return {
     ontoggleLocalVideo: () => dispatch(toggleLocalVideo()),
-    onAddRemoteVideo: value => dispatch(addRemoteVideo(value)),
+    onAddRemoteVideo: value => dispatch(addRemoteStream(value)),
     onRemoteAudioChanged: (streamId, value) => dispatch(remoteAudioChanged(streamId, value)),
     onRemoteVideoChanged: (streamId, value) => dispatch(remoteVideoChanged(streamId, value)),
     onSetScreenShareStream: (stream, streamId) => dispatch(setScreenShareStream(stream, streamId)),

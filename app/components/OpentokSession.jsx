@@ -14,7 +14,7 @@ import {
 } from 'opentok-react';
 import {
   toggleLocalVideo,
-  addRemoteVideo,
+  addRemoteStream,
   remoteAudioChanged,
   remoteVideoChanged,
   setScreenShareStream,
@@ -159,7 +159,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToState(dispatch) {
   return {
-    onAddRemoteVideo: value => dispatch(addRemoteVideo(value)),
+    onAddRemoteVideo: value => dispatch(addRemoteStream(value)),
     onRemoteAudioChanged: (streamId, value) => dispatch(remoteAudioChanged(streamId, value)),
     onRemoteVideoChanged: (streamId, value) => dispatch(remoteVideoChanged(streamId, value)),
     onSetScreenShareStream: (stream, streamId) => dispatch(setScreenShareStream(stream, streamId)),

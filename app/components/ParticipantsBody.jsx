@@ -92,21 +92,21 @@ function ParticipantsBody({
               />
             </StyledMeetingUrlLabel>
             <StyledMeetingUrlTextfield
-              defaultValue={`pixie://meeting?id=${meetingId}`}
+              defaultValue={`pixie://meeting/${meetingId}`}
               readOnly
             />
           </StyledFlexContainer>
         </div>
         {users.map(({
-          firstName,
-          isMicEnabled,
+          displayName,
+          micEnabled,
         }) => (
-          <StyledUserListContainer key={firstName}>
+          <StyledUserListContainer key={displayName}>
             <StyledFlexRowContainer>
               <StyledFullWidthLabel>
-                {firstName}
+                {displayName}
               </StyledFullWidthLabel>
-              {!isMicEnabled && (
+              {!micEnabled && (
                 <div>
                   <Icon
                     type="mic-off"

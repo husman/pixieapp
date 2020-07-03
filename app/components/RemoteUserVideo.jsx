@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { Fragment } from 'react';
 import {
   bool,
   arrayOf,
@@ -12,12 +12,13 @@ import Grid from '@material-ui/core/Grid';
 import UserVideo from './UserVideo';
 import VideoControls from './VideoControls';
 import PlaceholderIcon from '../svgs/user-video-placeholder.svg';
+import UserAudio from './UserAudio';
 
 const StyledUserVideoContainer = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  
+
   :hover {
     .video-controls {
       display: block;
@@ -54,67 +55,73 @@ const StyledVideoLabel = styled.div`
 `;
 
 function RemoteUserVideo({
-  remoteStreams,
+  remoteVideoStreams,
+  remoteAudioStreams,
 }) {
-  if (remoteStreams.length === 0) {
-    return (
-      <PlacehonderContainer>
-        <PlaceholderIcon height="100%" />
-      </PlacehonderContainer>
-    );
-  }
-
-  if (remoteStreams.length === 1) {
-    return remoteStreams.map(({
-      streamId,
-      hasAudio,
-      srcObject,
-    }) => (
-      <StyledUserVideoContainer key={streamId}>
-        {!hasAudio && (
-          <StyledVideoControls className="video-controls">
-            <VideoControls hasVideo={false} audioEnabled={hasAudio} />
-          </StyledVideoControls>
-        )}
-        <UserVideo stream={srcObject} />
-        <StyledVideoLabel>
-          Remote
-        </StyledVideoLabel>
-      </StyledUserVideoContainer>
-    ));
-  }
-
   return (
-    <Grid
-      container
-      justify="center"
-      alignItems="center"
-    >
-      {remoteStreams.map(({
-        streamId,
-        hasAudio,
-        srcObject,
-      }, index) => (
+    <Fragment>
+      {remoteVideoStreams.length === 0 ? (
+        <PlacehonderContainer>
+          <PlaceholderIcon height="100%" />
+        </PlacehonderContainer>
+      ) : null}
+      {remoteVideoStreams.length === 1 ? (
+        remoteVideoStreams.map(({
+            hasAudio,
+            srcObject,
+          }) => (
+            <StyledUserVideoContainer key={srcObject.id}>
+              {!hasAudio && (
+                <StyledVideoControls className="video-controls">
+                  <VideoControls hasVideo={false} audioEnabled={hasAudio} />
+                </StyledVideoControls>
+              )}
+              <UserVideo stream={srcObject} />
+              <StyledVideoLabel>
+                Remote
+              </StyledVideoLabel>
+            </StyledUserVideoContainer>
+          ),
+        )
+      ) : null}
+      {remoteVideoStreams.length > 1 ? (
         <Grid
-          item
-          xs={12}
-          sm={6}
           container
+          justify="center"
+          alignItems="center"
         >
-          <MultiUserVideoContainer key={streamId} paddingRight={index % 2 !== 0}>
-            {!hasAudio && (
-              <StyledVideoControls className="video-controls">
-                <VideoControls hasVideo={false} audioEnabled={hasAudio} />
-              </StyledVideoControls>
-            )}
-            <UserVideo stream={srcObject} />
-            <StyledVideoLabel>
-              Remote
-            </StyledVideoLabel>
-          </MultiUserVideoContainer>
+          {remoteVideoStreams.map(({
+            streamId,
+            hasAudio,
+            srcObject,
+          }, index) => (
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              container
+            >
+              <MultiUserVideoContainer key={streamId} paddingRight={index % 2 !== 0}>
+                {!hasAudio && (
+                  <StyledVideoControls className="video-controls">
+                    <VideoControls hasVideo={false} audioEnabled={hasAudio} />
+                  </StyledVideoControls>
+                )}
+                <UserVideo stream={srcObject} />
+                <StyledVideoLabel>
+                  Remote
+                </StyledVideoLabel>
+              </MultiUserVideoContainer>
+            </Grid>
+          ))}
         </Grid>
+      ) : null}
+      {remoteAudioStreams.map(({
+        srcObject,
+      }) => (
+        <UserAudio stream={srcObject} key={srcObject.id} />
       ))}
-    </Grid>
+    </Fragment>
   );
 }
 
@@ -133,19 +140,33 @@ function mapStateToProps(state) {
   } = state;
 
   return {
-    remoteStreams: remoteStreams.filter(({ hasVideo }) => hasVideo),
+    remoteAudioStreams: remoteStreams.filter(stream => stream.srcObject && stream.type === 'audio'),
+    remoteVideoStreams: remoteStreams.filter(stream => stream.srcObject && stream.type === 'video'),
   };
 }
 
+RemoteUserVideo.defaultProps = {
+  remoteAudioStreams: [],
+  remoteVideoStreams: [],
+};
+
 RemoteUserVideo.propTypes = {
-  remoteStreams: arrayOf(
+  remoteAudioStreams: arrayOf(
     shape({
       streamId: string,
       hasAudio: bool,
       hasVideo: bool,
       srcObject: instanceOf(MediaStream),
     }),
-  ).isRequired,
+  ),
+  remoteVideoStreams: arrayOf(
+    shape({
+      streamId: string,
+      hasAudio: bool,
+      hasVideo: bool,
+      srcObject: instanceOf(MediaStream),
+    }),
+  ),
 };
 
 export default connect(mapStateToProps)(RemoteUserVideo);

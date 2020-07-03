@@ -4,6 +4,7 @@ export const OPEN_ADD_PANEL = 'OPEN_ADD_PANEL';
 export const CLOSE_RIGHT_PANEL = 'CLOSE_RIGHT_PANEL';
 export const SET_SESSION_ID = 'SET_SESSION_ID';
 export const SET_APP_MODE = 'SET_APP_MODE';
+export const SHOW_WELCOME_VIEW = 'SHOW_WELCOME_VIEW';
 
 export function openChatPanel() {
   return {
@@ -46,5 +47,13 @@ export function setAppMode(mode) {
   return {
     type: SET_APP_MODE,
     mode,
+  };
+}
+
+export function showWelcomeView(view, guest) {
+  return {
+    type: SHOW_WELCOME_VIEW,
+    view,
+    guest,
   };
 }

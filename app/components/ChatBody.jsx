@@ -36,7 +36,7 @@ const StyledRemoteMessageContainer = styled.div`
 
 
 function ChatBody({
-  firstName,
+  displayName,
   messages,
   onSend,
 }) {
@@ -111,7 +111,7 @@ function ChatBody({
         ))}
       </StyledChatBody>
       <ChatTextfield
-        user={firstName}
+        user={displayName}
         onSend={onSend}
       />
     </React.Fragment>
@@ -128,7 +128,7 @@ ChatBody.propTypes = {
       date: instanceOf(Date).isRequired,
     }),
   ).isRequired,
-  firstName: string.isRequired,
+  displayName: string.isRequired,
   onSend: func.isRequired,
 };
 
@@ -136,7 +136,7 @@ ChatBody.propTypes = {
 function mapStateToProps(state) {
   const {
     user: {
-      firstName,
+      displayName,
     },
     chat: {
       messages,
@@ -144,7 +144,7 @@ function mapStateToProps(state) {
   } = state;
 
   return {
-    firstName,
+    displayName,
     messages,
   };
 }

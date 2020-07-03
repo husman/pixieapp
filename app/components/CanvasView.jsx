@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import styled from 'styled-components';
 import CanvasUserVideosView from './CanvasUserVideosView';
 import Canvas from './Canvas';
@@ -12,38 +11,26 @@ const StyledVideoContainer = styled.div`
   width: 100%;
 `;
 
+let hasBeenMounted = false;
+
 function CanvasView({
-  remoteStreams,
+  isMounted,
 }) {
-  const remoteVideosEnabled = remoteStreams.length > 0;
+  hasBeenMounted = hasBeenMounted || isMounted;
 
   return (
     <React.Fragment>
-      <StyledVideoContainer>
-        <CanvasToolbar />
-        <Canvas />
+      <StyledVideoContainer style={{ display: isMounted ? null : 'none' }}>
+        {hasBeenMounted ? (
+          <React.Fragment>
+            <CanvasToolbar />
+            <Canvas />
+          </React.Fragment>
+        ) : null}
       </StyledVideoContainer>
-      {remoteVideosEnabled && (<CanvasUserVideosView />)}
+      <CanvasUserVideosView />
     </React.Fragment>
   );
 }
 
-function mapStateToProps(state) {
-  const {
-    view: {
-      remoteStreams,
-    },
-  } = state;
-
-  return {
-    remoteStreams: remoteStreams.filter(({ hasVideo }) => hasVideo),
-  };
-}
-
-function mapDispatchToState() {
-  return {};
-}
-
-CanvasView.propTypes = {};
-
-export default connect(mapStateToProps, mapDispatchToState)(CanvasView);
+export default CanvasView;

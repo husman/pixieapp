@@ -8,7 +8,7 @@ import {
 import {
   TOGGLE_LOCAL_AUDIO,
   TOGGLE_LOCAL_VIDEO,
-  ADD_REMOTE_VIDEO,
+  ADD_REMOTE_STREAM,
   REMOTE_AUDIO_CHANGED,
   REMOTE_VIDEO_CHANGED,
   START_SCREEN_SHARING,
@@ -17,23 +17,45 @@ import {
   REMOTE_SCREEN_SHARING_STOPPED,
   REMOVE_REMOTE_STREAM,
   SET_LOCAL_VIDEO_STREAM,
+  SET_LOCAL_AUDIO_STREAM,
+  ADD_REMOTE_AUDIO,
+  UPDATE_REMOTE_STREAM,
 } from '../actions/video';
 import {
   APP_VIEW_CANVAS,
   APP_VIEW_USER_VIDEOS,
+  WELCOME_MEETING_OPTIONS_VIEW,
+  WELCOME_VIEW_SIGN_UP_SUCCESSFUL,
 } from '../constants/app';
 import {
   OPEN_CHAT_PANEL,
   OPEN_PARTICIPANTS_PANEL,
   CLOSE_RIGHT_PANEL,
   SET_SESSION_ID,
-  SET_APP_MODE, OPEN_ADD_PANEL,
+  SET_APP_MODE,
+  OPEN_ADD_PANEL,
+  SHOW_WELCOME_VIEW,
 } from '../actions/view';
 import {
   SET_USER_INFO,
-  USER_JOINED,
   USER_LEFT,
+  USER_SIGN_UP_ERROR,
+  USER_SIGN_IN,
+  USER_SIGN_IN_ERROR,
   USER_SIGN_OUT,
+  USER_SIGN_UP,
+  USER_SIGN_UP_SUCCESS,
+  USER_SIGN_IN_UNVERIFIED,
+  RESEND_VERIFICATION_EMAIL,
+  RESEND_VERIFICATION_EMAIL_SUCCESS,
+  MEETING_GUEST_NOT_ENABLED,
+  MEETING_NOT_FOUND,
+  JOIN_MEETING,
+  STOP_JOIN_MEETING_LOADING,
+  SET_MEETING_INFO,
+  MEETING_CREATION_ERROR,
+  CREATE_MEETING,
+  USER_JOINED,
 } from '../actions/user';
 import { REMOTE_CHAT_MESSAGE_RECEIVED } from '../actions/chat';
 import {
@@ -41,6 +63,7 @@ import {
   APP_UPDATE_DOWNLOADED,
   CLOSE_APP_UPDATE_NOTICE,
 } from '../actions/app';
+import store from '../lib/Store';
 
 /**
  * The initial state for the canvas.
@@ -48,8 +71,8 @@ import {
  * @type {{}}
  */
 const initialState = {
-  mode: APP_VIEW_USER_VIDEOS,
-  isMicEnabled: true,
+  mode: APP_VIEW_CANVAS,
+  isMicEnabled: false,
   isVideoEnabled: false,
   localVideo: null,
   remoteStreams: [],
@@ -62,6 +85,7 @@ const initialState = {
   token: '',
   appUpdateAvailable: false,
   appUpdateDownloaded: false,
+  signInEmail: store.get('signInEmail'),
 };
 
 /**
@@ -131,18 +155,37 @@ export default function view(state = initialState, action) {
         ...state,
         localVideo: action.stream,
       };
-    case ADD_REMOTE_VIDEO:
+    case SET_LOCAL_AUDIO_STREAM:
+      return {
+        ...state,
+        localAudio: action.stream,
+      };
+    case ADD_REMOTE_STREAM:
       return {
         ...state,
         remoteStreams: [
           ...state.remoteStreams,
-          action.value,
+          {
+            id: action.streamId,
+            type: action.streamType,
+          },
+        ],
+      };
+    case ADD_REMOTE_AUDIO:
+      return {
+        ...state,
+        remoteStreams: [
+          ...state.remoteStreams,
+          {
+            type: 'audio',
+            srcObject: action.srcObject,
+          },
         ],
       };
     case REMOVE_REMOTE_STREAM:
       return {
         ...state,
-        remoteStreams: state.remoteStreams.filter(({ streamId }) => streamId !== action.streamId),
+        remoteStreams: state.remoteStreams.filter(({ id }) => id !== action.streamId),
       };
     case REMOTE_AUDIO_CHANGED:
       return {
@@ -169,6 +212,20 @@ export default function view(state = initialState, action) {
           return {
             ...stream,
             hasVideo: action.value,
+          };
+        }),
+      };
+    case UPDATE_REMOTE_STREAM:
+      return {
+        ...state,
+        remoteStreams: state.remoteStreams.map((stream) => {
+          if (stream.id !== action.stream.id) {
+            return stream;
+          }
+
+          return {
+            ...stream,
+            srcObject: action.stream,
           };
         }),
       };
@@ -200,17 +257,18 @@ export default function view(state = initialState, action) {
     case USER_JOINED:
       return {
         ...state,
-        users: action.data,
+        users: action.users,
       };
     case USER_LEFT:
       return {
         ...state,
-        users: state.users.filter(({ id }) => id !== action.clientId),
+        users: action.users,
       };
     case SET_USER_INFO:
       return {
         ...state,
-        meetingId: action.meetingId,
+        welcomeView: WELCOME_MEETING_OPTIONS_VIEW,
+        isSignInLoading: false,
       };
     case SET_SESSION_ID:
       return {
@@ -257,6 +315,95 @@ export default function view(state = initialState, action) {
       return {
         ...state,
         isRightPanelOpened: false,
+      };
+    case SHOW_WELCOME_VIEW:
+      return {
+        ...state,
+        welcomeView: action.view,
+        guest: action.guest,
+      };
+    case USER_SIGN_IN:
+      return {
+        ...state,
+        isSignInLoading: true,
+        signInErrors: false,
+      };
+    case USER_SIGN_IN_ERROR:
+      return {
+        ...state,
+        isSignInLoading: false,
+        signInErrors: true,
+      };
+    case USER_SIGN_UP:
+      return {
+        ...state,
+        isSignUpLoading: true,
+        signUpErrors: false,
+      };
+    case USER_SIGN_UP_ERROR:
+      return {
+        ...state,
+        isSignUpLoading: false,
+        signUpErrors: true,
+      };
+    case USER_SIGN_UP_SUCCESS:
+      return {
+        ...state,
+        isSignUpLoading: false,
+        signUpErrors: false,
+        welcomeView: WELCOME_VIEW_SIGN_UP_SUCCESSFUL,
+      };
+    case USER_SIGN_IN_UNVERIFIED:
+      return {
+        ...state,
+        signInEmail: action.email,
+        verified: action.verified,
+        isSignInLoading: false,
+      };
+    case RESEND_VERIFICATION_EMAIL:
+      return {
+        ...state,
+        isResendVerificationEmailLoading: true,
+      };
+    case RESEND_VERIFICATION_EMAIL_SUCCESS:
+      return {
+        ...state,
+        isResendVerificationEmailLoading: false,
+      };
+    case MEETING_GUEST_NOT_ENABLED:
+      return {
+        ...state,
+        meetingGuestDisabled: true,
+        meetingNotFound: false,
+      };
+    case MEETING_NOT_FOUND:
+      return {
+        ...state,
+        meetingGuestDisabled: false,
+        meetingNotFound: true,
+      };
+    case JOIN_MEETING:
+    case CREATE_MEETING:
+      return {
+        ...state,
+        isJoinMeetingLoading: true,
+        meetingCreationError: false,
+      };
+    case STOP_JOIN_MEETING_LOADING:
+      return {
+        ...state,
+        isJoinMeetingLoading: false,
+      };
+    case SET_MEETING_INFO:
+      return {
+        ...state,
+        meetingId: action.meetingId,
+        meetingUrl: action.meetingUrl,
+      };
+    case MEETING_CREATION_ERROR:
+      return {
+        ...state,
+        meetingCreationError: true,
       };
     case USER_SIGN_OUT:
       return initialState;
