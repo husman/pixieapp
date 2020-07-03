@@ -43,7 +43,7 @@ function WelcomeViewJoinMeeting({
   onSignIn,
   onCreateMeeting,
 }) {
-  const [meetingUrl, setMeetingUrl] = useState(meetingId || 'http://pixie.neetos.com/meeting/1386c4aa-3dee-4f73-a2d4-aa6b8e968684');
+  const [meetingUrl, setMeetingUrl] = useState(meetingId);
   const [alias, setName] = useState(displayName);
   const [enableGuests, setEnableGuests] = useState(false);
 
