@@ -64,7 +64,8 @@ function* connectToSession({
 }) {
   // Initialize the network socket.
   // const host = 'https://pixiehd.neetos.com';
-  const host = 'http://localhost:4000';
+  const host = 'http://pixie.neetos.com';
+  // const host = 'http://localhost:4000';
 
   const socket = io(host, {
     autoConnect: true,

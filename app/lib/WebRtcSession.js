@@ -105,11 +105,9 @@ class WebRtcSession {
         this.store.dispatch(updateRemoteStream(stream));
 
         stream.onremovetrack = () => {
-          console.log('onremovetrack', stream.id);
           this.store.dispatch(removeRemoteStream(stream.id));
         };
         track.onended = () => {
-          console.log('onended', stream.id);
           this.store.dispatch(removeRemoteStream(stream.id));
         };
       };

@@ -42,3 +42,10 @@ yarn test-e2e
 
 ## License
 Copyright © 2018-present Neetos LLC. All rights reserved.
+
+
+## Enable web sockets logging/debug mode
+To enable verbose logging for web sockets. Open the developer's console and execute
+```js
+localStorage.debug = '*';
+```

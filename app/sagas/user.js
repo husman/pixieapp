@@ -3,7 +3,6 @@
  */
 
 import { put, takeEvery } from 'redux-saga/effects';
-import axios from 'axios';
 import log from 'electron-log';
 import {
   USER_SIGN_IN,
@@ -22,6 +21,7 @@ import {
   meetingCreationError,
 } from '../actions/user';
 import store from '../lib/Store';
+import { post } from '../lib/httpClient';
 
 function* handleUserSignIn({
   email,
@@ -30,13 +30,16 @@ function* handleUserSignIn({
 }) {
   try {
     const {
-      data: {
-        id,
-        firstName,
-        lastName,
-        verified,
-      },
-    } = yield axios.post('http://pixie.neetos.com/login', { email, password });
+      id,
+      firstName,
+      lastName,
+      verified,
+    } = yield post(
+      'http://pixie.neetos.com/login',
+      {
+        email,
+        password,
+      });
 
     if (!verified) {
       return yield put(signInUnverifiedAccount({ email, verified }));
@@ -75,7 +78,7 @@ function* handleUserSignUp({
   password,
 }) {
   try {
-    yield axios.post('http://pixie.neetos.com/signup', {
+    yield post('http://pixie.neetos.com/signup', {
       firstName,
       lastName,
       email,
@@ -102,11 +105,9 @@ function* handleJoinMeeting({
 }) {
   try {
     const {
-      data: {
-        isGuestEnabled,
-        meetingId,
-      },
-    } = yield axios.post('http://pixie.neetos.com/check', {
+      isGuestEnabled,
+      meetingId,
+    } = yield post('http://pixie.neetos.com/check', {
       meetingUrl,
     });
 
@@ -132,11 +133,9 @@ function* handleCreateMeeting({
 }) {
   try {
     const {
-      data: {
-        meetingId,
-        meetingUrl,
-      },
-    } = yield axios.post('http://pixie.neetos.com/create', {
+      meetingId,
+      meetingUrl,
+    } = yield post('http://pixie.neetos.com/create', {
       enableGuests,
     });
 

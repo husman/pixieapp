@@ -1,6 +1,6 @@
 build-mac: ## CI: Builds and deploys a release for Windows and Linux
 	yarn package-mac
-	./scripts/plist
+	./scripts/plist.sh
 
 release-win-linux: ## Dev: Builds and deploys a release for Windows and Linux
 	docker-compose -f docker-compose.yml -f docker-compose-dev.yml run --rm app scripts/release-win-linux.sh
