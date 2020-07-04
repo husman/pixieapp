@@ -18,8 +18,8 @@ const StyledContainer = styled.div`
   right: 0;
   bottom: 0;
   background-color: white;
+  box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.1);
   border-radius: 2px 0 0 2px;
-  filter: drop-shadow(30px 10px 4px #4444dd);
 `;
 
 const StyledColumnFlexBox = styled.div`
