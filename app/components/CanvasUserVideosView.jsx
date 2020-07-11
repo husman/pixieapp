@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 const StyledContainer = styled.div`
   text-align: center;
-  height: 100px;
+  height: 180px;
   overflow: hidden;
   position: relative;
   padding: 5px 0 5px 5px;
@@ -41,7 +41,7 @@ function mapStateToProps(state) {
   } = state;
 
   return {
-    remoteStreams: remoteStreams.filter(({ hasVideo }) => hasVideo),
+    remoteStreams: remoteStreams.filter(stream => stream.srcObject && stream.type === 'video'),
   };
 }
 

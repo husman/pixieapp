@@ -1,7 +1,10 @@
 import React, { Fragment } from 'react';
 import {
+  arrayOf,
   bool,
+  instanceOf,
   number,
+  shape,
   string,
 } from 'prop-types';
 import { connect } from 'react-redux';
@@ -30,6 +33,7 @@ import WelcomeViewMeetingOptions from './WelcomeViewMeetingOptions';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import SignUpSuccess from './SignUpSuccess';
+import UserAudio from './UserAudio';
 
 const StyledContainer = styled.div`
   display: flex;
@@ -52,6 +56,7 @@ function App({
   isSignedIn,
   welcomeView,
   meetingId,
+  remoteAudioStreams,
 }) {
   return (
     <Fragment>
@@ -95,6 +100,11 @@ function App({
           {isRightPanelOpened && (
             <Chat />
           )}
+          {remoteAudioStreams.map(({
+            srcObject,
+          }) => (
+            <UserAudio stream={srcObject} key={srcObject.id} />
+          ))}
           <Dialogs />
         </StyledContainer>
       )}
@@ -106,6 +116,7 @@ App.defaultProps = {
   isSignedIn: false,
   welcomeView: WELCOME_VIEW_SIGN_IN,
   meetingId: '',
+  remoteAudioStreams: [],
 };
 
 App.propTypes = {
@@ -116,6 +127,14 @@ App.propTypes = {
   isSignedIn: bool,
   welcomeView: number,
   meetingId: string,
+  remoteAudioStreams: arrayOf(
+    shape({
+      streamId: string,
+      hasAudio: bool,
+      hasVideo: bool,
+      srcObject: instanceOf(MediaStream),
+    }),
+  ),
 };
 
 function mapStateToProps(state) {
@@ -132,6 +151,7 @@ function mapStateToProps(state) {
       isRightPanelOpened,
       appUpdateDownloaded,
       welcomeView,
+      remoteStreams,
     },
   } = state;
 
@@ -145,6 +165,7 @@ function mapStateToProps(state) {
     isRightPanelOpened,
     appUpdateDownloaded,
     welcomeView,
+    remoteAudioStreams: remoteStreams.filter(stream => stream.srcObject && stream.type === 'audio'),
   };
 }
 

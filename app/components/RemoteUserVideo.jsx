@@ -56,7 +56,6 @@ const StyledVideoLabel = styled.div`
 
 function RemoteUserVideo({
   remoteVideoStreams,
-  remoteAudioStreams,
 }) {
   return (
     <Fragment>
@@ -116,11 +115,6 @@ function RemoteUserVideo({
           ))}
         </Grid>
       ) : null}
-      {remoteAudioStreams.map(({
-        srcObject,
-      }) => (
-        <UserAudio stream={srcObject} key={srcObject.id} />
-      ))}
     </Fragment>
   );
 }
@@ -140,25 +134,15 @@ function mapStateToProps(state) {
   } = state;
 
   return {
-    remoteAudioStreams: remoteStreams.filter(stream => stream.srcObject && stream.type === 'audio'),
     remoteVideoStreams: remoteStreams.filter(stream => stream.srcObject && stream.type === 'video'),
   };
 }
 
 RemoteUserVideo.defaultProps = {
-  remoteAudioStreams: [],
   remoteVideoStreams: [],
 };
 
 RemoteUserVideo.propTypes = {
-  remoteAudioStreams: arrayOf(
-    shape({
-      streamId: string,
-      hasAudio: bool,
-      hasVideo: bool,
-      srcObject: instanceOf(MediaStream),
-    }),
-  ),
   remoteVideoStreams: arrayOf(
     shape({
       streamId: string,

@@ -47,23 +47,16 @@ const StyledVideoLabel = styled.div`
 function RemoteCanvasUserVideos({
   mode,
   remoteStreams,
+  firstName,
 }) {
   return remoteStreams.map(({
     streamId,
-    hasAudio,
-    hasVideo,
     srcObject,
   }) => (
     <StyledUserVideoContainer key={streamId} mode={mode}>
-      {!hasAudio && (
-        <StyledVideoControls className="video-controls">
-          <VideoControls hasVideo={false} audioEnabled={hasAudio} />
-        </StyledVideoControls>
-      )}
-      {hasVideo && (<UserVideo stream={srcObject} />)}
-      {!hasVideo && (<PlaceholderIcon height="100" />)}
+      <UserVideo stream={srcObject} />
       <StyledVideoLabel>
-        Remote
+        {firstName}
       </StyledVideoLabel>
     </StyledUserVideoContainer>
   ));
@@ -82,15 +75,20 @@ function mapStateToProps(state) {
       mode,
       remoteStreams,
     },
+    user: {
+      firstName,
+    },
   } = state;
 
   return {
     mode,
     remoteStreams,
+    firstName,
   };
 }
 
 RemoteCanvasUserVideos.propTypes = {
+  firstName: string.isRequired,
   remoteStreams: arrayOf(
     shape({
       streamId: string,

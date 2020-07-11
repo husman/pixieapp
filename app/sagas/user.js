@@ -136,6 +136,7 @@ function* handleCreateMeeting({
       meetingId,
       meetingUrl,
     } = yield post('http://pixie.neetos.com/create', {
+    // } = yield post('http://localhost:4000/create', {
       enableGuests,
     });
 
