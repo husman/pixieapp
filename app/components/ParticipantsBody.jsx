@@ -106,28 +106,9 @@ function ParticipantsBody({
               <StyledFullWidthLabel>
                 {displayName}
               </StyledFullWidthLabel>
-              {!micEnabled && (
-                <div>
-                  <Icon
-                    type="mic-off"
-                    color="white"
-                    backgroundColor="#e96565"
-                    padding={8}
-                    fontSize="0.7em"
-                  />
-                </div>
-              )}
             </StyledFlexRowContainer>
           </StyledUserListContainer>
         ))}
-        <StyledBottomContainer>
-          <StyledInviteButton>
-            <FormattedMessage
-              id="button.invite"
-              defaultMessage="+ Invite"
-            />
-          </StyledInviteButton>
-        </StyledBottomContainer>
       </StyledFlexContainer>
     </StyledChatBody>
   );

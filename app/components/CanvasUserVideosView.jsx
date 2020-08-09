@@ -13,6 +13,7 @@ const StyledContainer = styled.div`
 
 const StyledVideoContainer = styled.div`
   height: 100%;
+  display: flex;
 `;
 
 function CanvasUserVideosView({

@@ -28,7 +28,7 @@ function CanvasView({
           </React.Fragment>
         ) : null}
       </StyledVideoContainer>
-      <CanvasUserVideosView />
+      {isMounted && <CanvasUserVideosView />}
     </React.Fragment>
   );
 }

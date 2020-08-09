@@ -95,6 +95,7 @@ function RemoteUserVideo({
             srcObject,
           }, index) => (
             <Grid
+              key={streamId}
               item
               xs={12}
               sm={6}

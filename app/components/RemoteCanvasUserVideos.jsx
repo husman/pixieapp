@@ -17,6 +17,7 @@ const StyledUserVideoContainer = styled.div`
   position: relative;
   width: 25%;
   height: 100%;
+  margin-left: 10px;
 
   :hover {
     .video-controls {

@@ -1,7 +1,7 @@
 {
   "name": "pixieapp",
   "productName": "Pixie Canvas",
-  "version": "0.33.0",
+  "version": "0.40.0",
   "description": "Copyright 2019 Neetos LLC. All rights reserved.",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -55,6 +55,7 @@
   },
   "main": "./app/main.prod.js",
   "build": {
+    "afterSign": "scripts/notarize.js",
     "protocols": [
       {
         "name": "Pixie Canvas",
@@ -74,15 +75,14 @@
       "package.json"
     ],
     "mac": {
-      "hardenedRuntime": false,
+      "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "entitlements.mac.plist",
-      "entitlementsInherit": "entitlements.mas.inherit.plist",
-      "target": ["mas"],
+      "entitlementsInherit": "entitlements.mac.inherit.plist",
+      "target": ["dmg"],
       "provisioningProfile": "Pixie_Canvas_Mac_App_Store.provisionprofile"
     },
     "dmg": {
-      "sign": false,
       "contents": [
         {
           "x": 130,
