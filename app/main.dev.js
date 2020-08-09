@@ -74,22 +74,21 @@ app.on('ready', async () => {
     await installExtensions();
   }
 
-  if (process.platform === 'win32' && process.argv.slice(1)) {
-
-    const {
-      query: {
-        id: meetingId,
-        name: firstName,
-      },
-    } = urlParse(process.argv.slice(1), true);
-
-    store.dispatch(
-      setUserInfo({
-        meetingId,
-        firstName,
-      }),
-    );
-  }
+  // if (process.platform === 'win32' && process.argv.slice(1)) {
+  //   const {
+  //     query: {
+  //       id: meetingId,
+  //       name: firstName,
+  //     },
+  //   } = urlParse(process.argv.slice(1), true);
+  //
+  //   store.dispatch(
+  //     setUserInfo({
+  //       meetingId,
+  //       firstName,
+  //     }),
+  //   );
+  // }
 
   const mainWindow = windowManager.createNew(
     'main',

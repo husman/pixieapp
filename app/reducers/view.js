@@ -25,6 +25,7 @@ import {
   APP_VIEW_CANVAS,
   APP_VIEW_USER_VIDEOS,
   WELCOME_MEETING_OPTIONS_VIEW,
+  WELCOME_VIEW_SIGN_IN,
   WELCOME_VIEW_SIGN_UP_SUCCESSFUL,
 } from '../constants/app';
 import {
@@ -86,6 +87,7 @@ const initialState = {
   appUpdateAvailable: false,
   appUpdateDownloaded: false,
   signInEmail: store.get('signInEmail'),
+  welcomeView: WELCOME_VIEW_SIGN_IN,
 };
 
 /**
@@ -160,7 +162,7 @@ export default function view(state = initialState, action) {
         ...state,
         localAudio: action.stream,
       };
-    case ADD_REMOTE_STREAM:
+    case ADD_REMOTE_STREAM: {
       const alreadyExists = state.remoteStreams.find(stream => stream.id === action.streamId);
 
       if (alreadyExists) {
@@ -177,6 +179,7 @@ export default function view(state = initialState, action) {
           },
         ],
       };
+    }
     case ADD_REMOTE_AUDIO:
       return {
         ...state,
