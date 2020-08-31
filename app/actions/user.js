@@ -42,6 +42,7 @@ export function setUserInfo({
   email,
   firstName,
   lastName,
+  meetingId,
 }) {
   return {
     type: SET_USER_INFO,
@@ -49,6 +50,7 @@ export function setUserInfo({
     email,
     firstName,
     lastName,
+    meetingId,
   };
 }
 

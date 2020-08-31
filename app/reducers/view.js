@@ -278,6 +278,7 @@ export default function view(state = initialState, action) {
         ...state,
         welcomeView: WELCOME_MEETING_OPTIONS_VIEW,
         isSignInLoading: false,
+        meetingId: action.meetingId,
       };
     case SET_SESSION_ID:
       return {

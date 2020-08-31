@@ -16,7 +16,7 @@ const initialState = {
   lastName: process.env.LASTNAME || '',
 };
 
-export default function chat(state = initialState, action) {
+export default function user(state = initialState, action) {
   switch (action.type) {
     case SET_USER_INFO: {
       const {
@@ -32,7 +32,7 @@ export default function chat(state = initialState, action) {
         email,
         firstName,
         lastName,
-        displayName: `${firstName} ${lastName}`,
+        displayName: firstName,
         isSignedIn: true,
         isVerified: true,
       };

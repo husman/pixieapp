@@ -153,38 +153,37 @@ app.on('ready', async () => {
   });
 });
 
-app.on('open-url', (event, url) => {
+function joinMeetingFromUrl(event, url) {
   const parsedUrl = urlParse(url, true);
   const {
-    host,
+    pathname,
     query,
   } = parsedUrl;
 
-  switch (host) {
-    case 'user': {
-      const { v } = query;
+  const {
+    name: firstName,
+  } = query;
 
-      if(v === '1') {
-        persist.set('userVerified', 1);
-        store.dispatch(userVerificationSuccess());
-      } else {
-        persist.set('userVerified', 0);
-        store.dispatch(userVerificationError());
-      }
-
-      break;
-    }
-    default: {
-      const {
-        id: meetingId,
-        name: firstName,
-      } = query;
-
-      store.dispatch(
-        setUserInfo({
-          meetingId,
-          firstName,
-        }));
-    }
+  if (!pathname) {
+    return;
   }
-});
+
+  const urlParts = pathname.split('/');
+
+  // Remove the proceeding slashes
+  urlParts.shift();
+
+  const [action, data] = urlParts;
+
+  if(action === 'meeting') {
+    const meetingId = data;
+
+    store.dispatch(
+      setUserInfo({
+        meetingId,
+        firstName,
+      }));
+  }
+}
+
+app.on('open-url', joinMeetingFromUrl);
