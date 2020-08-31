@@ -7,6 +7,7 @@ import {
 import {
   injectIntl,
   FormattedMessage,
+  FormattedNumber,
 } from 'react-intl';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
