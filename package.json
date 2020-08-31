@@ -83,7 +83,7 @@
       "provisioningProfile": "Pixie_Canvas_Mac_App_Store.provisionprofile"
     },
     "dmg": {
-      "sign": true,
+      "sign": false,
       "contents": [
         {
           "x": 130,
