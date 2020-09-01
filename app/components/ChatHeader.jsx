@@ -83,7 +83,7 @@ function ChatHeader({
         >
           <FormattedMessage
             id="panel.tab.chat.label"
-            defaultMessage="Chat"
+            defaultMessage="Chat2"
           />
         </IconButton>
         {chatAlertCount > 0 && (
