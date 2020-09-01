@@ -17,6 +17,7 @@
 import {
   app,
 } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import windowManager from 'electron-window-manager';
 import log from 'electron-log';
 import { createStore, applyMiddleware } from 'redux';
@@ -25,10 +26,7 @@ import urlParse from 'url-parse';
 import reducers from './reducers';
 import {
   setUserInfo,
-  userVerificationError,
-  userVerificationSuccess,
 } from './actions/user';
-import persist from './lib/Store';
 
 // Redux
 const store = createStore(
@@ -40,6 +38,16 @@ const store = createStore(
 );
 
 replayActionMain(store);
+
+export function initAppUpdater() {
+  log.transports.file.level = 'info';
+  autoUpdater.logger = log;
+  autoUpdater.checkForUpdatesAndNotify();
+
+  ipcMain.on('quit-and-install', () => {
+    autoUpdater.quitAndInstall();
+  });
+}
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -151,6 +159,8 @@ app.on('ready', async () => {
     winFullscreenBorderOverlay.maximize();
     winFullscreenBorderOverlay.object.setIgnoreMouseEvents(true);
   });
+
+  initAppUpdater();
 });
 
 function joinMeetingFromUrl(event, url) {
