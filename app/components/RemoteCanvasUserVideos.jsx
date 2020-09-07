@@ -51,10 +51,9 @@ function RemoteCanvasUserVideos({
   firstName,
 }) {
   return remoteStreams.map(({
-    streamId,
     srcObject,
   }) => (
-    <StyledUserVideoContainer key={streamId} mode={mode}>
+    <StyledUserVideoContainer key={srcObject.id} mode={mode}>
       <UserVideo stream={srcObject} />
       <StyledVideoLabel>
         {firstName}
@@ -74,7 +73,6 @@ function mapStateToProps(state) {
   const {
     view: {
       mode,
-      remoteStreams,
     },
     user: {
       firstName,
@@ -83,7 +81,6 @@ function mapStateToProps(state) {
 
   return {
     mode,
-    remoteStreams,
     firstName,
   };
 }

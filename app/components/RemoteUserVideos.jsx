@@ -57,7 +57,6 @@ function RemoteUserVideos({
     >
       {remoteStreams.map(({
         hasAudio,
-        hasVideo,
         srcObject,
         type,
       }) => {

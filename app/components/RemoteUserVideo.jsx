@@ -90,18 +90,17 @@ function RemoteUserVideo({
           alignItems="center"
         >
           {remoteVideoStreams.map(({
-            streamId,
             hasAudio,
             srcObject,
           }, index) => (
             <Grid
-              key={streamId}
+              key={srcObject.id}
               item
               xs={12}
               sm={6}
               container
             >
-              <MultiUserVideoContainer key={streamId} paddingRight={index % 2 !== 0}>
+              <MultiUserVideoContainer key={srcObject.id} paddingRight={index % 2 !== 0}>
                 {!hasAudio && (
                   <StyledVideoControls className="video-controls">
                     <VideoControls hasVideo={false} audioEnabled={hasAudio} />

@@ -28,7 +28,7 @@ function CanvasUserVideosView({
   return (
     <StyledContainer>
       <StyledVideoContainer>
-        <RemoteCanvasUserVideos />
+        <RemoteCanvasUserVideos remoteStreams={remoteStreams} />
       </StyledVideoContainer>
     </StyledContainer>
   );
