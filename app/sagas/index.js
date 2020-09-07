@@ -143,7 +143,6 @@ function* initLocalUserVideo() {
 }
 
 function* initLocalUserAudio() {
-  const isMicEnabled = yield select(({ view }) => view.isMicEnabled);
   const { mediaDevices } = navigator;
   let stream = null;
 
@@ -153,9 +152,7 @@ function* initLocalUserAudio() {
       video: false,
     };
 
-    if (isMicEnabled) {
-      stream = yield mediaDevices.getUserMedia(constraints);
-    }
+    stream = yield mediaDevices.getUserMedia(constraints);
 
     yield put(setLocalAudioStream(stream));
     webRtcSession.setLocalAudioStream(stream);

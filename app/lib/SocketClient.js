@@ -30,12 +30,10 @@ class SocketClient {
     });
 
     this.on(PEER_EVENT_USER_JOINED, ({ newUser, users }) => {
-      console.log({ newUser, users });
       store.dispatch(userJoined(newUser, users));
     });
 
     this.on(PEER_EVENT_USER_LEFT, ({ user, users }) => {
-      console.log({ user, users });
       store.dispatch(userLeft(user, users));
     });
   }

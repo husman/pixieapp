@@ -48,14 +48,10 @@ export function toggleLocalAudio() {
   };
 }
 
-export function addRemoteStream({
-  streamId,
-  streamType,
-}) {
+export function addRemoteStream(stream) {
   return {
     type: ADD_REMOTE_STREAM,
-    streamId,
-    streamType,
+    stream,
   };
 }
 

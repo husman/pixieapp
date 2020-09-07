@@ -102,7 +102,7 @@ class WebRtcSession {
         streams,
       }) => {
         const [stream] = streams;
-        this.store.dispatch(updateRemoteStream(stream));
+        this.store.dispatch(addRemoteStream(stream));
 
         stream.onremovetrack = () => {
           this.store.dispatch(removeRemoteStream(stream.id));
@@ -122,6 +122,9 @@ class WebRtcSession {
           JSON.stringify({ sdp: rtcPeer.localDescription }),
         );
       };
+
+      this.sendVideoStreamsToPeers(clientId);
+      this.sendAudioStreamsToPeers(clientId);
     });
 
     if (nbUsers >= 2) {
@@ -141,15 +144,54 @@ class WebRtcSession {
   setLocalVideoStream = async (stream) => {
     this.localVideoStream = stream;
 
+    this.sendVideoStreamsToPeers();
+  };
+
+  unsetLocalVideoStream = async () => {
+    if (!this.localVideoStream) {
+      return;
+    }
+
     for (let [clientId, rtcPeer] of this.connections) {
       if (clientId === SocketClient.getClientId()) {
         continue;
       }
 
-      SocketClient.emit(PEER_EVENT_ADD_STREAM, {
-        streamId: this.localVideoStream.id,
-        streamType: 'video',
-      });
+      if (this.isConnectionOnline(rtcPeer)) {
+        rtcPeer
+          .getSenders()
+          .forEach((sender) => {
+            if (sender.track && sender.track.kind === 'video') {
+              rtcPeer.removeTrack(sender);
+            }
+          });
+      }
+    }
+
+    this.localVideoStream = null;
+  };
+
+  sendVideoStreamsToPeers = (clientId) => {
+    const stream = this.localVideoStream;
+
+    if (!stream) {
+      return;
+    }
+
+    if (clientId) {
+      const rtcPeer = this.connections.get(clientId);
+
+      stream
+        .getTracks()
+        .map(track => rtcPeer.addTrack(track, stream));
+
+      return;
+    }
+
+    for (let [clientId, rtcPeer] of this.connections) {
+      if (clientId === SocketClient.getClientId()) {
+        continue;
+      }
 
       stream
         .getTracks()
@@ -157,50 +199,73 @@ class WebRtcSession {
     }
   };
 
-  unsetLocalVideoStream = async () => {
-    if (this.localVideoStream) {
-      this.localVideoStream
-        .getTracks()
-        .map(track => track.stop());
-
-      SocketClient.emit(PEER_EVENT_REMOVE_STREAM, {
-        streamId: this.localVideoStream.id,
-      });
-
-      this.localVideoStream = null;
-    }
-  };
-
   setLocalAudioStream = async (stream) => {
     this.localAudioStream = stream;
+
+    this.sendAudioStreamsToPeers();
+  };
+
+  unsetLocalAudioStream = async () => {
+    if (!this.localAudioStream) {
+      return;
+    }
 
     for (let [clientId, rtcPeer] of this.connections) {
       if (clientId === SocketClient.getClientId()) {
         continue;
       }
 
-      SocketClient.emit(PEER_EVENT_ADD_STREAM, {
-        streamId: this.localAudioStream.id,
-        streamType: 'audio',
-      });
+      if (this.isConnectionOnline(rtcPeer)) {
+        rtcPeer
+          .getSenders()
+          .forEach((sender) => {
+            if (sender.track && sender.track.kind === 'audio') {
+              rtcPeer.removeTrack(sender);
+            }
+          });
+      }
+    }
+
+    this.localAudioStream = null;
+  };
+
+  isConnectionOnline = (rtcPeer) => {
+    const onlineStates = new Set([
+      'new',
+      'connecting',
+      'connected',
+    ]);
+
+    return rtcPeer && onlineStates.has(rtcPeer.connectionState);
+  };
+
+  sendAudioStreamsToPeers = (clientId) => {
+    const stream = this.localAudioStream;
+
+    if (!stream) {
+      return;
+    }
+
+    if (clientId) {
+      const rtcPeer = this.connections.get(clientId);
+
+      if (this.isConnectionOnline(rtcPeer)) {
+        stream
+          .getTracks()
+          .map(track => rtcPeer.addTrack(track, stream));
+      }
+
+      return;
+    }
+
+    for (let [clientId, rtcPeer] of this.connections) {
+      if (clientId === SocketClient.getClientId()) {
+        continue;
+      }
 
       stream
         .getTracks()
-        .map((track) => rtcPeer.addTrack(track, stream));
-    }
-  };
-
-  unsetLocalAudioStream = async () => {
-    if (this.localAudioStream) {
-      this.localAudioStream
-        .getTracks()
-        .map(track => track.stop());
-
-      SocketClient.emit(PEER_EVENT_REMOVE_STREAM, {
-        streamId: this.localAudioStream.id,
-      });
-
-      this.localAudioStream = null;
+        .map(track => rtcPeer.addTrack(track, stream));
     }
   };
 

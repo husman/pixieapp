@@ -173,10 +173,7 @@ export default function view(state = initialState, action) {
         ...state,
         remoteStreams: [
           ...state.remoteStreams,
-          {
-            id: action.streamId,
-            type: action.streamType,
-          },
+          action.stream,
         ],
       };
     }

@@ -42,7 +42,11 @@ function mapStateToProps(state) {
   } = state;
 
   return {
-    remoteStreams: remoteStreams.filter(stream => stream.srcObject && stream.type === 'video'),
+    remoteStreams: remoteStreams.filter(stream => {
+      const videoTracks = stream.getVideoTracks();
+
+      return videoTracks && videoTracks.length > 0;
+    }),
   };
 }
 

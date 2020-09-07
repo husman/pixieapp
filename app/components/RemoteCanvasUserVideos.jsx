@@ -50,11 +50,9 @@ function RemoteCanvasUserVideos({
   remoteStreams,
   firstName,
 }) {
-  return remoteStreams.map(({
-    srcObject,
-  }) => (
-    <StyledUserVideoContainer key={srcObject.id} mode={mode}>
-      <UserVideo stream={srcObject} />
+  return remoteStreams.map((stream) => (
+    <StyledUserVideoContainer key={stream.id} mode={mode}>
+      <UserVideo stream={stream} />
       <StyledVideoLabel>
         {firstName}
       </StyledVideoLabel>
@@ -88,12 +86,7 @@ function mapStateToProps(state) {
 RemoteCanvasUserVideos.propTypes = {
   firstName: string.isRequired,
   remoteStreams: arrayOf(
-    shape({
-      streamId: string,
-      hasAudio: bool,
-      hasVideo: bool,
-      srcObject: instanceOf(MediaStream),
-    }),
+    instanceOf(MediaStream),
   ).isRequired,
   mode: number.isRequired,
 };

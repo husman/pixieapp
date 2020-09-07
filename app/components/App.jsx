@@ -100,10 +100,8 @@ function App({
           {isRightPanelOpened && (
             <Chat />
           )}
-          {remoteAudioStreams.map(({
-            srcObject,
-          }) => (
-            <UserAudio stream={srcObject} key={srcObject.id} />
+          {remoteAudioStreams.map((stream) => (
+            <UserAudio key={stream.id} stream={stream} />
           ))}
           <Dialogs />
         </StyledContainer>
@@ -165,7 +163,11 @@ function mapStateToProps(state) {
     isRightPanelOpened,
     appUpdateDownloaded,
     welcomeView,
-    remoteAudioStreams: remoteStreams.filter(stream => stream.srcObject && stream.type === 'audio'),
+    remoteAudioStreams: remoteStreams.filter(stream => {
+      const audioTracks = stream.getAudioTracks();
+
+      return audioTracks && audioTracks.length > 0;
+    }),
   };
 }
 
