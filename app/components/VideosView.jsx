@@ -23,8 +23,8 @@ function mapStateToProps(state) {
   } = state;
 
   const {
-    srcObject: screenShareStream = null,
-  } = remoteStreams.find(({ type }) => type === 'screen') || {};
+    stream: screenShareStream = null,
+  } = remoteStreams.find(({ isScreenShare }) => isScreenShare) || {};
 
   return {
     screenShareStream,

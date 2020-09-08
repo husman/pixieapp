@@ -19,7 +19,7 @@ import {
   SET_LOCAL_VIDEO_STREAM,
   SET_LOCAL_AUDIO_STREAM,
   ADD_REMOTE_AUDIO,
-  UPDATE_REMOTE_STREAM,
+  SET_SCREEN_SHARE_ID,
 } from '../actions/video';
 import {
   APP_VIEW_CANVAS,
@@ -173,7 +173,10 @@ export default function view(state = initialState, action) {
         ...state,
         remoteStreams: [
           ...state.remoteStreams,
-          action.stream,
+          {
+            isScreenShare: action.stream.id === state.screenShareStreamId,
+            stream: action.stream,
+          },
         ],
       };
     }
@@ -191,7 +194,7 @@ export default function view(state = initialState, action) {
     case REMOVE_REMOTE_STREAM:
       return {
         ...state,
-        remoteStreams: state.remoteStreams.filter(({ id }) => id !== action.streamId),
+        remoteStreams: state.remoteStreams.filter(({ stream: { id } }) => id !== action.streamId),
       };
     case REMOTE_AUDIO_CHANGED:
       return {
@@ -221,19 +224,22 @@ export default function view(state = initialState, action) {
           };
         }),
       };
-    case UPDATE_REMOTE_STREAM:
+    case SET_SCREEN_SHARE_ID:
       return {
         ...state,
-        remoteStreams: state.remoteStreams.map((stream) => {
-          if (stream.id !== action.stream.id) {
+        remoteStreams: state.remoteStreams.map(({
+          stream,
+        }) => {
+          if (stream.id !== action.streamId) {
             return stream;
           }
 
           return {
-            ...stream,
-            srcObject: action.stream,
+            stream,
+            isScreenShare: true,
           };
         }),
+        screenShareStreamId: action.streamId,
       };
     case START_SCREEN_SHARING:
       return {
@@ -243,6 +249,7 @@ export default function view(state = initialState, action) {
     case STOP_SCREEN_SHARING:
       return {
         ...state,
+        screenShareStreamId: null,
         isScreenSharing: false,
       };
     case SET_SCREEN_SHARING_STREAM:

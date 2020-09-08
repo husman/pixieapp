@@ -126,12 +126,7 @@ App.propTypes = {
   welcomeView: number,
   meetingId: string,
   remoteAudioStreams: arrayOf(
-    shape({
-      streamId: string,
-      hasAudio: bool,
-      hasVideo: bool,
-      srcObject: instanceOf(MediaStream),
-    }),
+    instanceOf(MediaStream),
   ),
 };
 
@@ -163,7 +158,14 @@ function mapStateToProps(state) {
     isRightPanelOpened,
     appUpdateDownloaded,
     welcomeView,
-    remoteAudioStreams: remoteStreams.filter(stream => {
+    remoteAudioStreams: remoteStreams.filter(({
+      isScreenShare,
+      stream,
+    }) => {
+      if (!stream || isScreenShare) {
+        return false;
+      }
+
       const audioTracks = stream.getAudioTracks();
 
       return audioTracks && audioTracks.length > 0;

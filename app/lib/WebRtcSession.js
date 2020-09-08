@@ -7,11 +7,12 @@ import {
   PEER_EVENT_REMOVE_STREAM,
   PEER_SIGNAL,
   PEER_EVENT_ADD_STREAM,
+  PEER_EVENT_SCREEN_SHARE_STREAM_ID,
 } from '../constants/chat';
 import {
   addRemoteStream,
   removeRemoteStream,
-  updateRemoteStream,
+  setScreenShareScreenId,
 } from '../actions/video';
 
 class WebRtcSession {
@@ -125,6 +126,7 @@ class WebRtcSession {
 
       this.sendVideoStreamsToPeers(clientId);
       this.sendAudioStreamsToPeers(clientId);
+      this.sendScreenShareStreamToPeers(clientId);
     });
 
     if (nbUsers >= 2) {
@@ -272,33 +274,74 @@ class WebRtcSession {
   setLocalScreenShareStream = async (stream) => {
     this.localScreenShareStream = stream;
 
+    this.sendScreenShareStreamToPeers();
+  };
+
+  unsetLocalScreenShareStream = async () => {
+    if (!this.localScreenShareStream) {
+      return;
+    }
+
     for (let [clientId, rtcPeer] of this.connections) {
       if (clientId === SocketClient.getClientId()) {
         continue;
       }
 
-      SocketClient.emit(PEER_EVENT_ADD_STREAM, {
-        streamId: this.localScreenShareStream.id,
-        streamType: 'screen',
-      });
+      if (this.isConnectionOnline(rtcPeer)) {
+        rtcPeer
+          .getSenders()
+          .forEach((sender) => {
+            if (sender.track && sender.track.kind === 'video') {
+              rtcPeer.removeTrack(sender);
+            }
+          });
+      }
+    }
+
+    this.localScreenShareStream = null;
+  };
+
+  sendScreenShareStreamToPeers = (clientId) => {
+    const stream = this.localScreenShareStream;
+
+    if (!stream) {
+      return;
+    }
+
+    if (clientId) {
+      const rtcPeer = this.connections.get(clientId);
+
+      if (this.isConnectionOnline(rtcPeer)) {
+        stream
+          .getTracks()
+          .map(track => {
+            rtcPeer.addTrack(track, stream);
+
+            SocketClient.emit(
+              PEER_EVENT_SCREEN_SHARE_STREAM_ID,
+              stream.id,
+            );
+          });
+      }
+
+      return;
+    }
+
+    for (let [clientId, rtcPeer] of this.connections) {
+      if (clientId === SocketClient.getClientId()) {
+        continue;
+      }
 
       stream
         .getTracks()
-        .map(track => rtcPeer.addTrack(track, stream));
-    }
-  };
+        .map(track => {
+          rtcPeer.addTrack(track, stream);
 
-  unsetLocalScreenShareStream = async () => {
-    if (this.localScreenShareStream) {
-      this.localScreenShareStream
-        .getTracks()
-        .map(track => track.stop());
-
-      SocketClient.emit(PEER_EVENT_REMOVE_STREAM, {
-        streamId: this.localScreenShareStream.id,
-      });
-
-      this.localScreenShareStream = null;
+          SocketClient.emit(
+            PEER_EVENT_SCREEN_SHARE_STREAM_ID,
+            stream.id,
+          );
+        });
     }
   };
 
@@ -350,11 +393,16 @@ class WebRtcSession {
     }));
   };
 
+  onScreenShareId = (streamId) => {
+    this.store.dispatch(setScreenShareScreenId(streamId));
+  };
+
   init = () => {
     SocketClient.on(PEER_EVENT_USER_JOINED, this.onUserJoin);
     SocketClient.on(PEER_SIGNAL, this.onPeerSignal);
     SocketClient.on(PEER_EVENT_REMOVE_STREAM, this.onRemoveRemoteStream);
     SocketClient.on(PEER_EVENT_ADD_STREAM, this.onPeerStreamAdded);
+    SocketClient.on(PEER_EVENT_SCREEN_SHARE_STREAM_ID, this.onScreenShareId);
   };
 
   disconnect = async () => {

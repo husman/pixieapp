@@ -22,7 +22,6 @@ function ScreenShareDialog({
   onStartSharing,
 }) {
   const [defaultSource] = sources;
-  console.log('defaultSource', defaultSource);
   const [sourceId, setSourceId] = useState(defaultSource ? defaultSource.id : null);
   const onSelectScreen = useCallback(source => setSourceId(source), [sourceId]);
 

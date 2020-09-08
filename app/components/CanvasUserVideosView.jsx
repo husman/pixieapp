@@ -20,6 +20,7 @@ function CanvasUserVideosView({
   remoteStreams,
 }) {
   const remoteVideosEnabled = remoteStreams.length > 0;
+  console.log('remoteStreams', remoteStreams);
 
   if (!remoteVideosEnabled) {
     return null;
@@ -42,7 +43,14 @@ function mapStateToProps(state) {
   } = state;
 
   return {
-    remoteStreams: remoteStreams.filter(stream => {
+    remoteStreams: remoteStreams.filter(({
+      isScreenShare,
+      stream,
+    }) => {
+      if (!stream || isScreenShare) {
+        return false;
+      }
+
       const videoTracks = stream.getVideoTracks();
 
       return videoTracks && videoTracks.length > 0;

@@ -50,14 +50,18 @@ function RemoteCanvasUserVideos({
   remoteStreams,
   firstName,
 }) {
-  return remoteStreams.map((stream) => (
-    <StyledUserVideoContainer key={stream.id} mode={mode}>
-      <UserVideo stream={stream} />
-      <StyledVideoLabel>
-        {firstName}
-      </StyledVideoLabel>
-    </StyledUserVideoContainer>
-  ));
+  return remoteStreams
+    .filter(({ isScreenShare }) => !isScreenShare)
+    .map(({
+      stream,
+    }) => (
+      <StyledUserVideoContainer key={stream.id} mode={mode}>
+        <UserVideo stream={stream} />
+        <StyledVideoLabel>
+          {firstName}
+        </StyledVideoLabel>
+      </StyledUserVideoContainer>
+    ));
 }
 
 /**
@@ -86,7 +90,10 @@ function mapStateToProps(state) {
 RemoteCanvasUserVideos.propTypes = {
   firstName: string.isRequired,
   remoteStreams: arrayOf(
-    instanceOf(MediaStream),
+    shape({
+      isScreenShare: bool,
+      stream: instanceOf(MediaStream),
+    })
   ).isRequired,
   mode: number.isRequired,
 };

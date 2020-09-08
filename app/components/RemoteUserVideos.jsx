@@ -112,10 +112,8 @@ function mapStateToProps(state) {
 RemoteUserVideos.propTypes = {
   remoteStreams: arrayOf(
     shape({
-      streamId: string,
-      hasAudio: bool,
-      hasVideo: bool,
-      srcObject: instanceOf(MediaStream),
+      isScreenShare: bool,
+      stream: instanceOf(MediaStream),
     }),
   ).isRequired,
   mode: number.isRequired,

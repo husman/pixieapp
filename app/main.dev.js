@@ -15,6 +15,7 @@
  *
  */
 import {
+  ipcMain,
   app,
 } from 'electron';
 import { autoUpdater } from 'electron-updater';

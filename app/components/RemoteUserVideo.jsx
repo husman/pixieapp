@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import {
-  func,
+  bool,
   arrayOf,
   shape,
   instanceOf,
@@ -64,7 +64,9 @@ function RemoteUserVideo({
         </PlacehonderContainer>
       ) : null}
       {remoteVideoStreams.length === 1 ? (
-        remoteVideoStreams.map((stream) => (
+        remoteVideoStreams.map(({
+            stream,
+          }) => (
             <StyledUserVideoContainer key={stream.id}>
               {/*{!hasAudio && (*/}
               {/*  <StyledVideoControls className="video-controls">*/}
@@ -85,7 +87,7 @@ function RemoteUserVideo({
           justify="center"
           alignItems="center"
         >
-          {remoteVideoStreams.map((stream, index) => (
+          {remoteVideoStreams.map(({ stream }, index) => (
             <Grid
               key={stream.id}
               item
@@ -127,7 +129,14 @@ function mapStateToProps(state) {
   } = state;
 
   return {
-    remoteVideoStreams: remoteStreams.filter(stream => {
+    remoteVideoStreams: remoteStreams.filter(({
+      isScreenShare,
+      stream,
+    }) => {
+      if (!stream || isScreenShare) {
+        return false;
+      }
+
       const videoTracks = stream.getVideoTracks();
 
       return videoTracks && videoTracks.length > 0;
@@ -141,7 +150,10 @@ RemoteUserVideo.defaultProps = {
 
 RemoteUserVideo.propTypes = {
   remoteVideoStreams: arrayOf(
-    instanceOf(MediaStream),
+    shape({
+      isScreenShare: bool,
+      stream: instanceOf(MediaStream),
+    }),
   ),
 };
 
