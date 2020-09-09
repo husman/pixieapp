@@ -163,7 +163,7 @@ export default function view(state = initialState, action) {
         localAudio: action.stream,
       };
     case ADD_REMOTE_STREAM: {
-      const alreadyExists = state.remoteStreams.find(stream => stream.id === action.streamId);
+      const alreadyExists = state.remoteStreams.find(stream => stream.id === action.stream.id);
 
       if (alreadyExists) {
         return state;

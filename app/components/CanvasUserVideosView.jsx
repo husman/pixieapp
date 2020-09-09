@@ -20,7 +20,6 @@ function CanvasUserVideosView({
   remoteStreams,
 }) {
   const remoteVideosEnabled = remoteStreams.length > 0;
-  console.log('remoteStreams', remoteStreams);
 
   if (!remoteVideosEnabled) {
     return null;

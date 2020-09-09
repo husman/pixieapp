@@ -100,7 +100,7 @@ function App({
           {isRightPanelOpened && (
             <Chat />
           )}
-          {remoteAudioStreams.map((stream) => (
+          {remoteAudioStreams.map(({ stream }) => (
             <UserAudio key={stream.id} stream={stream} />
           ))}
           <Dialogs />
@@ -126,7 +126,10 @@ App.propTypes = {
   welcomeView: number,
   meetingId: string,
   remoteAudioStreams: arrayOf(
-    instanceOf(MediaStream),
+    shape({
+      isScreenShare: bool,
+      stream: instanceOf(MediaStream),
+    }),
   ),
 };
 
