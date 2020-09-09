@@ -170,6 +170,10 @@ class WebRtcSession {
       }
     }
 
+    this.localVideoStream
+      .getTracks()
+      .map(track => track.stop());
+
     this.localVideoStream = null;
   };
 
@@ -227,6 +231,10 @@ class WebRtcSession {
           });
       }
     }
+
+    this.localAudioStream
+      .getTracks()
+      .map(track => track.stop());
 
     this.localAudioStream = null;
   };
@@ -297,6 +305,10 @@ class WebRtcSession {
           });
       }
     }
+
+    this.localScreenShareStream
+      .getTracks()
+      .map(track => track.stop());
 
     this.localScreenShareStream = null;
   };
