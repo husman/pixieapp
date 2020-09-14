@@ -19,12 +19,14 @@ import { forwardToMain, replayActionRenderer, getInitialStateRenderer } from 'el
 import reducer from './reducers';
 import sagas from './sagas';
 import SocketClient from './lib/SocketClient';
-import WebRtcSession from './lib/WebRtcSession';
 import App from './components/App';
 import {
   appUpdateAvailable,
   appUpdateDownloaded,
 } from './actions/app';
+import {
+  setStore as setWebrtcStore,
+} from './lib/WebRtcSession';
 
 // Localization
 const localeData = require('react-intl/locale-data/ja');
@@ -101,7 +103,8 @@ sagaMiddleware.run(sagas);
 // });
 //
 SocketClient.setStore(store);
-WebRtcSession.setStore(store);
+setWebrtcStore(store);
+
 
 ipcRenderer.on('app-update-available', () => {
   store.dispatch(appUpdateAvailable());

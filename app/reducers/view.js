@@ -411,7 +411,6 @@ export default function view(state = initialState, action) {
     case SET_MEETING_INFO:
       return {
         ...state,
-        meetingId: action.meetingId,
         meetingUrl: action.meetingUrl,
       };
     case MEETING_CREATION_ERROR:

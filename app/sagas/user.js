@@ -106,8 +106,8 @@ function* handleJoinMeeting({
   try {
     const {
       isGuestEnabled,
-      meetingId,
     } = yield post('http://pixie.neetos.com/check', {
+    //   } = yield post('http://localhost:4000/check', {
       meetingUrl,
     });
 
@@ -116,7 +116,6 @@ function* handleJoinMeeting({
     } else {
       yield put(setMeetingInfo({
         displayName,
-        meetingId,
         meetingUrl,
       }));
     }
@@ -133,16 +132,14 @@ function* handleCreateMeeting({
 }) {
   try {
     const {
-      meetingId,
       meetingUrl,
     } = yield post('http://pixie.neetos.com/create', {
-    // } = yield post('http://localhost:4000/create', {
+      // } = yield post('http://localhost:4000/create', {
       enableGuests,
     });
 
     yield put(setMeetingInfo({
       displayName,
-      meetingId,
       meetingUrl,
     }));
   } catch (error) {

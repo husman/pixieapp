@@ -77,7 +77,7 @@ const StyledChatBody = styled.div`
 `;
 
 function ParticipantsBody({
-  meetingId,
+  meetingUrl,
   users,
 }) {
   return (
@@ -92,7 +92,7 @@ function ParticipantsBody({
               />
             </StyledMeetingUrlLabel>
             <StyledMeetingUrlTextfield
-              defaultValue={`http://pixie.neetos.com/meeting/${meetingId}`}
+              defaultValue={`http://pixie.neetos.com/meeting/${meetingUrl}`}
               readOnly
             />
           </StyledFlexContainer>
@@ -117,19 +117,19 @@ function ParticipantsBody({
 function mapStateToProps(state) {
   const {
     view: {
-      meetingId,
+      meetingUrl,
       users,
     },
   } = state;
 
   return {
-    meetingId,
+    meetingUrl,
     users,
   };
 }
 
 ParticipantsBody.propTypes = {
-  meetingId: string.isRequired,
+  meetingUrl: string.isRequired,
   users: arrayOf(
     shape({
       firstName: string.isRequired,
