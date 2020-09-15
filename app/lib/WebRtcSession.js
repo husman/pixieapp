@@ -1,7 +1,6 @@
 /**
  * Copyright 2020 Neetos LLC. All rights reserved.
  */
-import { OpenVidu } from 'openvidu-browser';
 import { get } from './httpClient';
 import {
   addRemoteStream,

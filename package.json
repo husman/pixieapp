@@ -1,7 +1,7 @@
 {
   "name": "pixieapp",
   "productName": "Pixie Canvas",
-  "version": "0.60.0",
+  "version": "0.61.0",
   "description": "Copyright 2019 Neetos LLC. All rights reserved.",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -69,6 +69,7 @@
     "files": [
       "app/dist/**",
       "app/app.html",
+      "app/lib/openvidu-browser-2.15.0.js",
       "app/presenterToolbar.html",
       "app/presenterOverlay.html",
       "app/main.prod.js",
@@ -257,7 +258,6 @@
     "mxgraph": "^4.0.3",
     "opentok": "^2.9.1",
     "opentok-react": "git+ssh://git@github.com/husman/opentok-react",
-    "openvidu-browser": "^2.15.1-alpha2",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-ace": "^6.3.2",
