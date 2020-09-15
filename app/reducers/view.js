@@ -3,7 +3,6 @@
  */
 import {
   CANVAS_INSERT_IMAGE_DOCUMENT,
-  SET_SCREEN_SHARE_STREAM,
 } from '../actions/actionTypes';
 import {
   TOGGLE_LOCAL_AUDIO,
@@ -19,7 +18,6 @@ import {
   SET_LOCAL_VIDEO_STREAM,
   SET_LOCAL_AUDIO_STREAM,
   ADD_REMOTE_AUDIO,
-  SET_SCREEN_SHARE_ID,
 } from '../actions/video';
 import {
   APP_VIEW_CANVAS,
@@ -137,11 +135,6 @@ export default function view(state = initialState, action) {
         ...state,
         chatAlertCount: state.chatAlertCount + (!state.isChatPanelOpened ? 1 : 0),
       };
-    case SET_SCREEN_SHARE_STREAM:
-      return {
-        ...state,
-        mode: APP_VIEW_USER_VIDEOS,
-      };
     case TOGGLE_LOCAL_AUDIO:
       return {
         ...state,
@@ -174,7 +167,6 @@ export default function view(state = initialState, action) {
         remoteStreams: [
           ...state.remoteStreams,
           {
-            isScreenShare: action.stream.id === state.screenShareStreamId,
             stream: action.stream,
           },
         ],
@@ -224,23 +216,6 @@ export default function view(state = initialState, action) {
           };
         }),
       };
-    case SET_SCREEN_SHARE_ID:
-      return {
-        ...state,
-        remoteStreams: state.remoteStreams.map(({
-          stream,
-        }) => {
-          if (stream.id !== action.streamId) {
-            return stream;
-          }
-
-          return {
-            stream,
-            isScreenShare: true,
-          };
-        }),
-        screenShareStreamId: action.streamId,
-      };
     case START_SCREEN_SHARING:
       return {
         ...state,
@@ -249,7 +224,6 @@ export default function view(state = initialState, action) {
     case STOP_SCREEN_SHARING:
       return {
         ...state,
-        screenShareStreamId: null,
         isScreenSharing: false,
       };
     case SET_SCREEN_SHARING_STREAM:
@@ -258,14 +232,12 @@ export default function view(state = initialState, action) {
         mode: APP_VIEW_USER_VIDEOS,
         isScreenSharing: false,
         screenShareStream: action.stream,
-        screenShareStreamId: action.streamId,
       };
     case REMOTE_SCREEN_SHARING_STOPPED:
       return {
         ...state,
         mode: APP_VIEW_USER_VIDEOS,
         screenShareStream: null,
-        screenShareStreamId: null,
       };
     case USER_JOINED:
       return {

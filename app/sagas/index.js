@@ -2,13 +2,9 @@
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
 
-import { fork, put, select, takeEvery } from 'redux-saga/effects';
+import { fork, select, takeEvery } from 'redux-saga/effects';
 import io from 'socket.io-client';
-import { remote } from 'electron';
 import {
-  OPENTOK_STREAM_DESTROYED,
-  remoteScreenSharingStopped,
-  removeRemoteStream,
   TOGGLE_LOCAL_VIDEO,
   TOGGLE_LOCAL_AUDIO,
   START_SCREEN_SHARING,
@@ -32,26 +28,9 @@ import {
   unpublishVideo,
   publishAudio,
   unpublishAudio,
+  publishScreenShare,
+  unpublishScreenShare,
 } from '../lib/WebRtcSession';
-import { getScreenSize } from '../utils/capture';
-
-const { app } = remote;
-
-function* remoteStreamDestroyed({
-  event: {
-    stream: {
-      id: streamId,
-    },
-  },
-}) {
-  const screenShareStreamId = yield select(({ view: { screenShareStreamId: id } }) => id);
-
-  if (streamId === screenShareStreamId) {
-    yield put(remoteScreenSharingStopped());
-  } else {
-    yield put(removeRemoteStream(streamId));
-  }
-}
 
 function sendChatMessage({
   user,
@@ -94,6 +73,7 @@ function* disconnectFromSession() {
 }
 
 function* stopScreenSharing() {
+  yield unpublishScreenShare();
 }
 
 function* toggleLocalUserVideo() {
@@ -138,33 +118,7 @@ function* canvasUploadComplete({
 function* initScreenShareVideo({
   sourceId,
 }) {
-  const {
-    mediaDevices,
-  } = navigator;
-  const {
-    width,
-    height,
-  } = getScreenSize();
-  const constraints = {
-    audio: false,
-    video: {
-      mandatory: {
-        chromeMediaSource: 'desktop',
-        chromeMediaSourceId: sourceId,
-        minWidth: width,
-        minHeight: height,
-        maxWidth: width,
-        maxHeight: height,
-      },
-    },
-  };
-
-  try {
-    const stream = yield mediaDevices.getUserMedia(constraints);
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('Could not get media device to capture the screen', err);
-  }
+  yield publishScreenShare(sourceId);
 }
 
 function* userLeft({
@@ -173,7 +127,6 @@ function* userLeft({
 }
 
 function* sagas() {
-  yield takeEvery(OPENTOK_STREAM_DESTROYED, remoteStreamDestroyed);
   yield takeEvery(SEND_CHAT_TEXT, sendChatMessage);
   yield takeEvery(SET_MEETING_INFO, connectToSession);
   yield takeEvery(TOGGLE_LOCAL_VIDEO, toggleLocalUserVideo);

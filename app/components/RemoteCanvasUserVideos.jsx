@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  bool,
   arrayOf,
   shape,
   instanceOf,
@@ -10,8 +9,6 @@ import {
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import UserVideo from './UserVideo';
-import VideoControls from './VideoControls';
-import PlaceholderIcon from '../svgs/user-video-placeholder.svg';
 
 const StyledUserVideoContainer = styled.div`
   position: relative;
@@ -51,7 +48,6 @@ function RemoteCanvasUserVideos({
   firstName,
 }) {
   return remoteStreams
-    .filter(({ isScreenShare }) => !isScreenShare)
     .map(({
       stream,
     }) => (
@@ -91,7 +87,6 @@ RemoteCanvasUserVideos.propTypes = {
   firstName: string.isRequired,
   remoteStreams: arrayOf(
     shape({
-      isScreenShare: bool,
       stream: instanceOf(MediaStream),
     })
   ).isRequired,

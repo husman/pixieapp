@@ -43,10 +43,9 @@ function mapStateToProps(state) {
 
   return {
     remoteStreams: remoteStreams.filter(({
-      isScreenShare,
       stream,
     }) => {
-      if (!stream || isScreenShare) {
+      if (!stream) {
         return false;
       }
 

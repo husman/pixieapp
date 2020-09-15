@@ -118,7 +118,6 @@ App.defaultProps = {
 };
 
 App.propTypes = {
-  firstName: string.isRequired,
   mode: number.isRequired,
   isVideoEnabled: bool.isRequired,
   isRightPanelOpened: bool,
@@ -127,7 +126,6 @@ App.propTypes = {
   meetingUrl: string,
   remoteAudioStreams: arrayOf(
     shape({
-      isScreenShare: bool,
       stream: instanceOf(MediaStream),
     }),
   ),
@@ -137,7 +135,6 @@ function mapStateToProps(state) {
   const {
     user: {
       isSignedIn,
-      firstName,
     },
     view: {
       guest,
@@ -155,17 +152,15 @@ function mapStateToProps(state) {
     guest,
     meetingUrl,
     isSignedIn,
-    firstName,
     isVideoEnabled,
     mode,
     isRightPanelOpened,
     appUpdateDownloaded,
     welcomeView,
     remoteAudioStreams: remoteStreams.filter(({
-      isScreenShare,
       stream,
     }) => {
-      if (!stream || isScreenShare) {
+      if (!stream) {
         return false;
       }
 

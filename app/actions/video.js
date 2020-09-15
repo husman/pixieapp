@@ -21,7 +21,6 @@ export const OPENTOK_STREAM_DESTROYED = 'OPENTOK_STREAM_DESTROYED';
 export const SET_LOCAL_VIDEO_STREAM = 'SET_LOCAL_VIDEO_STREAM';
 export const SET_LOCAL_AUDIO_STREAM = 'SET_LOCAL_AUDIO_STREAM';
 export const UPDATE_REMOTE_STREAM = 'UPDATE_REMOTE_STREAM';
-export const SET_SCREEN_SHARE_ID = 'SET_SCREEN_SHARE_ID';
 
 export function toggleLocalVideo() {
   return {
@@ -61,13 +60,6 @@ export function updateRemoteStream({
 }) {
   return {
     type: UPDATE_REMOTE_STREAM,
-    streamId,
-  };
-}
-
-export function setScreenShareScreenId(streamId) {
-  return {
-    type: SET_SCREEN_SHARE_ID,
     streamId,
   };
 }
@@ -147,11 +139,10 @@ export function stopScreenSharing() {
   };
 }
 
-export function setScreenShareStream(stream, streamId) {
+export function setScreenShareStream(stream) {
   return {
     type: SET_SCREEN_SHARING_STREAM,
     stream,
-    streamId,
   };
 }
 

@@ -4,17 +4,22 @@
 import { get } from './httpClient';
 import {
   addRemoteStream,
+  remoteScreenSharingStopped,
   removeRemoteStream,
   setLocalVideoStream,
+  setScreenShareStream,
 } from '../actions/video';
 
 let store = null;
 let OV = null;
 let OvAudio = null;
+let OvScreenShare = null;
 let session = null;
 let sessionAudio = null;
+let sessionScreenShare = null;
 let subscriber = null;
 let videoPublisher = null;
+let screenSharePublisher = null;
 let audioPublisher = null;
 
 export function setStore(value) {
@@ -22,24 +27,33 @@ export function setStore(value) {
 }
 
 export async function init(meetingUrl) {
-  const { token } = await get(`http://pixie.neetos.com/token?meetingUrl=${meetingUrl}`);
-  const { token: token2 } = await get(`http://pixie.neetos.com/token?meetingUrl=${meetingUrl}`);
-  // const { token } = await get(`http://localhost:4000/token?meetingUrl=${meetingUrl}`);
-  // const { token: token2 } = await get(`http://localhost:4000/token?meetingUrl=${meetingUrl}`);
+  const { token: videoSessionToken } = await get(`http://pixie.neetos.com/token?meetingUrl=${meetingUrl}`);
+  const { token: audioSessionToken } = await get(`http://pixie.neetos.com/token?meetingUrl=${meetingUrl}`);
+  const { token: screenShareSessionToken } = await get(`http://pixie.neetos.com/token?meetingUrl=${meetingUrl}`);
+  // const { token: videoSessionToken } = await get(`http://localhost:4000/token?meetingUrl=${meetingUrl}`);
+  // const { token: audioSessionToken } = await get(`http://localhost:4000/token?meetingUrl=${meetingUrl}`);
+  // const { token: screenShareSessionToken } = await get(`http://localhost:4000/token?meetingUrl=${meetingUrl}`);
 
   OV = new OpenVidu();
   OvAudio = new OpenVidu();
+  OvScreenShare = new OpenVidu();
   session = OV.initSession();
   sessionAudio = OvAudio.initSession();
+  sessionScreenShare = OvScreenShare.initSession();
 
   initEvents();
-  await session.connect(token);
-  await sessionAudio.connect(token2);
+  await session.connect(videoSessionToken);
+  await sessionAudio.connect(audioSessionToken);
+  await sessionScreenShare.connect(screenShareSessionToken);
 }
 
 export async function disconnect() {
   if (sessionAudio) {
     sessionAudio.disconnect();
+  }
+
+  if (sessionScreenShare) {
+    sessionScreenShare.disconnect();
   }
 
   if (session) {
@@ -58,6 +72,10 @@ export function isLocalConnectionId(connectionId) {
     localConnectionIds.add(sessionAudio.connection.connectionId);
   }
 
+  if (sessionScreenShare && sessionScreenShare.connection) {
+    localConnectionIds.add(sessionScreenShare.connection.connectionId);
+  }
+
   return localConnectionIds.has(connectionId);
 }
 
@@ -74,7 +92,13 @@ export function initEvents() {
         stream: playingStream,
       },
     }) => {
-      store.dispatch(addRemoteStream(playingStream.getMediaStream()));
+      const mediaStream = playingStream.getMediaStream();
+
+      if (playingStream.typeOfVideo === 'SCREEN') {
+        store.dispatch(setScreenShareStream(mediaStream));
+      } else {
+        store.dispatch(addRemoteStream(mediaStream));
+      }
     });
 
     const video = document.createElement('video');
@@ -82,6 +106,11 @@ export function initEvents() {
   });
 
   session.on('streamDestroyed', ({ stream: mediaStream }) => {
+    if (mediaStream.typeOfVideo === 'SCREEN') {
+      store.dispatch(remoteScreenSharingStopped());
+      return;
+    }
+
     const stream = mediaStream.getMediaStream();
 
     if (!stream) {
@@ -96,8 +125,8 @@ export function initEvents() {
   });
 }
 
-export function* publishVideo() {
-  const stream = yield OV.getUserMedia({
+export async function publishVideo() {
+  const stream = await OV.getUserMedia({
     audioSource: false,
   });
   const [videoSource] = stream.getVideoTracks();
@@ -135,8 +164,8 @@ export async function unpublishVideo() {
   videoPublisher = null;
 }
 
-export function* publishAudio() {
-  const stream = yield OV.getUserMedia({
+export async function publishAudio() {
+  const stream = await OvAudio.getUserMedia({
     videoSource: false,
   });
   const [audioSource] = stream.getAudioTracks();
@@ -148,7 +177,7 @@ export function* publishAudio() {
     videoSource: null,
   });
 
-  sessionAudio.publish(audioPublisher);
+  await sessionAudio.publish(audioPublisher);
 }
 
 export async function unpublishAudio() {
@@ -168,4 +197,42 @@ export async function unpublishAudio() {
 
   await sessionAudio.unpublish(audioPublisher);
   audioPublisher = null;
+}
+
+export async function publishScreenShare(sourceId) {
+  const stream = await OvScreenShare.getUserMedia({
+    videoSource: `screen:${sourceId}`,
+    audioSource: false,
+  });
+  const [videoSource] = stream.getVideoTracks();
+
+  videoSource.isScreenShare = true;
+
+  screenSharePublisher = OvScreenShare.initPublisher(undefined, {
+    videoSource,
+    publishVideo: true,
+    publishAudio: false,
+    audioSource: null,
+  });
+
+  sessionScreenShare.publish(screenSharePublisher);
+}
+
+export async function unpublishScreenShare() {
+  if (!screenSharePublisher || !screenSharePublisher.stream) {
+    return;
+  }
+
+  const stream = screenSharePublisher.stream.getMediaStream();
+
+  if (!stream) {
+    return;
+  }
+
+  stream
+    .getVideoTracks()
+    .forEach(track => track.stop());
+
+  await sessionScreenShare.unpublish(screenSharePublisher);
+  screenSharePublisher = null;
 }

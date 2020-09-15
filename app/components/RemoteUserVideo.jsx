@@ -130,10 +130,9 @@ function mapStateToProps(state) {
 
   return {
     remoteVideoStreams: remoteStreams.filter(({
-      isScreenShare,
       stream,
     }) => {
-      if (!stream || isScreenShare) {
+      if (!stream) {
         return false;
       }
 
@@ -151,7 +150,6 @@ RemoteUserVideo.defaultProps = {
 RemoteUserVideo.propTypes = {
   remoteVideoStreams: arrayOf(
     shape({
-      isScreenShare: bool,
       stream: instanceOf(MediaStream),
     }),
   ),

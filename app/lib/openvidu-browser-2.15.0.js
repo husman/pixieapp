@@ -6585,6 +6585,11 @@ var Stream = (function (_super) {
                     var typeOfVideo = '';
                     if (_this.isSendVideo()) {
                         typeOfVideo = (typeof MediaStreamTrack !== 'undefined' && _this.outboundStreamOpts.publisherProperties.videoSource instanceof MediaStreamTrack) ? 'CUSTOM' : (_this.isSendScreen() ? 'SCREEN' : 'CAMERA');
+
+                      // TODO: Submit an open source PR?
+                      if (_this.outboundStreamOpts.publisherProperties.videoSource.isScreenShare) {
+                        typeOfVideo = 'SCREEN';
+                      }
                     }
                     params = {
                         doLoopback: _this.displayMyRemote() || false,
