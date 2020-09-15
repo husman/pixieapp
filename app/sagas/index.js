@@ -91,10 +91,6 @@ function* disconnectFromSession() {
 
   // Disconnect from the OpenVidu server
   disconnectWebRtc();
-
-  // Restart Electron app
-  app.relaunch();
-  app.exit(0);
 }
 
 function* stopScreenSharing() {
