@@ -5,6 +5,7 @@ import { get } from './httpClient';
 import {
   addRemoteStream,
   removeRemoteStream,
+  setLocalVideoStream,
 } from '../actions/video';
 
 let store = null;
@@ -96,10 +97,8 @@ export function initEvents() {
 }
 
 export function* publishVideo() {
-  const { mediaDevices } = navigator;
-  const stream = yield mediaDevices.getUserMedia({
-    audio: false,
-    video: true,
+  const stream = yield OV.getUserMedia({
+    audioSource: false,
   });
   const [videoSource] = stream.getVideoTracks();
 
@@ -111,6 +110,8 @@ export function* publishVideo() {
   });
 
   session.publish(videoPublisher);
+
+  store.dispatch(setLocalVideoStream(stream));
 }
 
 export async function unpublishVideo() {
@@ -129,14 +130,14 @@ export async function unpublishVideo() {
     .forEach(track => track.stop());
 
   await session.unpublish(videoPublisher);
+
+  store.dispatch(setLocalVideoStream(null));
   videoPublisher = null;
 }
 
 export function* publishAudio() {
-  const { mediaDevices } = navigator;
-  const stream = yield mediaDevices.getUserMedia({
-    audio: true,
-    video: false,
+  const stream = yield OV.getUserMedia({
+    videoSource: false,
   });
   const [audioSource] = stream.getAudioTracks();
 
