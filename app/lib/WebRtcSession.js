@@ -83,6 +83,10 @@ export function initEvents() {
   session.on('streamDestroyed', ({ stream: mediaStream }) => {
     const stream = mediaStream.getMediaStream();
 
+    if (!stream) {
+      return;
+    }
+
     if (stream && stream.connection && isLocalConnectionId(stream.connection.connectionId)) {
       return;
     }
