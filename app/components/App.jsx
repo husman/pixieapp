@@ -55,33 +55,33 @@ function App({
   isRightPanelOpened,
   isSignedIn,
   welcomeView,
-  meetingId,
+  meetingUrl,
   remoteAudioStreams,
 }) {
   return (
     <Fragment>
       <CssBaseline />
-      {!isSignedIn && !meetingId && welcomeView === WELCOME_VIEW_SIGN_IN && (
+      {!isSignedIn && !meetingUrl && welcomeView === WELCOME_VIEW_SIGN_IN && (
         <SignIn />
       )}
-      {!isSignedIn && !meetingId && welcomeView === WELCOME_VIEW_SIGN_UP && (
+      {!isSignedIn && !meetingUrl && welcomeView === WELCOME_VIEW_SIGN_UP && (
         <SignUp />
       )}
-      {!isSignedIn && !meetingId && welcomeView === WELCOME_VIEW_SIGN_UP_SUCCESSFUL && (
+      {!isSignedIn && !meetingUrl && welcomeView === WELCOME_VIEW_SIGN_UP_SUCCESSFUL && (
         <SignUpSuccess />
       )}
-      {isSignedIn && !meetingId && welcomeView === WELCOME_MEETING_OPTIONS_VIEW && (
+      {isSignedIn && !meetingUrl && welcomeView === WELCOME_MEETING_OPTIONS_VIEW && (
         <WelcomeViewMeetingOptions />
       )}
-      {(isSignedIn || guest) && !meetingId && welcomeView === WELCOME_JOIN_MEETING_VIEW && (
+      {(isSignedIn || guest) && !meetingUrl && welcomeView === WELCOME_JOIN_MEETING_VIEW && (
         <WelcomeViewJoinMeeting />
       )}
-      {isSignedIn && !meetingId && welcomeView === WELCOME_NEW_MEETING_VIEW && (
+      {isSignedIn && !meetingUrl && welcomeView === WELCOME_NEW_MEETING_VIEW && (
         <WelcomeViewJoinMeeting
           isNewMeeting
         />
       )}
-      {isSignedIn && meetingId && (
+      {isSignedIn && meetingUrl && (
         <StyledContainer className="video-mode-container">
           <Header />
           {!isRightPanelOpened && (
@@ -113,21 +113,19 @@ function App({
 App.defaultProps = {
   isSignedIn: false,
   welcomeView: WELCOME_VIEW_SIGN_IN,
-  meetingId: '',
+  meetingUrl: '',
   remoteAudioStreams: [],
 };
 
 App.propTypes = {
-  firstName: string.isRequired,
   mode: number.isRequired,
   isVideoEnabled: bool.isRequired,
   isRightPanelOpened: bool,
   isSignedIn: bool,
   welcomeView: number,
-  meetingId: string,
+  meetingUrl: string,
   remoteAudioStreams: arrayOf(
     shape({
-      isScreenShare: bool,
       stream: instanceOf(MediaStream),
     }),
   ),
@@ -137,11 +135,10 @@ function mapStateToProps(state) {
   const {
     user: {
       isSignedIn,
-      firstName,
     },
     view: {
       guest,
-      meetingId,
+      meetingUrl,
       isVideoEnabled,
       mode,
       isRightPanelOpened,
@@ -153,19 +150,17 @@ function mapStateToProps(state) {
 
   return {
     guest,
-    meetingId,
+    meetingUrl,
     isSignedIn,
-    firstName,
     isVideoEnabled,
     mode,
     isRightPanelOpened,
     appUpdateDownloaded,
     welcomeView,
     remoteAudioStreams: remoteStreams.filter(({
-      isScreenShare,
       stream,
     }) => {
-      if (!stream || isScreenShare) {
+      if (!stream) {
         return false;
       }
 

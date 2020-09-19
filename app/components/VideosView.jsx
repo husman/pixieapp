@@ -18,13 +18,9 @@ function VideosView({
 function mapStateToProps(state) {
   const {
     view: {
-      remoteStreams,
+      screenShareStream = null,
     },
   } = state;
-
-  const {
-    stream: screenShareStream = null,
-  } = remoteStreams.find(({ isScreenShare }) => isScreenShare) || {};
 
   return {
     screenShareStream,

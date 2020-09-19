@@ -176,13 +176,11 @@ export function stopJoinMeetingLoading() {
 
 export function setMeetingInfo({
   displayName,
-  meetingId,
   meetingUrl,
 }) {
   return {
     type: SET_MEETING_INFO,
     displayName,
-    meetingId,
     meetingUrl,
   }
 }

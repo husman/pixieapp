@@ -11,10 +11,7 @@ import {
 /**
  * Copyright 2019 Neetos LLC. All rights reserved.
  */
-const initialState = {
-  firstName: process.env.FIRSTNAME || '',
-  lastName: process.env.LASTNAME || '',
-};
+const initialState = {};
 
 export default function user(state = initialState, action) {
   switch (action.type) {
@@ -44,10 +41,7 @@ export default function user(state = initialState, action) {
         displayName: action.displayName,
       };
     case USER_SIGN_OUT:
-      return {
-        ...state,
-        isSignedIn: false,
-      };
+      return initialState;
     case JOIN_MEETING:
       return {
         ...state,
